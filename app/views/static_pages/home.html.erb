@@ -1,0 +1,14 @@
+<div class="center jumbotron">
+   <h1>Welcome to MiGA Clades</h1>
+   
+   <h2>
+      Explore the Microbial Genomes Atlas for select species.
+   </h2>
+
+   <% unless logged_in? %>
+      <%= link_to "Create user", signup_path, class: "btn btn-lg btn-primary" %>
+      <span class="text-muted">or</span>
+      <%= link_to "Log in", login_path, class: "btn btn-lg btn-primary" %>
+   <% end %>
+</div>
+
