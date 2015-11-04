@@ -1,0 +1,37 @@
+<%= provide(:title, "New project") %>
+<h1>New project</h1>
+<div class="row">
+   <div class="col-md-6 col-md-offset-3">
+      <%= form_for(@project) do |f| %>
+	 <%= render "shared/error_messages", object: f.object %>
+	 
+	 <%= hidden_field_tag :user_id, current_user.id %>
+	 
+	 <%= f.label :path %>
+	 <%= f.text_field :path, class: "form-control" %>
+
+	 <!--
+	 This could be extended in the future for other MiGA types.
+	 For now, this is MiGA Clades :-)
+	 <%= f.label :type %>
+	 <%= select_tag(:type,
+	    options_for_select(
+	    MiGA::Project.KNOWN_TYPES.map{ |k,t| [ k.to_s.capitalize + ": " + t[:description], k]})) %>
+	 -->
+	 <%= hidden_field_tag :type, :clade %>
+
+	 <hr/>
+	 <h1>Optional information</h1>
+	 <%= label_tag :name, "Name" %>
+	 <%= text_field_tag :name %>
+
+	 <%= label_tag :description, "Description" %>
+	 <%= text_field_tag :description %>
+
+	 <%= label_tag :comments, "Comments" %>
+	 <%= text_area_tag :comments %>
+
+	 <%= f.submit "Create new MiGA project", class: "btn btn-primary" %>
+      <% end %>
+   </div>
+</div>

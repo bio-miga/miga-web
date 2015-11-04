@@ -5,10 +5,16 @@
       Explore the Microbial Genomes Atlas for select species.
    </h2>
 
-   <% unless logged_in? %>
+   <% if logged_in? %>
+      <%= link_to pluralize(Project.all.count, "project"), projects_path, class: "btn btn-lg btn-primary" %>
+      <% if current_user.admin? %>
+	 or <%= link_to "Create project", new_project_path, class: "btn btn-lg btn-primary" %>
+      <% end %>
+   <% else %>
       <%= link_to "Create user", signup_path, class: "btn btn-lg btn-primary" %>
       <span class="text-muted">or</span>
       <%= link_to "Log in", login_path, class: "btn btn-lg btn-primary" %>
    <% end %>
+
 </div>
 

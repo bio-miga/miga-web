@@ -8,4 +8,14 @@
 	 </h1>
       </section>
    </aside>
+   <div class="col-md-8">
+      <!-- This should be changed to datasets, once I model those -->
+      <% if @user.projects.any? %>
+	 <h3>Projects (<%= @user.projects.count %>)</h3>
+	 <ol class="projects">
+	    <%= render @projects %>
+	 </ol>
+	 <%= will_paginate @projects %>
+      <% end %>
+   </div>
 </div>

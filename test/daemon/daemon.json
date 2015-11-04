@@ -1,0 +1,12 @@
+{
+   "created": "2015-11-03 16:56:35 -0500",
+   "updated": "2015-11-03 16:56:35 -0500",
+   "type"   : "bash",
+   "cmd"    : "%2$s '%1$s' &> '%4$s'",
+   "var"    : "%1$s=%2$s",
+   "varsep" : " ",
+   "alive"  : "ps -p '%1$s'|tail -n+2|wc -l|awk '{print $1}'",
+   "latency": 30,
+   "maxjobs": 6,
+   "ppn"    : 2
+}

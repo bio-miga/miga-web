@@ -118,7 +118,7 @@ footer {
 /* sidebar */
 
 aside {
-   section.user_info {
+   section.user_info, section.project_info {
       margin-top: 20px;
    }
    section {
@@ -204,3 +204,36 @@ input {
       border-bottom: 1px solid $gray-lighter;
    }
 }
+
+/* Projects */
+
+.projects {
+   list-style: none;
+   padding: 0;
+   li {
+      padding: 10px 0;
+      border-top: 1px solid #e8e8e8;
+   }
+   span {
+      display: block;
+   }
+   span.path {
+      font-weight: bolder;
+   }
+   .timestamp {
+      color: $gray-light;
+   }
+   .project_header {
+      span.path {
+	 font-size: 150%;
+      }
+   }
+}
+
+aside {
+   textarea {
+      height: 100px;
+      margin-bottom: 5px;
+   }
+}
+

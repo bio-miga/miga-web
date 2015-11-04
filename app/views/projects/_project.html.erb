@@ -1,0 +1,17 @@
+<li id="project-<%= project.id %>">
+   <span class="path">
+      <%= link_to project.path_name, project %>
+   </span>
+   <span class="description"><%= project.miga.metadata[:description] %></span>
+   <span class="datasets">
+      <%= pluralize(project.miga.metadata[:datasets].size, "datasets") %>
+      <% if logged_in? && current_user.admin? %>
+	 | <%= link_to "delete", project, method: :delete,
+	    data: { confirm: "Are you sure? This action cannot be undone" } %>
+      <% end %>
+   </span>
+   <span class="timestamp">
+      Created <%= time_ago_in_words(project.created_at) %> ago by
+      <%= link_to project.user.name, project.user %>.
+   </span>
+</li>
