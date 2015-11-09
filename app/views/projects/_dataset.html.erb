@@ -1,0 +1,36 @@
+<li id="dataset-<%= dataset.name %>">
+   <span class="name">
+      <span class="project"><%= link_to project.code, project %> | </span>
+      <%= link_to dataset.name, "#" %>
+   </span>
+   <% unless dataset.metadata[:tax].nil? %>
+      <span class="taxonomy">
+	 <b>Taxonomy:</b>
+	 <% tax = dataset.metadata[:tax].sorted_ranks.map{ |r| r.join(": ")} %>
+	 <%= tax.first %>
+	 <% if tax.size > 1 %>
+	    &raquo;
+	    <% if tax.size > 2 %>
+	       <span onclick='$(this).children().toggle();'>
+		  <span style="display: none;">
+		     <% tax[1, tax.size-2].each do |r| %>
+			<%= r %> &raquo;
+		     <% end %>
+		  </span>
+		  <span>&hellip; &raquo;</span>
+	       </span>
+	    <% end %>
+	    <%= tax.last %>
+	 <% end %>
+      </span>
+   <% end %>
+   <span class="metadata">
+      <% dataset.metadata.each do |k,v| %>
+	 <% next if [:type, :ref, :created, :updated, :user, :tax].include? k %>
+	 <b><%= k %>:</b> <%= v %>
+      <% end %>
+   </span>
+   <span class="timestamp">
+      Updated <%= time_ago_in_words Date.parse(dataset.metadata[:updated]) %> ago.
+   </span>
+</li>

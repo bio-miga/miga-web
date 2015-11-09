@@ -12,6 +12,13 @@ class ProjectsController < ApplicationController
 
    def show
       @project = Project.find(params[:id])
+      current_page = (params[:page] || 1).to_i
+      per_page = (params[:per_page] || 30).to_i
+      @ref_datasets = @project.ref_datasets
+      @datasets = WillPaginate::Collection.create(current_page, per_page, @ref_datasets.size) do |pager|
+	 start = (current_page-1)*per_page
+	 pager.replace(@ref_datasets[start, per_page])
+      end
    end
    
    def create

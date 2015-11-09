@@ -7,4 +7,18 @@
 	 </ol>
       </section>
    </aside>
+   <div class="col-md-8">
+      <% if @project.ref_datasets.any? %>
+	 <h3>Reference datasets (<%= @project.ref_datasets.count %>)</h3>
+	 <%= will_paginate @datasets %>
+	 <ol class="datasets">
+	    <% @datasets.each do |dataset| %>
+	       <%= render partial: "dataset",
+		  object: @project.miga.dataset(dataset),
+		  locals: { project: @project } %>
+	    <% end %>
+	 </ol>
+	 <%= will_paginate @datasets %>
+      <% end %>
+   </div>
 </div>

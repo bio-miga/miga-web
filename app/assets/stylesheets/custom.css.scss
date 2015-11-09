@@ -217,7 +217,15 @@ input {
    span {
       display: block;
    }
-   span.path {
+   .code {
+      margin-right: 10px;
+      margin-top: 5px;
+      font-size: 300%;
+      padding: 10px 10px 10px 15px;
+      font-weight: lighter !important;
+      font-family: 'Wire One';
+   }
+   .path {
       font-weight: bolder;
    }
    .timestamp {
@@ -234,6 +242,32 @@ aside {
    textarea {
       height: 100px;
       margin-bottom: 5px;
+   }
+}
+
+/* Reference datasets */
+
+.datasets {
+   list-style: none;
+   padding: 0;
+   li {
+      padding: 10px 0;
+      border-top: 1px solid #e8e8e8;
+   }
+   .project {
+      display: inline;
+      color: #555;
+      a {
+	 color: #222;
+      }
+   }
+   .timestamp {
+      color: $gray-light;
+   }
+   .taxonomy {
+      span{
+	 display: inline;
+      }
    }
 }
 

@@ -62,4 +62,9 @@ class ProjectsControllerTest < ActionController::TestCase
       end
       assert_redirected_to root_url
    end
+
+   def teardown
+      FileUtils.rm_rf @project.miga.path
+   end
+
 end

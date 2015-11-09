@@ -14,6 +14,15 @@ class Project < ActiveRecord::Base
       @miga_obj
    end
 
+   def ref_datasets
+      return [] if miga.nil?
+      miga.metadata[:datasets].reject{ |n| n =~ /^qG_.*_u\d+$/ }
+   end
+
+   def code
+      @code ||= path.gsub(/^(.)(?:.*_)?(.).*/,"\\1\\2")
+   end
+
    private
 
       def full_path

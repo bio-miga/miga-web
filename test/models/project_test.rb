@@ -3,9 +3,10 @@ require 'test_helper'
 class ProjectTest < ActiveSupport::TestCase
    def setup
       ENV['MIGA_PROJECTS'] = Rails.root.join("tmp").to_s
-      @admin_user = users(:michael)
+      @admin = users(:michael)
       @user = users(:archer)
-      @project = @admin_user.projects.create(path: "foo_bar")
+      @project = @admin.projects.create(path: "foo_bar")
+      @project_path = @project.miga.path
    end
 
    test "should be valid" do
@@ -22,6 +23,10 @@ class ProjectTest < ActiveSupport::TestCase
       assert_not @project.valid?
       @project.path = " "
       assert_not @project.valid?
+   end
+
+   def teardown
+      FileUtils.rm_rf @project_path
    end
 
 end
