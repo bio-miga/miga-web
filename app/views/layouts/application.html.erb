@@ -17,5 +17,8 @@
       <%= render 'layouts/footer' %>
       <%= debug(params) if Rails.env.development? %>
    </div>
+   <script>
+      $(function(){ $("[rel=tooltip]").tooltip({ placement: 'top'}); });
+   </script>
 </body>
 </html>

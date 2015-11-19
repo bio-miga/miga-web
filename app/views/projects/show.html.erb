@@ -1,15 +1,15 @@
 <% provide(:title, @project.path_name) %>
+<% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
 <div class="row projects">
    <aside class="col-md-4">
-      <section class="project_header">
-	 <ol class="projects">
-	    <%= render @project %>
-	 </ol>
-      </section>
+      <%= render partial: "query_datasets/menu_datasets",
+	 locals: { project: @project, all_qd: @all_qd,
+	 running_qd: @running_qd, ready_qd: @ready_qd,
+	 ref_datasets: true } %>
    </aside>
    <div class="col-md-8">
       <% if @project.ref_datasets.any? %>
-	 <h3>Reference datasets (<%= @project.ref_datasets.count %>)</h3>
+	 <h3><%= pluralize(@project.ref_datasets.count, "reference datasets") %></h3>
 	 <%= will_paginate @datasets %>
 	 <ol class="datasets">
 	    <% @datasets.each do |dataset| %>

@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
    has_many :projects, dependent: :destroy
+   has_many :query_datasets, dependent: :destroy
    attr_accessor :remember_token, :activation_token, :reset_token
    before_save   :downcase_email
    before_create :create_activation_digest

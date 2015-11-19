@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151103234528) do
+ActiveRecord::Schema.define(version: 20151116191820) do
 
   create_table "projects", force: :cascade do |t|
     t.text     "path"
@@ -23,6 +23,24 @@ ActiveRecord::Schema.define(version: 20151103234528) do
   add_index "projects", ["path"], name: "index_projects_on_path", unique: true
   add_index "projects", ["user_id", "created_at"], name: "index_projects_on_user_id_and_created_at"
   add_index "projects", ["user_id"], name: "index_projects_on_user_id"
+
+  create_table "query_datasets", force: :cascade do |t|
+    t.text     "name"
+    t.boolean  "complete",     default: false
+    t.integer  "user_id"
+    t.integer  "project_id"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.string   "input_file"
+    t.string   "input_type"
+    t.string   "input_file_2"
+  end
+
+  add_index "query_datasets", ["project_id", "created_at"], name: "index_query_datasets_on_project_id_and_created_at"
+  add_index "query_datasets", ["project_id", "user_id", "name"], name: "index_query_datasets_on_project_id_and_user_id_and_name", unique: true
+  add_index "query_datasets", ["project_id"], name: "index_query_datasets_on_project_id"
+  add_index "query_datasets", ["user_id", "created_at"], name: "index_query_datasets_on_user_id_and_created_at"
+  add_index "query_datasets", ["user_id"], name: "index_query_datasets_on_user_id"
 
   create_table "users", force: :cascade do |t|
     t.string   "name"

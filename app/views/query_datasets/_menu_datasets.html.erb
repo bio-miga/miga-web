@@ -1,0 +1,54 @@
+<% unless project.nil? %>
+   <section class="project_header">
+      <ol class="projects">
+	 <%= render project %>
+      </ol>
+   </section>
+<% end %>
+<section class="project_body">
+   <ul class="nav nav-pills nav-stacked">
+      <% if not project.nil? and project.ref_datasets.any? %>
+	 <li class="<%= "active" if ref_datasets %>">
+	    <%= link_to project do %>
+	       Reference datasets <span class="badge"><%= project.ref_datasets.count %></span>
+	    <% end %>
+	 </li>
+      <% end %>
+      <li class="<%= "active" unless ref_datasets or params[:ready] %>">
+	 <%= link_to (project.nil? ? query_datasets_path :
+	    project_query_datasets_path(project_id: project.id)) do %>
+	    Query datasets
+	    <% unless all_qd.nil? %>
+	       <span class="badge"><%= all_qd %></span>
+	    <% end %>
+	 <% end %>
+      </li>
+      <li class="<%= "active" if not ref_datasets and params[:ready]=="no" %>">
+	 <%= link_to (project.nil? ? query_datasets_ready_path(ready: "no") :
+	       project_query_datasets_ready_path(project_id: project.id, ready: "no")) do %>
+	    <i class="glyphicon glyphicon-menu-right"></i> Running
+	    <% unless running_qd.nil? %>
+	       <span class="badge"><%= running_qd %></span>
+	    <% end %>
+	 <% end %>
+      </li>
+      <li class="<%= "active" if not ref_datasets and params[:ready]=="yes" %>">
+	 <%= link_to (project.nil? ? query_datasets_ready_path(ready: "yes") :
+	       project_query_datasets_ready_path(project_id: project.id, ready: "yes")) do %>
+	    <i class="glyphicon glyphicon-menu-right"></i> Complete
+	    <% unless ready_qd.nil? %>
+	       <span class="badge"><%= ready_qd %></span>
+	    <% end %>
+	 <% end %>
+      </li>
+   </ul>
+   <br/>
+   <%= link_to "Upload new dataset",
+      new_query_dataset_path(project_id: project.id), class: "btn btn-primary btn-block" unless project.nil? %>
+</section>
+<% if current_user.admin? and not project.nil? %>
+   <section>
+      <%= link_to "Remove project", project, method: :delete, class: "btn btn-warning btn-block",
+	 data: { confirm: "Are you sure? This action cannot be undone" } %>
+   </section>
+<% end %>

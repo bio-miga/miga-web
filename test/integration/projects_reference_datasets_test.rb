@@ -14,6 +14,7 @@ class ProjectsReferenceDatasetsTest < ActionDispatch::IntegrationTest
    end
    
    test "should get show with pagination" do
+      log_in_as @user
       get project_path(@project)
       assert_template "projects/show"
       assert_select "div.pagination"
@@ -25,6 +26,7 @@ class ProjectsReferenceDatasetsTest < ActionDispatch::IntegrationTest
    end
 
    test "should get last page" do
+      log_in_as @user
       get project_path(@project), {page: 4}
       assert_template "projects/show"
       assert_select "div.pagination"

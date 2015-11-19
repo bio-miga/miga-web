@@ -9,12 +9,17 @@ Rails.application.routes.draw do
   get 'contact'	=> 'static_pages#contact'
   get 'signup'	=> 'users#new'
   get 'login'	=> 'sessions#new'
+  get 'projects/:project_id/query_datasets'        => 'query_datasets#index', as: :project_query_datasets
+  get 'projects/:project_id/query_datasets/:ready' => 'query_datasets#index', as: :project_query_datasets_ready
+  get 'query_datasets/all/:ready'                  => 'query_datasets#index', as: :query_datasets_ready
+  get 'query_datasets/:id/result/:result/:file'    => 'query_datasets#result', as: :query_dataset_result
   post 'login'	=> 'sessions#create'
   delete 'logout' => 'sessions#destroy'
   resources :users
   resources :account_activations, only: [:edit]
   resources :password_resets, only: [:new, :create, :edit, :update]
   resources :projects, only: [:index, :new, :create, :destroy, :show]
+  resources :query_datasets, only: [:index, :new, :create, :destroy, :show]
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

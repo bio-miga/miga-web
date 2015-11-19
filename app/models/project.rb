@@ -1,5 +1,8 @@
+require "miga/daemon"
 class Project < ActiveRecord::Base
    belongs_to :user
+   has_many :query_datasets, dependent: :destroy
+   attr_accessor :miga_obj, :code
    validates :user_id, presence: true
    validates :path, presence: true, miga_name: true,
       uniqueness: { case_sensitive: false }
@@ -11,7 +14,16 @@ class Project < ActiveRecord::Base
 
    def miga
       load_miga_project
-      @miga_obj
+      miga_obj
+   end
+
+   def daemon_last_alive
+      MiGA::Daemon.last_alive miga
+   end
+
+   def daemon_active?
+      return false if daemon_last_alive.nil?
+      daemon_last_alive > 1.hour.ago
    end
 
    def ref_datasets
@@ -36,7 +48,6 @@ class Project < ActiveRecord::Base
       end
 
       def load_miga_project
-	 @miga_obj = MiGA::Project.new(full_path) if
-	    @miga_obj.nil? and MiGA::Project.exist? full_path
+	 @miga_obj ||= MiGA::Project.load(full_path)
       end
 end

@@ -23,13 +23,13 @@
 	 <hr/>
 	 <h1>Optional information</h1>
 	 <%= label_tag :name, "Name" %>
-	 <%= text_field_tag :name %>
+	 <%= text_field_tag :name, "", class: "form-control" %>
 
 	 <%= label_tag :description, "Description" %>
-	 <%= text_field_tag :description %>
+	 <%= text_field_tag :description, "", class: "form-control" %>
 
 	 <%= label_tag :comments, "Comments" %>
-	 <%= text_area_tag :comments %>
+	 <%= text_area_tag :comments, "", class: "form-control" %>
 
 	 <%= f.submit "Create new MiGA project", class: "btn btn-primary" %>
       <% end %>

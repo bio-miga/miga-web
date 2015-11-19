@@ -1,0 +1,24 @@
+<% if @project.nil? %>
+   <% provide(:title, "Query datasets") %>
+<% else %>
+   <% provide(:title, @project.path_name) %>
+   <% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
+<% end %>
+<div class="row projects">
+   <aside class="col-md-4">
+      <%= render partial: "menu_datasets",
+	 locals: { project: @project, all_qd: @all_qd,
+	 running_qd: @running_qd, ready_qd: @ready_qd,
+	 ref_datasets: false } %>
+   </aside>
+   <div class="col-md-8">
+      <% if @query_datasets.any? %>
+	 <h3><%= pluralize(@query_datasets.count, "query dataset") %></h3>
+	 <%= will_paginate @query_datasets %>
+	 <ol class="query_datasets">
+	    <%= render @query_datasets %>
+	 </ol>
+	 <%= will_paginate @query_datasets %>
+      <% end %>
+   </div>
+</div>

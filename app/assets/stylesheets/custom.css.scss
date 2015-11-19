@@ -11,6 +11,16 @@ $gray-medium-light: #eaeaea;
    box-sizing:         border-box;
 }
 
+@mixin project_code {
+   display: block;
+   margin-right: 10px;
+   margin-top: 0px;
+   font-size: 250%;
+   padding: 10px 10px 10px 15px;
+   font-weight: lighter !important;
+   font-family: 'Wire One';
+}
+
 /* universal */
 
 body {
@@ -75,6 +85,17 @@ p {
    &:hover {
       color: #fff;
       text-decoration: none;
+   }
+}
+
+header {
+   .crumb {
+      display: inline-block;
+      padding-top: 18px;
+      color: $gray-light;
+      a {
+	 color: #bbb;
+      }
    }
 }
 
@@ -204,6 +225,11 @@ input {
       border-bottom: 1px solid $gray-lighter;
    }
 }
+.user-dashboard {
+   p {
+      margin-left: 30px;
+   }
+}
 
 /* Projects */
 
@@ -218,15 +244,16 @@ input {
       display: block;
    }
    .code {
-      margin-right: 10px;
-      margin-top: 5px;
-      font-size: 300%;
-      padding: 10px 10px 10px 15px;
-      font-weight: lighter !important;
-      font-family: 'Wire One';
+      @include project_code;
    }
    .path {
       font-weight: bolder;
+      .glyphicon-ok-sign {
+	 color: #5cb85c;
+      }
+      .glyphicon-remove-sign {
+	 color: #f0ad4e;
+      }
    }
    .timestamp {
       color: $gray-light;
@@ -236,13 +263,22 @@ input {
 	 font-size: 150%;
       }
    }
-}
-
-aside {
-   textarea {
-      height: 100px;
-      margin-bottom: 5px;
+   .project_body {
+      span {
+	 display: inline;
+      }
+      li {
+	 border-top: none;
+	 padding: 0px;
+      }
    }
+
+   aside {
+      section {
+	 border-top: 1px solid $gray-medium-light;
+      }
+   }
+
 }
 
 /* Reference datasets */
@@ -271,3 +307,61 @@ aside {
    }
 }
 
+/* Query datasets */
+
+.query_datasets {
+   list-style: none;
+   padding: 0;
+   li {
+      padding: 10px 0;
+      border-top: 1px solid #e8e8e8;
+   }
+   .name {
+      .glyphicon-ok {
+	 color: #5cb85c;
+      }
+      .glyphicon-time {
+	 color: #5bc0de;
+      }
+   }
+   .code {
+      @include project_code;
+      font-size: 200%;
+      padding: 5px 10px;
+   }
+   .timestamp {
+      display: block;
+      color: $gray-light;
+   }
+   
+}
+
+.query_dataset {
+   aside {
+      section {
+	 border-top: 1px solid $gray-medium-light;
+      }
+   }
+   .query_dataset_log {
+      dd{
+	 .timestamp {
+	    display: block;
+	    color: $gray-light;
+	 }
+	 .btn {
+	    margin: 0px 0px 5px 0px;
+	 }
+	 border-bottom: 1px solid $gray-medium-light;
+      }
+   }
+   .result_dump {
+      overflow: auto;
+      word-wrap: normal;
+      white-space: pre;
+   }
+   table {
+      td, th {
+	 text-align: center;
+      }
+   }
+}
