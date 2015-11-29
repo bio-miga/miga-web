@@ -1,0 +1,12 @@
+<h3>Result directory</h3>
+<div class="result-dir row">
+   <% Dir.new(@path).each_entry do |f| %>
+      <% next if %w(. ..).include? f %>
+      <div class="col-md-3">
+	 <%= link_to f, {f:f}, {class: "file btn btn-block btn-info"} %>
+	 <span class="pull-right">
+	    <%= number_to_human_size File.size(File.expand_path(f, @path)) %>
+	 </span>
+      </div>
+   <% end %>
+</div>

@@ -1,15 +1,19 @@
 class QueryDatasetsController < ApplicationController
-   before_action :logged_in_user, only: [:index, :new, :create, :show, :destroy]
-   before_action :correct_user, only: [:show, :destroy, :result]
+   before_action :logged_in_user, only: [:index, :new, :create, :show, :destroy, :result]
+   before_action :correct_user_or_admin, only: [:show, :destroy, :result]
 
    def index
       # Find query datasets
       if params[:project_id]
 	 @project = Project.find(params[:project_id])
-	 qd = QueryDataset.by_user_and_project(current_user, @project)
+	 qd = params[:all] ?
+	    @project.query_datasets.all :
+	    QueryDataset.by_user_and_project(current_user, @project)
       else
 	 @project = nil
-	 qd = current_user.query_datasets
+	 qd = params[:all] ?
+	    QueryDataset.all :
+	    current_user.query_datasets
       end
       @all_qd = qd.count
       params[:ready] ||= false
@@ -85,13 +89,21 @@ class QueryDatasetsController < ApplicationController
 	 if res = m.result(params[:result])
 	    if file = res.data[:files][params[:file].to_sym]
 	       f = File.expand_path(file, res.dir)
+	       if Dir.exist? f and params[:f] and not params[:f]=~/\//
+		  f = File.expand_path(params[:f], f)
+		  file = params[:f]
+	       end
 	       if Dir.exist? f
-		  # ToDo: Figure out how to handle it!
-		  render :nothing => true, :status => 200, :content_type => "text/html"
+		  @path = f
+		  @file = file
+		  @res = res
+		  render template: "shared/result_dir"
 	       else
 		  case File.extname(f)
 		  when ".pdf"
 		     send_file(f, filename:file, disposition:"inline", type:"application/pdf")
+		  when ".html"
+		     send_file(f, filename:file, disposition:"inline", type:"text/html")
 		  else
 		     send_file(f, filename:file, disposition:"inline", type:"raw/text")
 		  end
@@ -110,8 +122,8 @@ class QueryDatasetsController < ApplicationController
       end
       
       # Confirms the correct user
-      def correct_user
+      def correct_user_or_admin
 	 @user = QueryDataset.find(params[:id]).user
-	 redirect_to(root_url) unless current_user?(@user)
+	 redirect_to(root_url) unless current_user?(@user) or current_user.admin?
       end
 end

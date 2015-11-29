@@ -1,24 +1,25 @@
 <% provide(:title, @project.path_name) %>
 <% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
-<div class="row projects">
-   <aside class="col-md-4">
+<div class="row project">
+   <aside class="col-md-4 projects">
       <%= render partial: "query_datasets/menu_datasets",
-	 locals: { project: @project, all_qd: @all_qd,
-	 running_qd: @running_qd, ready_qd: @ready_qd,
-	 ref_datasets: true } %>
+	 locals: { project: @project, ds_counts: @project.dataset_counts(current_user),
+	 ref_datasets: false, qry_datasets: false } %>
    </aside>
    <div class="col-md-8">
-      <% if @project.ref_datasets.any? %>
-	 <h3><%= pluralize(@project.ref_datasets.count, "reference datasets") %></h3>
-	 <%= will_paginate @datasets %>
-	 <ol class="datasets">
-	    <% @datasets.each do |dataset| %>
-	       <%= render partial: "dataset",
-		  object: @project.miga.dataset(dataset),
-		  locals: { project: @project } %>
-	    <% end %>
-	 </ol>
-	 <%= will_paginate @datasets %>
+      <h3><%= @project.path_name %> project</h3>
+      <p>
+	 Initialized as
+	 <u rel="tooltip" title="<%=
+	 MiGA::Project.KNOWN_TYPES[ @project.miga.metadata.data[:type] ][:description]
+	 %>"><%= @project.miga.metadata.data[:type] %></u>
+	 <%= time_ago_in_words @project.miga.metadata.data[:created] %> ago, last updated
+	 <%= time_ago_in_words @project.miga.metadata.data[:updated] %> ago.
+      </p>
+      <% MiGA::Project.RESULT_DIRS.keys.each do |k| %>
+	 <% if res = @project.miga.result(k) %>
+	    <%= render partial: "shared/result", locals: { res:res, obj:@project, key:k } %>
+	 <% end %>
       <% end %>
    </div>
 </div>

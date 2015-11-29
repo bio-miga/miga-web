@@ -35,6 +35,33 @@ class Project < ActiveRecord::Base
       @code ||= path.gsub(/^(.)(?:.*_)?(.).*/,"\\1\\2")
    end
 
+   def code_base_color
+      sprintf("%06x", (XXhash.xxh32(path,6) % (16**6)))
+   end
+   
+   def code_color
+      c = Color::RGB.by_hex(code_base_color).to_hsl
+      c.luminosity = 40 + c.luminosity/4
+      c.saturation = 40 + c.saturation/4
+      c.css_hsl
+   end
+
+   def code_light_color
+      c = Color::RGB.by_hex(code_base_color).to_hsl
+      c.luminosity = 90 + c.luminosity/10
+      c.saturation = 40 + c.saturation/4
+      c.css_hsl
+   end
+
+   def dataset_counts(user)
+      qd = QueryDataset.by_user_and_project(user, self)
+      o = {ref: ref_datasets.count}
+      o[:qry] = qd.count
+      o[:qry_yes] = qd.select{ |qd| qd.ready? }.count
+      o[:qry_no]  = o[:qry] - o[:qry_yes]
+      o
+   end
+
    private
 
       def full_path

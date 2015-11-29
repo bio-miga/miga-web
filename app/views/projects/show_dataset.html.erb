@@ -1,0 +1,38 @@
+<% provide(:title, @dataset_miga.name) %>
+<% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
+<% provide(:breadcrumb_2, link_to(@project.path_name, @project)) %>
+<% provide(:breadcrumb_3, link_to("References", project_reference_datasets_path(@project.id))) %>
+<div class="row reference_dataset">
+   <aside class="col-md-4">
+      <section>
+	 <ul class="reference_datasets">
+	    <li id="reference_dataset-<%= @dataset_miga.name %>">
+	       <%= link_to @project.code, @project,
+		  class: "label label-primary pull-left code",
+		  title: @project.path_name,
+		  style: "background:#{@project.code_color};" %></a>
+	       <span class="name">
+		  <b>[Ref] <%= link_to @dataset_miga.name, reference_dataset_path(@project.id, @dataset_miga.name) %></b>
+	       </span>
+	       <span class="timestamp">
+		  Created <%= time_ago_in_words(@dataset_miga.metadata.data[:created]) %> ago.
+	       </span>
+	    </li>
+	 </ul>
+      </section>
+      <section class="metadata">
+	 <ul>
+	    <%= render partial: "dataset",
+	       object: @dataset_miga,
+	       locals: {project: @project, noname:true} %>
+	 </ul>
+      </section>
+   </aside>
+   <div class="col-md-8">
+      <% MiGA::Dataset.RESULT_DIRS.keys.each do |k| %>
+	 <% if res = @dataset_miga.result(k) %>
+	    <%= render partial: "shared/result", locals: { res:res, obj:@dataset_miga, proj:@project, key:k } %>
+	 <% end %>
+      <% end %>
+   </div>
+</div>

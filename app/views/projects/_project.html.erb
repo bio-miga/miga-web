@@ -1,20 +1,20 @@
 <li id="project-<%= project.id %>">
-   <span class="label label-primary pull-left code"><%= project.code %></span>
+   <span class="label label-primary pull-left code" style="background:<%= project.code_color %>;"><%= project.code %></span>
    <span class="path">
       <% if project.daemon_active? %>
 	 <i class="glyphicon glyphicon-ok-sign" rel="tooltip"
-	    title="active <%= time_ago_in_words(project.daemon_last_alive)%> ago"></i>
+	    title="active <%= time_ago_in_words(project.daemon_last_alive)%> ago"> </i>
       <% else %>
-	 <i class="glyphicon glyphicon-remove-sign" rel="tooltip" title="inactive"></i>
+	 <i class="glyphicon glyphicon-remove-sign" rel="tooltip" title="inactive"> </i>
       <% end %>
       <%= link_to project.path_name, project %>
    </span>
    <span class="description"><%= project.miga.metadata[:description] %></span>
    <span class="datasets">
       <b>Datasets:</b>
-      <%= pluralize(project.miga.metadata[:datasets].size, "reference") %>
+      <%= pluralize(project.ref_datasets.size, "reference") %>
       <% if logged_in? && current_user.admin? %>
-	 | <%= pluralize(project.query_datasets.count, "query") %>
+	 | <%= pluralize(project.dataset_counts(current_user)[:qry], "query") %>
       <% end %>
    </span>
    <span class="timestamp">

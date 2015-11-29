@@ -9,42 +9,37 @@
    <ul class="nav nav-pills nav-stacked">
       <% if not project.nil? and project.ref_datasets.any? %>
 	 <li class="<%= "active" if ref_datasets %>">
-	    <%= link_to project do %>
-	       Reference datasets <span class="badge"><%= project.ref_datasets.count %></span>
+	    <%= link_to project_reference_datasets_path(project.id) do %>
+	       Reference datasets <span class="badge"><%= ds_counts[:ref] %></span>
 	    <% end %>
 	 </li>
       <% end %>
-      <li class="<%= "active" unless ref_datasets or params[:ready] %>">
+      <li class="<%= "active" if qry_datasets and not params[:ready] %>">
 	 <%= link_to (project.nil? ? query_datasets_path :
 	    project_query_datasets_path(project_id: project.id)) do %>
-	    Query datasets
-	    <% unless all_qd.nil? %>
-	       <span class="badge"><%= all_qd %></span>
-	    <% end %>
+	    Query datasets <span class="badge"><%= ds_counts[:qry] %></span>
 	 <% end %>
       </li>
-      <li class="<%= "active" if not ref_datasets and params[:ready]=="no" %>">
+      <li class="<%= "active" if qry_datasets and params[:ready]=="no" %>">
 	 <%= link_to (project.nil? ? query_datasets_ready_path(ready: "no") :
 	       project_query_datasets_ready_path(project_id: project.id, ready: "no")) do %>
-	    <i class="glyphicon glyphicon-menu-right"></i> Running
-	    <% unless running_qd.nil? %>
-	       <span class="badge"><%= running_qd %></span>
-	    <% end %>
+	    <i class="glyphicon glyphicon-menu-right"> </i>
+	    Running <span class="badge"><%= ds_counts[:qry_no] %></span>
 	 <% end %>
       </li>
-      <li class="<%= "active" if not ref_datasets and params[:ready]=="yes" %>">
+      <li class="<%= "active" if qry_datasets and params[:ready]=="yes" %>">
 	 <%= link_to (project.nil? ? query_datasets_ready_path(ready: "yes") :
 	       project_query_datasets_ready_path(project_id: project.id, ready: "yes")) do %>
-	    <i class="glyphicon glyphicon-menu-right"></i> Complete
-	    <% unless ready_qd.nil? %>
-	       <span class="badge"><%= ready_qd %></span>
-	    <% end %>
+	    <i class="glyphicon glyphicon-menu-right"> </i>
+	    Complete <span class="badge"><%= ds_counts[:qry_yes] %></span>
 	 <% end %>
       </li>
    </ul>
    <br/>
-   <%= link_to "Upload new dataset",
-      new_query_dataset_path(project_id: project.id), class: "btn btn-primary btn-block" unless project.nil? %>
+   <% unless project.nil? %>
+      <%= link_to "Upload new dataset",
+	 new_query_dataset_path(project_id: project.id), class: "btn btn-primary btn-block" %>
+   <% end %>
 </section>
 <% if current_user.admin? and not project.nil? %>
    <section>

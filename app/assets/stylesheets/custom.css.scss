@@ -19,6 +19,7 @@ $gray-medium-light: #eaeaea;
    padding: 10px 10px 10px 15px;
    font-weight: lighter !important;
    font-family: 'Wire One';
+   width: 50px;
 }
 
 /* universal */
@@ -281,8 +282,7 @@ input {
 
 }
 
-/* Reference datasets */
-
+/* Datasets */
 .datasets {
    list-style: none;
    padding: 0;
@@ -306,10 +306,7 @@ input {
       }
    }
 }
-
-/* Query datasets */
-
-.query_datasets {
+.query_datasets, .reference_datasets {
    list-style: none;
    padding: 0;
    li {
@@ -328,18 +325,32 @@ input {
       @include project_code;
       font-size: 200%;
       padding: 5px 10px;
+      width: 40px;
    }
    .timestamp {
       display: block;
       color: $gray-light;
    }
-   
 }
 
-.query_dataset {
+.reference_dataset, .query_dataset {
    aside {
       section {
 	 border-top: 1px solid $gray-medium-light;
+      }
+      .metadata {
+	 ul {
+	    list-style: none;
+	    b{
+	       display: block;
+	       margin: 10px 0 5px 0;
+	    }
+	    .taxonomy {
+	       span{
+		  display: inline;
+	       }
+	    }
+	 }
       }
    }
    .query_dataset_log {
@@ -363,5 +374,35 @@ input {
       td, th {
 	 text-align: center;
       }
+   }
+}
+
+/* Results */
+.result {
+   margin: 20px 0;
+   h3 {
+      border-left: 1px solid $gray-medium-light;
+      margin: 0;
+      padding: 5px;
+   }
+   .result-body {
+      padding: 5px 20px;
+      border-left: 1px solid $gray-medium-light;
+      border-bottom: 1px solid #d0d0d0;
+   }
+   .result-footer {
+      border-left: 1px solid $gray-medium-light;
+      background: $gray-medium-light;
+      padding: 5px 10px;
+      .timestamp {
+	 color: $gray-light;
+	 text-align: right;
+      }
+   }
+}
+.result-dir {
+   .file {
+      text-align: center;
+      margin: 5px 5px 0 5px;
    }
 }

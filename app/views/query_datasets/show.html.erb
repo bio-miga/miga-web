@@ -8,150 +8,38 @@
 	    <%= render @query_dataset %>
 	 </ul>
       </section>
-      <section class="query_dataset_log">
-	 <dl class="panel panel-info">
-	    <% MiGA::Dataset.RESULT_DIRS.keys.each do |k| %>
-	       <% res = @query_dataset.miga.result k %>
-	       <% next if res.nil? %>
-	       <dt class="panel-heading pull-right"><%= k.to_s.gsub("_", " ") %></dt>
-	       <dd class="panel-body">
-		  <% res.data[:files].each do |k_f,v| %><%=
-		     link_to k_f.to_s.gsub("_"," "),
-			query_dataset_result_path(@query_dataset.id, k, k_f),
-			{ class: "btn btn-sm btn-default", title:"download", rel:"tooltip" }
-		  %><% end %>
-		  <span class="timestamp">Created <%= time_ago_in_words res.data[:created] %> ago.</span>
-	       </dd>
-	    <% end %>
-	 </dl>
-      </section>
       <section class="query_dataset_settings">
 	 <%= link_to "Remove dataset", @query_dataset, method: :delete, class: "btn btn-block btn-warning",
 	    data: { confirm: "Are you sure? This action cannot be undone." } %>
       </section>
    </aside>
    <div class="col-md-8">
-      <h3>Input data</h3>
-      <p>
-	 <%= @query_dataset.name %> was initialized
-	 <%= time_ago_in_words @query_dataset.miga.result(@query_dataset.input_type).data[:created] %> ago
-	 as <b><%= @query_dataset.input_type.gsub("_"," ") %></b>.
-      </p>
-      <% if res = @query_dataset.miga.result(:read_quality) %>
-         <h3>Read quality</h3>
-	 ### ToDo ###
+      <% MiGA::Dataset.RESULT_DIRS.keys.each do |k| %>
+	 <% if res = @query_dataset.miga.result(k) %>
+	    <%= render partial: "shared/result", locals: { res:res, obj:@query_dataset, key:k } %>
+	 <% end %>
       <% end %>
-      <% if res = @query_dataset.miga.result(:essential_genes) %>
-         <h3>Essential genes</h3>
-	 <p>Genes commonly found in Bacteria and Archaea detected <%= time_ago_in_words res.data[:created] %> ago:</p>
-	 <pre class="result_dump"><%=
-	    raw File.read(
-	       File.expand_path(res.data[:files][:report], res.dir)
-	       ).gsub(/^! ([^:]+):/, "<b>\\1:</b>")
-	 %></pre>
-      <% end %>
-      <% if res = @query_dataset.miga.result(:ssu) %>
-	 <% gff = Zlib::GzipReader.open(File.expand_path(res.data[:files][:gff], res.dir)){ |gz| gz.read } %>
-	 <h3>Ribosomal RNA (small subunit)</h3>
-	 <p>
-	    <%=
-	       # This code is ugly, I should make it prettier... eventually
-	       s = gff.split(/\n/).select{ |l| l !~ /^#/ }.map{ |l| l.gsub(/.*;product=/,"")
-		  }.inject(Hash.new(0)){ |t,e| t[e] += 1 ; t}.map{|l,c| pluralize c, l}.to_sentence
-	       s.empty? ? "Didn't detect SSU sequences" : "Found #{s}"
-	    %>
-	    <%= time_ago_in_words res.data[:created] %> ago.
-	 </p>
-	 <div class="panel panel-info">
-	    <div class="panel-heading">
-	       <%= link_to "Show GFF3 file <span class='caret'></span>".html_safe, "#job-res-ssu",
-		  { class: "btn btn-block", "data-toggle":"collapse"  } %>
-	    </div>
-	    <div class="panel-body collapse" id="job-res-ssu">
-	       <pre class="result_dump"><%= gff %></pre>
-	    </div>
-	 </div>
-      <% end %>
-      <% if res = @query_dataset.miga.result(:mytaxa_scan) %>
-         <h3>MyTaxa scan</h3>
-	 <% f_path = query_dataset_result_path @query_dataset.id, :mytaxa_scan, :report %>
-	 <% f_url = "#{request.protocol}#{request.host_with_port}#{f_path}" %>
-	 <p>
-	    MyTaxa scan detected <%=
-	       File.readlines(File.expand_path(res.data[:files][:region_ids], res.dir)).count
-	    %> regions with unusual taxonomic distribution
-	    <%= time_ago_in_words res.data[:created] %> ago (<%= link_to "download PDF", f_path %>).
-	 </p>
-	 <div class="panel panel-info">
-	    <div class="panel-heading">
-	       <%= link_to "Show MyTaxa scan plot <span class='caret'></span>".html_safe, "#job-res-mytaxa_scan",
-		  { class: "btn btn-block", "data-toggle":"collapse"  } %>
-	    </div>
-	    <div class="panel-body collapse" id="job-res-mytaxa_scan">
-	       <iframe
-		  src="<%= f_path %>"
-		  width="100%" height="400px"></iframe>
-	    </div>
-	 </div>
-      <% end %>
-      <% if res = @query_dataset.miga.result(:distances) %>
-	 <% ani_db = SQLite3::Database.new File.expand_path(res.data[:files][:ani_db], res.dir) %>
-	 <% val = ani_db.execute("SELECT seq2, ani FROM ani ORDER BY ani DESC LIMIT 2") %>
-	 <h3>Distances</h3>
-	 <p>
-	    <% if val.second.first %>
-	       MiGA found that the closest relatives in the database were
-	       <%= link_to val.first.first, "#" %> (<%= val.first.second.round 2 %>% ANI) and
-	       <%= link_to val.second.first, "#" %> (<%= val.second.second.round 2 %>% ANI)
-	       <%= time_ago_in_words res.data[:created] %> ago.
-	    <% elsif val.first.first %>
-	       MiGA found that the only relative in the database was
-	       <%= link_to val.first.first, "#" %> (<%= val.first.second.round 2 %>% ANI)
-	       <%= time_ago_in_words res.data[:created] %> ago.
-	    <% else %>
-	       MiGA couldn't find any close relatives registered in the database
-	       <%= time_ago_in_words res.data[:created] %> ago.
-	    <% end %>
-	 </p>
-	 <div class="panel panel-info">
-	    <div class="panel-heading">
-	       <%= link_to "Show ANI table <span class='caret'></span>".html_safe, "#job-res-distances",
-		  { class: "btn btn-block", "data-toggle":"collapse"  } %>
-	    </div>
-	    <div class="collapse" id="job-res-distances">
-	    <table class="table">
-	       <thead><tr>
-		  <th>Dataset</th>
-		  <th>ANI (%)</th>
-		  <th>Standard deviation (ANI%)</th>
-		  <th>Fraction of genome shared (%)</th>
-	       </tr></thead>
-	       <tbody>
-		  <% ani_db.execute("SELECT seq2, ani, sd, 100.0*n/omega FROM ani ORDER BY ani DESC").each do |row| %>
-		     <tr><% row.each do |cell| %>
-			   <td><%= cell.is_a?(Float) ?
-			      "<span rel='tooltip' title='#{cell}'>#{cell.round(2)}</span>".html_safe :
-			      link_to(cell, "#") %></td>
-		     <% end %></tr>
-		  <% end %>
-	       </tbody>
-	    </table>
-	    </div>
-	 </div>
-      <% end %>
+
       <% unless @query_dataset.ready? %>
-	 <% running = @query_dataset.miga.next_preprocessing %>
-	 <h3>Currently running</h3>
-	 <p><%= @query_dataset.name %> is currently being processed for <b><%= running %></b>.</p>
-	 <div class="panel panel-info">
-	    <div class="panel-heading">
-	       <%= link_to "Show partial #{running} log <span class='caret'></span>".html_safe, "#job-log-#{running}",
-		  { class: "btn btn-block", "data-toggle":"collapse" } %>
-	    </div>
-	    <div class="panel-body collapse" id="job-log-<%= running %>">
-	       <pre><%=
-		  @query_dataset.job_log(running)
-	       %></pre>
+	 <div class="result">
+	    <h3>
+	       <i class="glyphicon glyphicon-time"> </i>
+	       Currently running
+	    </h3>
+	    <% running = @query_dataset.miga.next_preprocessing %>
+	    <div class="result-body">
+	       <p><%= @query_dataset.name %> is currently being processed for <b><%= running %></b>.</p>
+	       <div class="panel panel-info">
+		  <div class="panel-heading">
+		     <%= link_to "Show partial #{running} log <span class='caret'></span>".html_safe, "#job-log-#{running}",
+			{ class: "btn btn-block", "data-toggle":"collapse" } %>
+		  </div>
+		  <div class="panel-body collapse" id="job-log-<%= running %>">
+		     <pre><%=
+			@query_dataset.job_log(running)
+		     %></pre>
+		  </div>
+	       </div>
 	    </div>
 	 </div>
       <% end %>

@@ -9,8 +9,12 @@ Rails.application.routes.draw do
   get 'contact'	=> 'static_pages#contact'
   get 'signup'	=> 'users#new'
   get 'login'	=> 'sessions#new'
+  get 'projects/:project_id/reference_datasets'    => 'projects#reference_datasets', as: :project_reference_datasets
+  get 'projects/:id/reference_datasets/:dataset'   => 'projects#show_dataset', as: :reference_dataset
+  get 'projects/:id/reference_datasets/:dataset/result/:result/:file' => 'projects#reference_dataset_result', as: :reference_dataset_result
   get 'projects/:project_id/query_datasets'        => 'query_datasets#index', as: :project_query_datasets
   get 'projects/:project_id/query_datasets/:ready' => 'query_datasets#index', as: :project_query_datasets_ready
+  get 'projects/:id/result/:result/:file'          => 'projects#result', as: :project_result
   get 'query_datasets/all/:ready'                  => 'query_datasets#index', as: :query_datasets_ready
   get 'query_datasets/:id/result/:result/:file'    => 'query_datasets#result', as: :query_dataset_result
   post 'login'	=> 'sessions#create'

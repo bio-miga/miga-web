@@ -1,11 +1,14 @@
 <li id="query_dataset-<%= query_dataset.id %>">
-   <%= link_to query_dataset.project.code, query_dataset.project, class: "label label-primary pull-left code", title: query_dataset.project.path_name %></a>
+   <%= link_to query_dataset.project.code, query_dataset.project,
+      class: "label label-primary pull-left code",
+      style: "background:#{query_dataset.project.code_color};",
+      title: query_dataset.project.path_name %></a>
    <span class="name">
       <% if query_dataset.ready? %>
-	 <i class="glyphicon glyphicon-ok" rel="tooltip" title="ready"></i>
+	 <i class="glyphicon glyphicon-ok" rel="tooltip" title="ready"> </i>
       <% else %>
 	 <i class="glyphicon glyphicon-time" rel="tooltip"
-	    title="running <%= query_dataset.miga.next_preprocessing %>"></i>
+	    title="running <%= query_dataset.miga.next_preprocessing %>"> </i>
       <% end %>
       <b><%= link_to query_dataset.name, query_dataset %></b>
    </span>

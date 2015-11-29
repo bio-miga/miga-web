@@ -5,14 +5,10 @@ To Do
 
 * Testing set for query_datasets
 
-* Allow admins access *ALL* query datasets
-
 * Allow admins make query datasets reference (ref:true in MiGA,
   and remove them from the database)
 
-* View reference datasets
-
-* View query_datasets: explore distances and classification
+* Allow admins removing reference datasets.
 
 * Configure initialization of query_datasets as raw reads
 
@@ -32,3 +28,18 @@ To Do
    * Create user
 
    * Create project
+
+* AJAXify project#reference_datasets
+
+Done
+====
+
+Nov-2015
+--------
+
+* View reference datasets
+
+* View query_datasets: explore distances and classification
+
+* Allow admins access *ALL* query datasets
+

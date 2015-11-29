@@ -6,10 +6,11 @@
 <% end %>
 <div class="row projects">
    <aside class="col-md-4">
+      <% ds_counts = {qry: @all_qd, qry_yes: @ready_qd, qry_no: @running_qd} %>
+      <% ds_counts[:ref] = @project.ref_datasets.count unless @project.nil? %>
       <%= render partial: "menu_datasets",
-	 locals: { project: @project, all_qd: @all_qd,
-	 running_qd: @running_qd, ready_qd: @ready_qd,
-	 ref_datasets: false } %>
+	 locals: { project: @project, ds_counts: ds_counts,
+	 ref_datasets: false, qry_datasets: true } %>
    </aside>
    <div class="col-md-8">
       <% if @query_datasets.any? %>

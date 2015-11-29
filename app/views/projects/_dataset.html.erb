@@ -1,8 +1,11 @@
+<% noname ||= false %>
 <li id="dataset-<%= dataset.name %>">
-   <span class="name">
-      <span class="project"><%= link_to project.code, project %> | </span>
-      <%= link_to dataset.name, "#" %>
-   </span>
+   <% unless noname %>
+      <span class="name">
+	 <span class="project"><%= link_to project.code, project %> | </span>
+	 <%= link_to dataset.name, reference_dataset_path(project.id, dataset.name) %>
+      </span>
+   <% end %>
    <% unless dataset.metadata[:tax].nil? %>
       <span class="taxonomy">
 	 <b>Taxonomy:</b>
@@ -30,7 +33,9 @@
 	 <b><%= k %>:</b> <%= v %>
       <% end %>
    </span>
-   <span class="timestamp">
-      Updated <%= time_ago_in_words Date.parse(dataset.metadata[:updated]) %> ago.
-   </span>
+   <% unless noname %>
+      <span class="timestamp">
+	 Updated <%= time_ago_in_words Date.parse(dataset.metadata[:updated]) %> ago.
+      </span>
+   <% end %>
 </li>
