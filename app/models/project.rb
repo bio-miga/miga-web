@@ -64,25 +64,28 @@ class Project < ActiveRecord::Base
    end
    
    def ncbi_download!(species, codes)
-      require "miga/remote_dataset"
-      url = "http://www.ncbi.nlm.nih.gov/genomes/Genome2BE/genome2srv.cgi?" +
-	 "action=download&orgn=#{URI::encode(species)}[orgn]&" +
-	 "status=#{codes}&report=proks&group=--%20All%20Prokaryotes" +
-	 "%20--&subgroup=--%20All%20Prokaryotes%20--&format="
-      g = 0
-      open(url) do |th|
-         th.each_line do |ln|
-	    next if ln =~ /^#/
-	    ln.chomp!
-	    r = ln.split "\t"
-	    #name = ln[0].miga_name # Make it unique!!!
-	    entries = r[10].split("; ").map{ |e| e.gsub(/.*:/,"").gsub(/\/.*/,"") }.join(",")
-	    rd = MiGA::RemoteDataset.new(entries, :nuccore, :ncbi)
-	    d = rd.save_to(miga, nil, true, {type: :genome})
-	    g+= 1
+      Spawnling.new(argv: "miga-clades-spawn -#{path_name}-") do
+	 require "miga/remote_dataset"
+	 url = "http://www.ncbi.nlm.nih.gov/genomes/Genome2BE/genome2srv.cgi?" +
+	    "action=download&orgn=#{URI::encode(species)}[orgn]&" +
+	    "status=#{codes}&report=proks&group=--%20All%20Prokaryotes" +
+	    "%20--&subgroup=--%20All%20Prokaryotes%20--&format="
+	 g = 0
+	 open(url) do |th|
+	    th.each_line do |ln|
+	       next if ln =~ /^#/
+	       ln.chomp!
+	       r = ln.split "\t"
+	       #name = ln[0].miga_name # Make it unique!!!
+	       entries = r[10].split("; ").map{ |e| e.gsub(/.*:/,"").gsub(/\/.*/,"") }.join(",")
+	       rd = MiGA::RemoteDataset.new(entries, :nuccore, :ncbi)
+	       d = rd.save_to(miga, nil, true, {type: :genome})
+	       g += 1
+	    end
 	 end
+	 logger.info("Project #{id}: Downloaded #{g} reference genomes.")
       end
-      g
+      true
    end
 
    private

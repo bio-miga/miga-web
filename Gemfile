@@ -27,6 +27,8 @@ gem 'coffee-rails', '>= 4.1.0'
 # The machinery behind code-colors :)
 gem 'color', '>= 1.8'
 gem 'xxhash', '>= 0.3'
+# To spawn NCBI downloads
+gem 'spawnling', '~>2.1'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 

@@ -95,8 +95,8 @@ class ProjectsController < ApplicationController
 	 flash[:danger] = "Nothing to do, please specify a species name." if species.empty?
 	 render "new_ncbi_download"
       else
-	 if g = @project.ncbi_download!(species, codes)
-	    flash[:success] = "Downloaded #{g} reference genomes, processing..."
+	 if @project.ncbi_download!(species, codes)
+	    flash[:success] = "Downloading reference genomes in the background..."
 	    redirect_to @project
 	 else
 	    render "new_ncbi_download"
