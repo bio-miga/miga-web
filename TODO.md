@@ -12,8 +12,6 @@ To Do
 
 * Configure initialization of query_datasets as raw reads
 
-* View results for :read_quality
-
 * Allow admins turning on/off initialization of query_datasets as
   raw reads
 
@@ -29,10 +27,19 @@ To Do
 
    * Create project
 
+   * NCBI download
+
 * AJAXify project#reference_datasets
+
+* Allow admin to spawn daemons
 
 Done
 ====
+
+Dec-2015
+--------
+
+* NCBI download
 
 Nov-2015
 --------

@@ -15,20 +15,20 @@ class ProjectsReferenceDatasetsTest < ActionDispatch::IntegrationTest
    
    test "should get show with pagination" do
       log_in_as @user
-      get project_path(@project)
-      assert_template "projects/show"
+      get project_reference_datasets_path(@project)
+      assert_template "projects/reference_datasets"
       assert_select "div.pagination"
       assert_select "ol.datasets li", count: 30
       assert_select "ol.datasets li#dataset-vaz_1 span.name",
-	 /#{@project.code}\s+\|\s+vaz_1/
+	 /#{@project.code}\s+\|\s+vaz 1/
       assert_select "ol.datasets li span.timestamp",
 	 /^Updated .* ago\./, count: 30
    end
 
    test "should get last page" do
       log_in_as @user
-      get project_path(@project), {page: 4}
-      assert_template "projects/show"
+      get project_reference_datasets_path(@project), {page: 4}
+      assert_template "projects/reference_datasets"
       assert_select "div.pagination"
       assert_select "ol.datasets li", count: 10
    end

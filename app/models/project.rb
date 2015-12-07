@@ -7,6 +7,7 @@ class Project < ActiveRecord::Base
    validates :path, presence: true, miga_name: true,
       uniqueness: { case_sensitive: false }
    before_save :create_miga_project
+   default_scope -> { order(path: :asc) }
 
    def path_name
       path.gsub(/_/," ").capitalize
@@ -60,6 +61,28 @@ class Project < ActiveRecord::Base
       o[:qry_yes] = qd.select{ |qd| qd.ready? }.count
       o[:qry_no]  = o[:qry] - o[:qry_yes]
       o
+   end
+   
+   def ncbi_download!(species, codes)
+      require "miga/remote_dataset"
+      url = "http://www.ncbi.nlm.nih.gov/genomes/Genome2BE/genome2srv.cgi?" +
+	 "action=download&orgn=#{URI::encode(species)}[orgn]&" +
+	 "status=#{codes}&report=proks&group=--%20All%20Prokaryotes" +
+	 "%20--&subgroup=--%20All%20Prokaryotes%20--&format="
+      g = 0
+      open(url) do |th|
+         th.each_line do |ln|
+	    next if ln =~ /^#/
+	    ln.chomp!
+	    r = ln.split "\t"
+	    #name = ln[0].miga_name # Make it unique!!!
+	    entries = r[10].split("; ").map{ |e| e.gsub(/.*:/,"").gsub(/\/.*/,"") }.join(",")
+	    rd = MiGA::RemoteDataset.new(entries, :nuccore, :ncbi)
+	    d = rd.save_to(miga, nil, true, {type: :genome})
+	    g+= 1
+	 end
+      end
+      g
    end
 
    private

@@ -43,7 +43,9 @@
 </section>
 <% if current_user.admin? and not project.nil? %>
    <section>
-      <%= link_to "Remove project", project, method: :delete, class: "btn btn-warning btn-block",
-	 data: { confirm: "Are you sure? This action cannot be undone" } %>
+      <%= link_to "Download available NCBI genomes",
+	 project_new_ncbi_download_path(@project), class: "btn btn-primary btn-block" %>
+      <%= link_to "Remove project", project, method: :delete, class: " btn btn-warning btn-block",
+	 data: { confirm: "Are you sure? This action cannot be undone." } %>
    </section>
 <% end %>

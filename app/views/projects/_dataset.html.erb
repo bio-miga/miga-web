@@ -3,7 +3,7 @@
    <% unless noname %>
       <span class="name">
 	 <span class="project"><%= link_to project.code, project %> | </span>
-	 <%= link_to dataset.name, reference_dataset_path(project.id, dataset.name) %>
+	 <%= link_to dataset.name.unmiga_name, reference_dataset_path(project.id, dataset.name) %>
       </span>
    <% end %>
    <% unless dataset.metadata[:tax].nil? %>

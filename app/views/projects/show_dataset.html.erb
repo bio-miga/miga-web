@@ -12,7 +12,7 @@
 		  title: @project.path_name,
 		  style: "background:#{@project.code_color};" %></a>
 	       <span class="name">
-		  <b>[Ref] <%= link_to @dataset_miga.name, reference_dataset_path(@project.id, @dataset_miga.name) %></b>
+		  <b>[Ref] <%= link_to @dataset_miga.name.unmiga_name, reference_dataset_path(@project.id, @dataset_miga.name) %></b>
 	       </span>
 	       <span class="timestamp">
 		  Created <%= time_ago_in_words(@dataset_miga.metadata.data[:created]) %> ago.

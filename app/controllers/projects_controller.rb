@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
    before_action :logged_in_user, only: [:new, :create, :destroy, :show, :result, :reference_datasets, :show_dataset, :reference_dataset_result]
-   before_action :admin_user, only: [:new, :create, :destroy]
+   before_action :admin_user, only: [:new, :create, :destroy, :new_ncbi_download, :create_ncbi_download]
 
    def index
       @projects = Project.paginate(page: params[:page])
@@ -79,6 +79,31 @@ class ProjectsController < ApplicationController
       render :nothing => true, :status => 200, :content_type => "text/html"
    end
 
+   def new_ncbi_download
+      @project = Project.find(params[:id])
+   end
+   
+   def create_ncbi_download
+      @project = Project.find(params[:project_id])
+      species = params[:species] || ""
+      codes = ""
+      codes += "50|" if params[:complete]
+      codes += "40|" if params[:chromosome]
+      
+      if codes.empty? or species.empty?
+	 flash[:danger] = "Nothing to do, please set at least one status to download." if codes.empty?
+	 flash[:danger] = "Nothing to do, please specify a species name." if species.empty?
+	 render "new_ncbi_download"
+      else
+	 if g = @project.ncbi_download!(species, codes)
+	    flash[:success] = "Downloaded #{g} reference genomes, processing..."
+	    redirect_to @project
+	 else
+	    render "new_ncbi_download"
+	 end
+      end
+   end
+
    private
 
       def project_params
@@ -99,11 +124,11 @@ class ProjectsController < ApplicationController
 	 else
 	    case File.extname(file)
 	    when ".pdf"
-	       send_file(f, filename:file, disposition:"inline", type:"application/pdf")
+	       send_file(f, filename:file, disposition:"inline", type:"application/pdf", x_sendfile:true)
 	    when ".html"
-	       send_file(f, filename:file, disposition:"inline", type:"text/html")
+	       send_file(f, filename:file, disposition:"inline", type:"text/html", x_sendfile:true)
 	    else
-	       send_file(f, filename:file, disposition:"inline", type:"raw/text")
+	       send_file(f, filename:file, disposition:"inline", type:"raw/text", x_sendfile:true)
 	    end
 	 end
       end

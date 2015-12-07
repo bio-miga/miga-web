@@ -101,11 +101,11 @@ class QueryDatasetsController < ApplicationController
 	       else
 		  case File.extname(f)
 		  when ".pdf"
-		     send_file(f, filename:file, disposition:"inline", type:"application/pdf")
+		     send_file(f, filename:file, disposition:"inline", type:"application/pdf", x_sendfile:true)
 		  when ".html"
-		     send_file(f, filename:file, disposition:"inline", type:"text/html")
+		     send_file(f, filename:file, disposition:"inline", type:"text/html", x_sendfile:true)
 		  else
-		     send_file(f, filename:file, disposition:"inline", type:"raw/text")
+		     send_file(f, filename:file, disposition:"inline", type:"raw/text", x_sendfile:true)
 		  end
 	       end
 	       return

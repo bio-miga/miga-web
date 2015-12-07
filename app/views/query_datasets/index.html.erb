@@ -8,7 +8,7 @@
    <aside class="col-md-4">
       <% ds_counts = {qry: @all_qd, qry_yes: @ready_qd, qry_no: @running_qd} %>
       <% ds_counts[:ref] = @project.ref_datasets.count unless @project.nil? %>
-      <%= render partial: "menu_datasets",
+      <%= render partial: "shared/menu_datasets",
 	 locals: { project: @project, ds_counts: ds_counts,
 	 ref_datasets: false, qry_datasets: true } %>
    </aside>
