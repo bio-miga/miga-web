@@ -1,6 +1,6 @@
 <% provide(:title, @dataset_miga.name) %>
 <% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
-<% provide(:breadcrumb_2, link_to(@project.path_name, @project)) %>
+<% provide(:breadcrumb_2, link_to(truncate(@project.path_name, length:15), @project)) %>
 <% provide(:breadcrumb_3, link_to("References", project_reference_datasets_path(@project.id))) %>
 <div class="row reference_dataset">
    <aside class="col-md-4">

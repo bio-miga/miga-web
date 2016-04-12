@@ -42,24 +42,26 @@
 	    File.read(res.file_path :report).gsub(/^! ([^:]+):/, "<b>\\1:</b>").html_safe
 	 %></pre>
       <% when :ssu %>
-	 <% gff = Zlib::GzipReader.open(res.file_path :gff){ |gz| gz.read } %>
-	 <p>
-	    MiGA <%=
-	       # This code is ugly, I should make it prettier... eventually
-	       s = gff.split(/\n/).select{ |l| l !~ /^#/ }.map{ |l| l.gsub(/.*;product=([^;]+).*/,"\\1")
-		  }.inject(Hash.new(0)){ |t,e| t[e] += 1 ; t}.map{|l,c| pluralize c, l}.to_sentence
-	       s.empty? ? "didn't detect SSU sequences." : "found #{s}."
-	    %>
-	 </p>
-	 <div class="panel panel-info">
-	    <div class="panel-heading">
-	       <%= link_to "Show GFF3 file <span class='caret'></span>".html_safe, "#job-res-ssu",
-		  { class: "btn btn-block", "data-toggle":"collapse"  } %>
+	 <% unless res.file_path(:gff).nil? %>
+	    <% gff = Zlib::GzipReader.open(res.file_path :gff){ |gz| gz.read } %>
+	    <p>
+	       MiGA <%=
+		  # This code is ugly, I should make it prettier... eventually
+		  s = gff.split(/\n/).select{ |l| l !~ /^#/ }.map{ |l| l.gsub(/.*;product=([^;]+).*/,"\\1")
+		     }.inject(Hash.new(0)){ |t,e| t[e] += 1 ; t}.map{|l,c| pluralize c, l}.to_sentence
+		  s.empty? ? "didn't detect SSU sequences." : "found #{s}."
+	       %>
+	    </p>
+	    <div class="panel panel-info">
+	       <div class="panel-heading">
+		  <%= link_to "Show GFF3 file <span class='caret'></span>".html_safe, "#job-res-ssu",
+		     { class: "btn btn-block", "data-toggle":"collapse"  } %>
+	       </div>
+	       <div class="panel-body collapse" id="job-res-ssu">
+		  <pre class="result_dump"><%= gff %></pre>
+	       </div>
 	    </div>
-	    <div class="panel-body collapse" id="job-res-ssu">
-	       <pre class="result_dump"><%= gff %></pre>
-	    </div>
-	 </div>
+	 <% end %>
       <% when :mytaxa_scan %>
 	 <%
 	    f_path = obj.is_a?(MiGA::Dataset) ?
@@ -73,22 +75,30 @@
 	 </p>
       <% when :distances %>
 	 <% db = {} %>
-	 <% db[:ani] = SQLite3::Database.new(res.file_path :ani_db) %>
 	 <% db[:aai] = SQLite3::Database.new(res.file_path :aai_db) %>
-	 <% val = db[:ani].execute("SELECT seq2, ani FROM ani ORDER BY ani DESC LIMIT 2") %>
+	 <% begin %>
+	    <% db[:ani] = SQLite3::Database.new(res.file_path :ani_db) %>
+	    <% val = db[:ani].execute("SELECT seq2, ani FROM ani ORDER BY ani DESC LIMIT 2") %>
+	    <% val_m = "ANI" %>
+	 <% rescue %>
+	    <% val = db[:aai].execute("SELECT seq2, aai FROM aai ORDER BY aai DESC LIMIT 2") %>
+	    <% db[:ani] = nil %>
+	    <% val_m = "AAI" %>
+	 <% end %>
 	 <p>
 	    <% if val.second %>
 	       MiGA found that the closest relatives in the database were
-	       <%= link_to val.first.first, reference_dataset_path(proj.id, val.first.first) %> (<%= val.first.second.round 2 %>% ANI) and
-	       <%= link_to val.second.first, reference_dataset_path(proj.id, val.second.first) %> (<%= val.second.second.round 2 %>% ANI).
+	       <%= link_to val.first.first, reference_dataset_path(proj.id, val.first.first) %> (<%= val.first.second.round 2 %>% <%= val_m %>) and
+	       <%= link_to val.second.first, reference_dataset_path(proj.id, val.second.first) %> (<%= val.second.second.round 2 %>% <%= val_m %>).
 	    <% elsif val.first %>
 	       MiGA found that the only close relative in the database was
-	       <%= link_to val.first.first, reference_dataset_path(proj.id, val.first.first) %> (<%= val.first.second.round 2 %>% ANI).
+	       <%= link_to val.first.first, reference_dataset_path(proj.id, val.first.first) %> (<%= val.first.second.round 2 %>% <%= val_m %>).
 	    <% else %>
 	       MiGA couldn't find any close relatives registered in the database.
 	    <% end %>
 	 </p>
 	 <% %w(ani aai).each do |metric| %>
+	    <% next if db[metric.to_sym].nil? %>
 	    <div class="panel panel-info">
 	       <div class="panel-heading">
 		  <%= link_to "Show #{metric.upcase} table <span class='caret'></span>".html_safe, "#job-res-distances-#{metric}",
@@ -121,11 +131,20 @@
 	 <% end %>
       <% # Project-wide results %>
       <% when :haai_distances %>
-	 <p>Distances between sets of conserved proteins in Bacteria and Archaea, as heuristic approximation to AAI.</p>
+	 <p>Distances between sets of conserved proteins in Bacteria and Archaea, as a heuristic approximation to AAI.</p>
+	 <%= plot_distances(res.file_path(:hist), {},
+	       {height:300, title:"Distribution of hAAI values"}) unless
+	       res.data[:files][:hist].nil? %>
       <% when :aai_distances %>
 	 <p>Average Amino acid Identity between genomes.</p>
+	 <%= plot_distances(res.file_path(:hist), {},
+	       {height:300, title:"Distribution of AAI values"}) unless
+	       res.data[:files][:hist].nil? %>
       <% when :ani_distances %>
 	 <p>Average Nucleotide Identity between genomes.</p>
+	 <%= plot_distances(res.file_path(:hist), {},
+	       {height:300, title:"Distribution of ANI values"}) unless
+	       res.data[:files][:hist].nil? %>
       <% when :clade_finding %>
 	 <p>
 	    MiGA proposes the following clade(s) at the species level based on ANI:
@@ -155,6 +174,10 @@
 	 </p>
       <% when :subclades %>
 	 <% f_path = project_result_path obj.id, :subclades, :report %>
+	 <% unless res.data[:files][:class_tree].nil? or res.data[:files][:ani_tree].nil? %>
+	    <p><b>Dendrograms:</b> ANI tree (<%= link_to "download Newick", project_result_path(obj.id, :subclades, :ani_tree) %>)
+	    and Classification tree (<%= link_to "download Newick", project_result_path(obj.id, :subclades, :class_tree) %>).</p>
+	 <% end %>
 	 <% unless res.data[:files][:medoids_1].nil? %>
 	    <% medoids = [] %>
 	    <% File.open(res.file_path(:medoids_1), "r") do |f| %>

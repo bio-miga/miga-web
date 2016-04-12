@@ -6,7 +6,7 @@
 	    <% (0 .. 9).each do |i| %>
 	       <%= breadcrumb(yield "breadcrumb_#{i}".to_sym) %>
 	    <% end %>
-	    <%= breadcrumb(yield :title) %>
+	    <%= breadcrumb(truncate(yield(:title), length:15)) %>
 	 </div>
 	 <ul class="nav navbar-nav navbar-right">
 	    <li><%= link_to "Home", root_path %></li>

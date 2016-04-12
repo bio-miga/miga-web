@@ -42,7 +42,14 @@
    <% end %>
 </section>
 <% if current_user.admin? and not project.nil? %>
-   <section>
+   <section class="admin-zone">
+      <h1>Admin zone</h1>
+      <div class="btn-group btn-group-justified btn-block" role="group" aria-label="daemon-actions">
+	 <%= link_to "Spawn daemon", project_start_daemon_path(@project), method: :post,
+	    class: "btn btn-primary #{"disabled" if project.daemon_active?}" %>
+	 <%= link_to "Stop daemon", project_stop_daemon_path(@project), method: :post,
+	    class: "btn btn-primary #{"disabled" unless project.daemon_active?}" %>
+      </div>
       <%= link_to "Download available NCBI genomes",
 	 project_new_ncbi_download_path(@project), class: "btn btn-primary btn-block" %>
       <%= link_to "Remove project", project, method: :delete, class: " btn btn-warning btn-block",

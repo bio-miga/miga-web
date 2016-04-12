@@ -19,6 +19,7 @@ class Project < ActiveRecord::Base
    end
 
    def daemon_last_alive
+      return nil if miga.nil?
       MiGA::Daemon.last_alive miga
    end
 
@@ -76,11 +77,13 @@ class Project < ActiveRecord::Base
 	       next if ln =~ /^#/
 	       ln.chomp!
 	       r = ln.split "\t"
-	       #name = ln[0].miga_name # Make it unique!!!
 	       entries = r[10].split("; ").map{ |e| e.gsub(/.*:/,"").gsub(/\/.*/,"") }.join(",")
-	       rd = MiGA::RemoteDataset.new(entries, :nuccore, :ncbi)
-	       d = rd.save_to(miga, nil, true, {type: :genome})
-	       g += 1
+	       name = entries.miga_name[0,50]
+	       unless miga.metadata[:datasets].include? name
+		  rd = MiGA::RemoteDataset.new(entries, :nuccore, :ncbi)
+		  d = rd.save_to(miga, name, true, {type: :genome})
+		  g += 1
+	       end
 	    end
 	 end
 	 logger.info("Project #{id}: Downloaded #{g} reference genomes.")

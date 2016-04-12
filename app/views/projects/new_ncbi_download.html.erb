@@ -1,6 +1,6 @@
 <% provide(:title, "Download NCBI genomes") %>
 <% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
-<% provide(:breadcrumb_2, link_to(@project.path_name, @project)) %>
+<% provide(:breadcrumb_2, link_to(truncate(@project.path_name, length:15), @project)) %>
 <% content_for :head do %>
    <script type="text/javascript">
       $(function() {

@@ -137,6 +137,19 @@ footer {
    @include box_sizing;
 }
 
+.admin-zone {
+   background: $gray-medium-light;
+   border: $gray-light;
+   padding: 20px;
+   border-radius: 5px;
+   h1 {
+      font-size: 200%;
+      color: $gray;
+      margin-bottom: 10px;
+   }
+   @include box_sizing;
+}
+
 /* sidebar */
 
 aside {
@@ -379,7 +392,7 @@ input {
 
 /* Results */
 .result {
-   margin: 20px 0;
+   margin: 20px 0 40px;
    h3 {
       border-left: 1px solid $gray-medium-light;
       margin: 0;

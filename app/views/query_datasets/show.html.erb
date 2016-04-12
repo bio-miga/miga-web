@@ -1,6 +1,6 @@
 <% provide(:title, @query_dataset.name) %>
 <% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
-<% provide(:breadcrumb_2, link_to(@query_dataset.project.path_name, @query_dataset.project)) %>
+<% provide(:breadcrumb_2, link_to(truncate(@query_dataset.project.path_name, length:15), @query_dataset.project)) %>
 <div class="row query_dataset">
    <aside class="col-md-4">
       <section class="query_dataset_info">

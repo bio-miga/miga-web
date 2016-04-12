@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
    before_action :logged_in_user, only: [:new, :create, :destroy, :show, :result, :reference_datasets, :show_dataset, :reference_dataset_result]
-   before_action :admin_user, only: [:new, :create, :destroy, :new_ncbi_download, :create_ncbi_download]
+   before_action :admin_user, only: [:new, :create, :destroy, :new_ncbi_download, :create_ncbi_download, :start_daemon, :stop_daemon]
 
    def index
       @projects = Project.paginate(page: params[:page])
@@ -102,6 +102,28 @@ class ProjectsController < ApplicationController
 	    render "new_ncbi_download"
 	 end
       end
+   end
+
+   def start_daemon
+      require "miga/daemon"
+      @project = Project.find(params[:id])
+      return if @project.daemon_active?
+      daemon = MiGA::Daemon.new( @project.miga )
+      f = File.open(File.expand_path("daemon/alive", @project.miga.path), "w")
+      f.print Time.now.to_s
+      f.close
+      Spawnling.new { daemon.start }
+      redirect_to @project
+   end
+
+   def stop_daemon
+      require "miga/daemon"
+      @project = Project.find(params[:id])
+      return unless @project.daemon_active?
+      daemon = MiGA::Daemon.new( @project.miga )
+      File.unlink(File.expand_path("daemon/alive", @project.miga.path))
+      Spawnling.new { daemon.stop }
+      redirect_to @project
    end
 
    private
