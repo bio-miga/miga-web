@@ -1,4 +1,6 @@
+require "miga/common"
 require "miga/daemon"
+
 class Project < ActiveRecord::Base
    belongs_to :user
    has_many :query_datasets, dependent: :destroy

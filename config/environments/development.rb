@@ -16,7 +16,7 @@ Rails.application.configure do
   # Configure mailer
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :test
-  host = "enve-omics.ce.gatech.edu:3000"
+  host = ENV["MAIL_HOST"]
   config.action_mailer.default_url_options = { host: host }
 
   # Print deprecation notices to the Rails logger.

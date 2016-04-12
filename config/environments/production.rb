@@ -17,7 +17,7 @@ Rails.application.configure do
   # Configure mailer
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :sendmail
-  host = "enve-omics.ce.gatech.edu:3000"
+  host = ENV["MAIL_HOST"]
   config.action_mailer.default_url_options = { host: host }
 
   # Enable Rack::Cache to put a simple HTTP cache in front of your application
