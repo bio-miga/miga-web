@@ -1,8 +1,6 @@
 To Do
 =====
 
-* README!
-
 * Testing set for query_datasets
 
 * Allow admins make query datasets reference (ref:true in MiGA,
@@ -33,8 +31,14 @@ To Do
 
 * Allow admin to spawn daemons
 
+
 Done
 ====
+
+Apr-2016
+--------
+
+* README!
 
 Dec-2015
 --------

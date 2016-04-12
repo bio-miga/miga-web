@@ -1,11 +1,4 @@
 <footer class="footer">
-   <small>
-      <p class="text-muted">
-	 MiGA Clades by Luis M. Rodriguez-R<br/>
-	 Powered by <%= MiGA::MiGA.LONG_VERSION.gsub(/ - \S+$/,"") %>
-      </p>
-      <%= link_to image_tag("MiGA.png", alt: "MiGA logo"), "http://enve-omics.ce.gatech.edu/miga" %>
-   </small>
    <nav>
       <ul>
 	 <li><%= link_to "About", about_path %></li>
@@ -13,4 +6,12 @@
 	 <li><%= link_to "News", "http://enve-omics.ce.gatech.edu/miga" %></li>
       </ul>
    </nav>
+   <small>
+      <p>
+	 MiGA Web by Luis M. Rodriguez-R<br/>
+	 Powered by <%= MiGA::MiGA.LONG_VERSION.gsub(/ - \S+$/,"") %>
+      </p>
+      <%= link_to image_tag("MiGA.png", alt: "MiGA logo"), "http://enve-omics.ce.gatech.edu/miga" %>
+      <p style="height:130px"></p>
+   </small>
 </footer>

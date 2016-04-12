@@ -1,7 +1,7 @@
 <header class="navbar navbar-fixed-top navbar-inverse">
    <div class="container">
       <nav>
-	 <%= link_to "MiGA Clades", "/", id: "logo" %>
+	 <%= link_to "MiGA", "/", id: "logo" %>
 	 <div class="crumb">
 	    <% (0 .. 9).each do |i| %>
 	       <%= breadcrumb(yield "breadcrumb_#{i}".to_sym) %>
