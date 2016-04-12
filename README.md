@@ -36,32 +36,32 @@ Next, launch the server. We have had a great experience with Puma, so that's wha
 You only need to specify where the data is:
 
 ```bash
-export SECRET_KEY_BASE=`rake secret`
 export MIGA_PROJECTS=$HOME/miga-data
+export SECRET_KEY_BASE=`rake secret`
 export MAIL_HOST=localhost
 rails s -e production Puma
 ```
 
-Now you can visit your MiGA Web interface at [http://localhost:3000/](http://localhost:3000/).
+Now you can visit your MiGA Web interface at [localhost:3000](http://localhost:3000/).
 To use a world-accessible address, simply set the mail host to that address, and pass it to
 rails using -b.
 For example, this is how we launch our own [MiGA Web](http://enve-omics.ce.gatech.edu:3000):
 
 ```bash
-export SECRET_KEY_BASE=`rake secret`
 export MIGA_PROJECTS=$HOME/miga-data
+export SECRET_KEY_BASE=`rake secret`
 export MAIL_HOST=enve-omics.ce.gatech.edu
 rails s -e production -b $MAIL_HOST Puma
 ```
 
 ## Create admin users
 
-Once you create your first user, you may want to make it an admin. You can do so from the
-console:
+Once you create your first user from the website, you may want to make it an admin. You can
+do so from the console:
 
 ```ruby
 RAILS_ENV=production rails c
-irb> u = Users.find(1) # Change the 1 for the actual ID of your user
+irb> u = User.find(1) # Change the 1 for the actual ID of your user
 irb> u.admin = true
 irb> u.save
 ```
