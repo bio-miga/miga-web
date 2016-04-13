@@ -8,7 +8,7 @@ class ProjectsControllerTest < ActionController::TestCase
     FileUtils.touch("#{ENV["MIGA_HOME"]}/.miga_rc")
     FileUtils.touch("#{ENV["MIGA_HOME"]}/.miga_daemon.json")
     # Setup Web
-    ENV["MIGA_PROJECTS"] = Rails.root.join("tmp").to_s
+    ENV["MIGA_PROJECTS"] = $tmp
     @admin = users(:michael)
     @user = users(:archer)
     @project = @admin.projects.create(path: "foo_bar")
@@ -18,7 +18,6 @@ class ProjectsControllerTest < ActionController::TestCase
   def teardown
     FileUtils.rm_rf $tmp
     ENV["MIGA_HOME"] = nil
-    FileUtils.rm_rf @project.miga.path
   end
 
   test "should get index" do
