@@ -1,7 +1,7 @@
 [![Code Climate](https://codeclimate.com/github/bio-miga/miga-web/badges/gpa.svg)](https://codeclimate.com/github/bio-miga/miga-web)
 [![Test Coverage](https://codeclimate.com/github/bio-miga/miga-web/badges/coverage.svg)](https://codeclimate.com/github/bio-miga/miga-web/coverage)
 [![Build Status](https://travis-ci.org/bio-miga/miga-web.svg?branch=master)](https://travis-ci.org/bio-miga/miga-web)
-[![Inch docs](http://inch-ci.org/github/bio-miga/miga-web.svg)](http://inch-ci.org/github/bio-miga/miga)
+[![Inch docs](http://inch-ci.org/github/bio-miga/miga-web.svg)](http://inch-ci.org/github/bio-miga/miga-web)
 
 # Web interface for MiGA
 
