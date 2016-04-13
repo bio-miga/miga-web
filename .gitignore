@@ -18,3 +18,8 @@
 
 # Ignore uploads
 /public/uploads
+
+# Ignore precompiled assets
+/public/assets
+
+Gemfile.lock

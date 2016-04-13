@@ -1,14 +1,23 @@
-# Web interface for the Microbial Genomes Atlas (MiGA)
+[![Code Climate](https://codeclimate.com/github/bio-miga/miga-web/badges/gpa.svg)](https://codeclimate.com/github/bio-miga/miga-web)
+[![Test Coverage](https://codeclimate.com/github/bio-miga/miga-web/badges/coverage.svg)](https://codeclimate.com/github/bio-miga/miga-web/coverage)
+[![Build Status](https://travis-ci.org/bio-miga/miga-web.svg?branch=master)](https://travis-ci.org/bio-miga/miga-web)
+[![Inch docs](http://inch-ci.org/github/bio-miga/miga-web.svg)](http://inch-ci.org/github/bio-miga/miga)
 
+# Web interface for MiGA
 
 ## Ruby version
 
-We have tested MiGA Web with Ruby 2.2.3, but any 2.x (and perhaps 1.9) should
-be compatible.
+We test MiGA Web with Ruby 2.x and 1.9 (MRI).
 
 ## System dependencies
 
-Make sure you have bundle `gem install bundle`. Next, execute:
+First, make sure you have bundle:
+
+```bash
+gem install bundle
+```
+
+Next, get `miga-web` and all its dependencies:
 
 ```bash
 git clone https://github.com/bio-miga/miga-web.git
@@ -18,22 +27,22 @@ bundle
 
 ## Deployment instructions
 
-Once your MiGA Web is ready with all the dependencies, you can start the server. First,
-prepare the system:
+Once your MiGA Web is ready, you can start the server. First, prepare the
+system:
 
 ```bash
 # Tell rails this is a production server:
 export RAILS_ENV=production
-# create an empty folder to host your projects (it can be anywhere in your computer):
+# create an empty folder to host your projects (it can be anywhere):
 mkdir $HOME/miga-data
 # Generate the initial database:
-rake db:migrate
+bundle exec rake db:migrate
 # Precompile assets:
-rake assets:precompile
+bundle exec rake assets:precompile
 ```
 
-Next, launch the server. We have had a great experience with Puma, so that's what we use.
-You only need to specify where the data is:
+Next, launch the server. We have had a great experience with Puma, so that's
+what we use. You only need to specify where the data is:
 
 ```bash
 export MIGA_PROJECTS=$HOME/miga-data
@@ -42,10 +51,11 @@ export MAIL_HOST=localhost
 rails s -e production Puma
 ```
 
-Now you can visit your MiGA Web interface at [localhost:3000](http://localhost:3000/).
-To use a world-accessible address, simply set the mail host to that address, and pass it to
-rails using -b.
-For example, this is how we launch our own [MiGA Web](http://enve-omics.ce.gatech.edu:3000):
+Now you can visit your MiGA Web interface at
+[localhost:3000](http://localhost:3000/). To use a world-accessible address,
+simply set the mail host to that address, and pass it to rails using -b. For
+example, this is how we launch our own
+[MiGA Web](http://enve-omics.ce.gatech.edu:3000):
 
 ```bash
 export MIGA_PROJECTS=$HOME/miga-data
@@ -56,8 +66,8 @@ rails s -e production -b $MAIL_HOST Puma
 
 ## Create admin users
 
-Once you create your first user from the website, you may want to make it an admin. You can
-do so from the console:
+Once you create your first user from the website, you may want to make it an
+admin. You can do so from the console:
 
 ```ruby
 RAILS_ENV=production rails c
