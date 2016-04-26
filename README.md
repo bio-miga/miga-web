@@ -7,7 +7,8 @@
 
 ## Ruby version
 
-We test MiGA Web with Ruby 2.x and 1.9 (MRI).
+We test MiGA Web with Ruby 2.x (MRI). Some gems used in the rails backend are
+unavailable for Ruby < 2.0.
 
 ## System dependencies
 
