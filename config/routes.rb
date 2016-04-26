@@ -26,6 +26,9 @@ Rails.application.routes.draw do
   # Query datasets
   get 'query_datasets/all/:ready'                  => 'query_datasets#index', as: :query_datasets_ready
   get 'query_datasets/:id/result/:result/:file'    => 'query_datasets#result', as: :query_dataset_result
+  # Medoid clusters
+  get "medoid_clade/:project_id/:metric/:clade"    => "projects#medoid_clade", as: :medoid_clade
+  get "medoid_clade/:project_id/:metric/:clade/as" => "projects#medoid_clade_as", as: :medoid_clade_as
   # Full resources
   resources :users
   resources :account_activations, only: [:edit]

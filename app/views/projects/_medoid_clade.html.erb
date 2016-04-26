@@ -1,0 +1,76 @@
+<% root_name += "-" unless root_name == "" %>
+<% medoids_file = File.expand_path("miga-project.1.medoids", root) %>
+<% classif_file = File.expand_path("../miga-project.1.classif", root) %>
+<% if File.exist? medoids_file %>
+  <ul class="medoid-tree list-group">
+  <% File.open(medoids_file, "r") do |f| %>
+    <% i = 0 %>
+    <% f.each_line do |ln| %>
+      <% i += 1 %>
+      <% ln.chomp! %>
+      <li class="list-group-item">
+        <%= link_to(
+	  ("<i class='glyphicon glyphicon-tree-deciduous'> </i> " +
+	    "#{metric} clade #{root_name}#{i}").html_safe,
+	  medoid_clade_url(project.id, metric, "#{root_name}#{i}"),
+	  :id => "link-#{metric}-#{root_name}#{i}",
+	  :remote => true, :"data-target" => "##{metric}-#{root_name}#{i}",
+	  :"data-url" => medoid_clade_as_url(project.id, metric,
+	    "#{root_name}#{i}")) %>
+        <script>
+          $('#link-<%= "#{metric}-#{root_name}#{i}" %>').click(function(event) {
+            var t = $($(this).data('target'));
+            if(t.data('loaded')){
+              t.toggle();
+            }else{
+              t.html("loading...");
+	      t.load($(this).data('url'));
+              t.data('loaded', true);
+            }
+            event.preventDefault();
+            event.stopPropagation();
+          });
+        </script>
+	<span class="medoid">
+	  <%= link_to(
+	    "<i class='permalink glyphicon glyphicon-link'> </i>".html_safe,
+	    medoid_clade_url(project.id, metric, "#{root_name}#{i}"),
+	    title: "permalink") %>
+	  medoid: <%= link_to ln.unmiga_name,
+	    reference_dataset_url(project.id, ln) %>
+	</span>
+        <div id="<%= "#{metric}-#{root_name}#{i}" %>">
+	  <% if target =~ /^#{root_name}#{i}(-.+)?$/ %>
+	    <script>
+              $('#<%= "#{metric}-#{root_name}#{i}" %>').data('loaded', true);
+            </script>
+            <%= render partial: "medoid_clade",
+	      locals: { project: project, result: result, metric: metric,
+              target: target, root: "#{root}/miga-project.1.sc-#{i}",
+              root_name: "#{root_name}#{i}" } %>
+	  <% end %>
+	</div>
+      </li>
+    <% end %>
+  <% end %>
+  </ul>
+<% elsif File.exist? classif_file %>
+  <% lowest_class = root_name.split("-").last %>
+  <% datasets = [] %>
+  <% id = [] %>
+  <% File.open(classif_file, "r") do |f| %>
+    <% f.each_line do |ln| %>
+      <% r = ln.chomp.split(/\t/) %>
+      <% next unless r[1] == lowest_class %>
+      <% datasets << r[0] %>
+      <% id << r[3].to_f.round(2).to_s %>
+    <% end %>
+  <% end %>
+  <div class="datasets list-group-item">
+    <b><%= pluralize(datasets.size, "dataset") %>:</b>
+    <%= datasets.map do |d| %>
+      <% link_to(d.unmiga_name, reference_dataset_url(project.id, d)) +
+        " <span class=medoid>(#{metric}: #{id.shift}%)</span>".html_safe %>
+    <% end.to_sentence.html_safe %>
+  </div>
+<% end %>

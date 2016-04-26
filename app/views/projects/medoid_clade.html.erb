@@ -1,0 +1,17 @@
+<% provide(:title, @clade_name) %>
+<% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
+<div class="row projects">
+   <aside class="col-md-4">
+      <%= render partial: "shared/menu_datasets",
+	 locals: { project: @project,
+	   ds_counts: @project.dataset_counts(current_user),
+	   ref_datasets: true, qry_datasets: false } %>
+   </aside>
+   <div class="col-md-8">
+      <% unless @result.nil? %>
+        <%= render partial: "medoid_clade",
+          locals: { project: @project, result: @result, metric: @metric,
+            target: @clade, root: @result.dir, root_name: "" } %>
+      <% end %>
+   </div>
+</div>

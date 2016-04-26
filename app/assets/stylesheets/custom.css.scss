@@ -118,7 +118,6 @@ footer {
       img {
 	 float: right;
       }
-      color: #0A538C;
       text-align: right;
    }
    ul {
@@ -422,4 +421,31 @@ input {
       text-align: center;
       margin: 5px 5px 0 5px;
    }
+}
+
+/* Medoid clades */
+.medoid-tree {
+  padding: 1em;
+  margin: 0;
+  .medoid {
+    font-size: 75%;
+    display: inline;
+    color: $gray-light;
+    a { color: $gray-light; }
+    .permalink { color: $gray-medium-light; }
+  }
+  li:hover > .medoid {
+    color: #0079A6;
+    a { color: #0079A6; }
+    .permalink { color: #0079A6; }
+  }
+  li {
+    padding: 1em;
+    margin: 0;
+  }
+  .datasets {
+    background: $gray-medium-light;
+    margin: 0.5em 0 0 0;
+    padding: 0.5em 1em;
+  }
 }
