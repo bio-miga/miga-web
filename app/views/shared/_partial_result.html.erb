@@ -1,0 +1,44 @@
+<% key_name = key.to_s.unmiga_name %>
+<div class="result">
+  <h3>
+    <i class="glyphicon glyphicon-time"> </i>
+    Currently running
+  </h3>
+  <div class="result-body">
+    <p>
+      <%= obj.name.unmiga_name %> is currently being processed for
+      <b><%= key_name %></b>.
+    </p>
+    <% if key==:distances %>
+      <%
+        metric = obj.miga.project.metadata[:type]==:clade ? "ani" : "aai"
+        med_file = File.expand_path(
+          "data/09.distances/#{obj.miga.name}.#{metric}-medoids.tsv",
+          obj.miga.project.path)
+        lowest_med = nil
+        File.open(med_file, "r") do |f|
+          lowest_med = f.readlines.last.chomp.split(/\s+/)
+        end if File.size?(med_file)
+      %>
+      <% unless lowest_med.nil? or lowest_med.empty? %>
+        <p>
+          The best available classification so far is:
+          <%= lowest_med.join(" | ") %>.
+        </p>
+      <% end %>
+    <% end %>
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        <%= link_to("#job-log-#{key}",
+          { class: "btn btn-block", "data-toggle":"collapse" }) do %>
+            Show partial <%= key_name %> log <span class='caret'></span>
+        <% end %>
+      </div>
+      <div class="panel-body collapse" id="job-log-<%= key %>">
+        <pre><%=
+          obj.job_log(key_name)
+        %></pre>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,7 @@
 <% provide(:title, @clade_name) %>
 <% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
+<% provide(:breadcrumb_2, link_to(@project.path_name,
+  project_path(@project))) %>
 <div class="row projects">
    <aside class="col-md-4">
       <%= render partial: "shared/menu_datasets",
@@ -8,6 +10,20 @@
 	   ref_datasets: true, qry_datasets: false } %>
    </aside>
    <div class="col-md-8">
+      <h3><%= @metric %>-based medoid clustering</h3>
+      <% if @metric == :AAI %>
+        <p>
+          The AAI clusters provide a good <b>overview</b> of the
+          <b>above-species</b> structure of the datasets and facilitate
+          taxonomic classification.
+        </p>
+      <% elsif @metric == :ANI %>
+        <p>
+          The ANI clusters provide a <b>high resolution</b> view of the
+          <b>below-species</b> structure of the datasets and facilitate
+          genome-based typing.
+        </p>
+      <% end %>
       <% unless @result.nil? %>
         <%= render partial: "medoid_clade",
           locals: { project: @project, result: @result, metric: @metric,

@@ -39,7 +39,8 @@
       <% when :essential_genes %>
 	 <p>Genes commonly found in Bacteria and Archaea detected:</p>
 	 <pre class="result_dump"><%=
-	    File.read(res.file_path :report).gsub(/^! ([^:]+):/, "<b>\\1:</b>").html_safe
+	    File.read(res.file_path :report).
+	      gsub(/^! ([^:]+):/, "<b>\\1:</b>").html_safe
 	 %></pre>
       <% when :ssu %>
 	 <% unless res.file_path(:gff).nil? %>
@@ -75,12 +76,12 @@
 	 </p>
       <% when :distances %>
 	 <% db = {} %>
-	 <% db[:aai] = SQLite3::Database.new(res.file_path :aai_db) %>
 	 <% begin %>
 	    <% db[:ani] = SQLite3::Database.new(res.file_path :ani_db) %>
 	    <% val = db[:ani].execute("SELECT seq2, ani FROM ani ORDER BY ani DESC LIMIT 2") %>
 	    <% val_m = "ANI" %>
 	 <% rescue %>
+            <% db[:aai] = SQLite3::Database.new(res.file_path :aai_db) %>
 	    <% val = db[:aai].execute("SELECT seq2, aai FROM aai ORDER BY aai DESC LIMIT 2") %>
 	    <% db[:ani] = nil %>
 	    <% val_m = "AAI" %>
@@ -156,52 +157,11 @@
       <% when :clade_finding %>
 	 <%= render partial: "shared/results/clade_tree",
 	   locals: { res: res, job: key, project: proj } %>
-	 <p>
-	    MiGA proposes the following clade(s) at the species level based on ANI:
-	    <ul class="list-group">
-	    <% i=0 %>
-	    <% File.open(res.file_path(:proposal), "r") do |f| %>
-	       <% f.each_line do |ln| %>
-		  <% i+=1 %>
-		  <% r = ln.split /\s+/ %>
-		  <li class="list-group-item"><b>Species clade <%= i %> (<%= r.count %> datasets):</b>
-		     <span>
-			<i onclick='$(this).parent().children().toggle();'
-			   class="glyphicon glyphicon-chevron-down btn btn-xs btn-default"> </i>
-			<i onclick='$(this).parent().children().toggle();'
-			   style="display: none;" class="glyphicon glyphicon-chevron-up btn btn-xs btn-default"> </i>
-			<span style="display: none;">
-			   <hr/>
-			   <%= r.map do |ds| %>
-			      <% link_to ds.unmiga_name,
-			        reference_dataset_path(proj.id, ds) %>
-			   <% end.to_sentence.html_safe %>
-			</span>
-		     </span>
-		  </li>
-	       <% end %>
-	    <% end %>
-	    </ul>
-	 </p>
+	 <%= render partial: "shared/results/proposed_clades",
+	   locals: { res: res, job: key, project: proj } %>
       <% when :subclades %>
-	 <% f_path = project_result_path obj.id, :subclades, :report %>
-	 <% unless res.data[:files][:class_tree].nil? or res.data[:files][:ani_tree].nil? %>
-	    <p><b>Dendrograms:</b> ANI tree (<%= link_to "download Newick", project_result_path(obj.id, :subclades, :ani_tree) %>)
-	    and Classification tree (<%= link_to "download Newick", project_result_path(obj.id, :subclades, :class_tree) %>).</p>
-	 <% end %>
-	 <% unless res.data[:files][:medoids_1].nil? %>
-	    <% medoids = [] %>
-	    <% File.open(res.file_path(:medoids_1), "r") do |f| %>
-	       <% f.each_line{ |ln| medoids << ln.chomp } %>
-	    <% end %>
-	    <p>MiGA found <%= medoids.size %> ANI-types in the collection (<%= link_to "download PDF", f_path %>)
-	    with medoids:</p>
-	    <ul class="list-group">
-	       <% medoids.each do |m| %>
-		  <li class="list-group-item"><%= link_to m, "#" %></li>
-	       <% end %>
-	    </ol>
-	 <% end %>
+	 <%= render partial: "shared/results/clade_tree",
+	   locals: { res: res, job: key, project: proj } %>
       <% when :ogs %>
 	 <% unless res.data[:files][:stats].nil? %>
 	    <% stats = JSON.parse(File.read(res.file_path :stats), symbolize_names:true) %>
