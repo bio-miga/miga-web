@@ -6,420 +6,445 @@
 $gray-medium-light: #eaeaea;
 
 @mixin box_sizing {
-   -moz-box-sizing:    border-box;
-   -webkit-box-sizing: border-box;
-   box-sizing:         border-box;
+  -moz-box-sizing:    border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing:         border-box;
 }
 
 @mixin project_code {
-   display: block;
-   margin-right: 10px;
-   margin-top: 0px;
-   font-size: 250%;
-   padding: 10px 10px 10px 15px;
-   font-weight: lighter !important;
-   font-family: 'Wire One';
-   width: 50px;
+  display: block;
+  margin-right: 10px;
+  margin-top: 0px;
+  font-size: 250%;
+  padding: 10px 10px 10px 15px;
+  font-weight: lighter !important;
+  font-family: 'Wire One';
+  width: 50px;
 }
 
 /* universal */
 
 body {
-   padding-top: 60px;
+  padding-top: 60px;
 }
 
 section {
-   overflow: auto;
+  overflow: auto;
 }
 
 textarea {
-   resize: vertical;
+  resize: vertical;
 }
 
 .center {
-   text-align: center;
+  text-align: center;
 }
 
 .center h1 {
-   margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 /* typography */
 
 h1, h2, h3, h4, h5, h6 {
-   line-height: 1;
+  line-height: 1;
 }
 
 h1 {
-   font-size: 3em;
-   letter-spacing: -2px;
-   margin-bottom: 30px;
-   text-align: center;
+  font-size: 3em;
+  letter-spacing: -2px;
+  margin-bottom: 30px;
+  text-align: center;
 }
 
 h2 {
-   font-size: 1.2em;
-   letter-spacing: -1px;
-   margin-bottom: 30px;
-   text-align: center;
-   font-weight: normal;
-   color: $gray-light;
+  font-size: 1.2em;
+  letter-spacing: -1px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: normal;
+  color: $gray-light;
 }
 
 p {
-   font-size: 1.1em;
-   line-height: 1.7em;
+  font-size: 1.1em;
+  line-height: 1.7em;
 }
 
 /* header */
 
 #logo {
-   float: left;
-   margin-right: 10px;
-   font-size: 1.7em;
-   color: #bbb;
-   text-transform: uppercase;
-   letter-spacing: -1px;
-   padding-top: 9px;
-   font-weight: bold;
+  float: left;
+  margin-right: 10px;
+  font-size: 1.7em;
+  color: #bbb;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  padding-top: 9px;
+  font-weight: bold;
 
-   &:hover {
-      color: #fff;
-      text-decoration: none;
-   }
+  &:hover {
+    color: #fff;
+    text-decoration: none;
+  }
 }
 
 header {
-   .crumb {
-      display: inline-block;
-      padding-top: 18px;
-      color: $gray-light;
-      a {
-	 color: #bbb;
-      }
-   }
+  .crumb {
+    display: inline-block;
+    padding-top: 18px;
+    color: $gray-light;
+    a {
+      color: #bbb;
+    }
+  }
 }
 
 /* footer */
 
 footer {
-   margin-top: 45px;
-   padding: 5px 45px;
-   border-top: 1px solid $gray-medium-light;
-   color: #0079A6;
-   background: #361224;
-   a {
-      color: #0079A6;
-      &:hover {
-	 color: #78B142;
-      }
-   }
-   small {
-      img {
-	 float: right;
-      }
-      color: #0A538C;
-      text-align: right;
-   }
-   ul {
-      float: left;
-      list-style: none;
-      li {
-	 float: right;
-	 margin-right: 15px;
-      }
-   }
+  margin-top: 45px;
+  padding: 5px 45px;
+  border-top: 1px solid $gray-medium-light;
+  color: #0079A6;
+  background: #361224;
+  a {
+    color: #0079A6;
+    &:hover {
+      color: #78B142;
+    }
+  }
+  small {
+    img {
+      float: right;
+    }
+    text-align: right;
+  }
+  ul {
+    float: left;
+    list-style: none;
+    li {
+      float: right;
+      margin-right: 15px;
+    }
+  }
 }
 
 /* miscellaneous */
 
 .debug_dump {
-   clear: both;
-   float: left;
-   width: 100%;
-   margin-top: 45px;
-   @include box_sizing;
+  clear: both;
+  float: left;
+  width: 100%;
+  margin-top: 45px;
+  @include box_sizing;
 }
 
 .admin-zone {
-   background: $gray-medium-light;
-   border: $gray-light;
-   padding: 20px;
-   border-radius: 5px;
-   h1 {
-      font-size: 200%;
-      color: $gray;
-      margin-bottom: 10px;
-   }
-   @include box_sizing;
+  background: $gray-medium-light;
+  border: $gray-light;
+  padding: 20px;
+  border-radius: 5px;
+  h1 {
+    font-size: 200%;
+    color: $gray;
+    margin-bottom: 10px;
+  }
+  @include box_sizing;
 }
 
 /* sidebar */
 
 aside {
-   section.user_info, section.project_info {
-      margin-top: 20px;
-   }
-   section {
-      padding: 10px 0;
-      margin-top: 20px;
-      &:first-child {
-	 border: 0;
-	 padding-top: 0;
-      }
-      span {
-	 display: block;
-	 margin-bottom: 3px;
-	 line-height: 1;
-      }
-      h1 {
-	 font-size: 1.4em;
-	 text-align: left;
-	 letter-spacing: -1px;
-	 margin-bottom: 3px;
-	 margin-top: 0px;
-      }
-   }
+  section.user_info, section.project_info {
+    margin-top: 20px;
+  }
+  section {
+    padding: 10px 0;
+    margin-top: 20px;
+    &:first-child {
+      border: 0;
+      padding-top: 0;
+    }
+    span {
+      display: block;
+      margin-bottom: 3px;
+      line-height: 1;
+    }
+    h1 {
+      font-size: 1.4em;
+      text-align: left;
+      letter-spacing: -1px;
+      margin-bottom: 3px;
+      margin-top: 0px;
+    }
+  }
 }
 
 .gravatar {
-   float: left;
-   margin-right: 10px;
+  float: left;
+  margin-right: 10px;
 }
 
 .gravatar_edit {
-   margin-top: 15px;
+  margin-top: 15px;
 }
 
 /* forms */
 
 input, textarea, select, .uneditable-input {
-   border: 1px solid #bbb;
-   width: 100%;
-   margin-bottom: 15px;
-   @include box_sizing;
+  border: 1px solid #bbb;
+  width: 100%;
+  margin-bottom: 15px;
+  @include box_sizing;
 }
 
 input {
-   height: auto !important;
+  height: auto !important;
 }
 
 #error_explanation {
-   color: red;
-   ul {
-      color: red;
-      margin: 0 0 30px 0;
-   }
+  color: red;
+  ul {
+    color: red;
+    margin: 0 0 30px 0;
+  }
 }
 
 .field_with_errors {
-   @extend .has-error;
-   .form-control {
-      color: $state-danger-text;
-   }
+  @extend .has-error;
+  .form-control {
+    color: $state-danger-text;
+  }
 }
 
 .checkbox {
-   margin-top: -10px;
-   margin-bottom: 10px;
-   span {
-      margin-left: 20px;
-      font-weight: normal;
-   }
+  margin-top: -10px;
+  margin-bottom: 10px;
+  span {
+    margin-left: 20px;
+    font-weight: normal;
+  }
 }
 
 #session_remember_me {
-   width: auto;
-   margin-left: 0;
+  width: auto;
+  margin-left: 0;
 }
 
 /* Users index */
 .users {
-   list-style: none;
-   margin: 0;
-   li {
-      overflow: auto;
-      padding: 10px 0;
-      border-bottom: 1px solid $gray-lighter;
-   }
+  list-style: none;
+  margin: 0;
+  li {
+    overflow: auto;
+    padding: 10px 0;
+    border-bottom: 1px solid $gray-lighter;
+  }
 }
 .user-dashboard {
-   p {
-      margin-left: 30px;
-   }
+  p {
+    margin-left: 30px;
+  }
 }
 
 /* Projects */
 
 .projects {
-   list-style: none;
-   padding: 0;
-   li {
-      padding: 10px 0;
-      border-top: 1px solid #e8e8e8;
-   }
-   span {
-      display: block;
-   }
-   .code {
-      @include project_code;
-   }
-   .path {
-      font-weight: bolder;
-      .glyphicon-ok-sign {
-	 color: #5cb85c;
-      }
-      .glyphicon-remove-sign {
-	 color: #f0ad4e;
-      }
-   }
-   .timestamp {
-      color: $gray-light;
-   }
-   .project_header {
-      span.path {
-	 font-size: 150%;
-      }
-   }
-   .project_body {
-      span {
-	 display: inline;
-      }
-      li {
-	 border-top: none;
-	 padding: 0px;
-      }
-   }
+  list-style: none;
+  padding: 0;
+  li {
+    padding: 10px 0;
+    border-top: 1px solid #e8e8e8;
+  }
+  span {
+    display: block;
+  }
+  .code {
+    @include project_code;
+  }
+  .path {
+    font-weight: bolder;
+    .glyphicon-ok-sign {
+      color: #5cb85c;
+    }
+    .glyphicon-remove-sign {
+      color: #f0ad4e;
+    }
+  }
+  .timestamp {
+    color: $gray-light;
+  }
+  .project_header {
+    span.path {
+      font-size: 150%;
+    }
+  }
+  .project_body {
+    span {
+      display: inline;
+    }
+    li {
+      border-top: none;
+      padding: 0px;
+    }
+  }
 
-   aside {
-      section {
-	 border-top: 1px solid $gray-medium-light;
-      }
-   }
-
+  aside {
+    section {
+      border-top: 1px solid $gray-medium-light;
+    }
+  }
 }
 
 /* Datasets */
 .datasets {
-   list-style: none;
-   padding: 0;
-   li {
-      padding: 10px 0;
-      border-top: 1px solid #e8e8e8;
-   }
-   .project {
+  list-style: none;
+  padding: 0;
+  li {
+    padding: 10px 0;
+    border-top: 1px solid #e8e8e8;
+  }
+  .project {
+    display: inline;
+    color: #555;
+    a {
+      color: #222;
+    }
+  }
+  .timestamp {
+    color: $gray-light;
+  }
+  .taxonomy {
+    span{
       display: inline;
-      color: #555;
-      a {
-	 color: #222;
-      }
-   }
-   .timestamp {
-      color: $gray-light;
-   }
-   .taxonomy {
-      span{
-	 display: inline;
-      }
-   }
+    }
+  }
 }
 .query_datasets, .reference_datasets {
-   list-style: none;
-   padding: 0;
-   li {
-      padding: 10px 0;
-      border-top: 1px solid #e8e8e8;
-   }
-   .name {
-      .glyphicon-ok {
-	 color: #5cb85c;
-      }
-      .glyphicon-time {
-	 color: #5bc0de;
-      }
-   }
-   .code {
-      @include project_code;
-      font-size: 200%;
-      padding: 5px 10px;
-      width: 40px;
-   }
-   .timestamp {
-      display: block;
-      color: $gray-light;
-   }
+  list-style: none;
+  padding: 0;
+  li {
+    padding: 10px 0;
+    border-top: 1px solid #e8e8e8;
+  }
+  .name {
+    .glyphicon-ok {
+      color: #5cb85c;
+    }
+    .glyphicon-time {
+      color: #5bc0de;
+    }
+  }
+  .code {
+    @include project_code;
+    font-size: 200%;
+    padding: 5px 10px;
+    width: 40px;
+  }
+  .timestamp {
+    display: block;
+    color: $gray-light;
+  }
 }
 
 .reference_dataset, .query_dataset {
-   aside {
-      section {
-	 border-top: 1px solid $gray-medium-light;
+  aside {
+    section {
+      border-top: 1px solid $gray-medium-light;
+    }
+    .metadata {
+      ul {
+        list-style: none;
+        b{
+          display: block;
+          margin: 10px 0 5px 0;
+        }
+        .taxonomy {
+          span{
+            display: inline;
+          }
+        }
       }
-      .metadata {
-	 ul {
-	    list-style: none;
-	    b{
-	       display: block;
-	       margin: 10px 0 5px 0;
-	    }
-	    .taxonomy {
-	       span{
-		  display: inline;
-	       }
-	    }
-	 }
+    }
+  }
+  .query_dataset_log {
+    dd{
+      .timestamp {
+        display: block;
+        color: $gray-light;
       }
-   }
-   .query_dataset_log {
-      dd{
-	 .timestamp {
-	    display: block;
-	    color: $gray-light;
-	 }
-	 .btn {
-	    margin: 0px 0px 5px 0px;
-	 }
-	 border-bottom: 1px solid $gray-medium-light;
+      .btn {
+        margin: 0px 0px 5px 0px;
       }
-   }
-   .result_dump {
-      overflow: auto;
-      word-wrap: normal;
-      white-space: pre;
-   }
-   table {
-      td, th {
-	 text-align: center;
-      }
-   }
+      border-bottom: 1px solid $gray-medium-light;
+    }
+  }
+  .result_dump {
+    overflow: auto;
+    word-wrap: normal;
+    white-space: pre;
+  }
+  table {
+    td, th {
+      text-align: center;
+    }
+  }
 }
 
 /* Results */
 .result {
-   margin: 20px 0 40px;
-   h3 {
-      border-left: 1px solid $gray-medium-light;
-      margin: 0;
-      padding: 5px;
-   }
-   .result-body {
-      padding: 5px 20px;
-      border-left: 1px solid $gray-medium-light;
-      border-bottom: 1px solid #d0d0d0;
-   }
-   .result-footer {
-      border-left: 1px solid $gray-medium-light;
-      background: $gray-medium-light;
-      padding: 5px 10px;
-      .timestamp {
-	 color: $gray-light;
-	 text-align: right;
-      }
-   }
+  margin: 20px 0 40px;
+  h3 {
+    border-left: 1px solid $gray-medium-light;
+    margin: 0;
+    padding: 5px;
+  }
+  .result-body {
+    padding: 5px 20px;
+    border-left: 1px solid $gray-medium-light;
+    border-bottom: 1px solid #d0d0d0;
+  }
+  .result-footer {
+    border-left: 1px solid $gray-medium-light;
+    background: $gray-medium-light;
+    padding: 5px 10px;
+    .timestamp {
+      color: $gray-light;
+      text-align: right;
+    }
+  }
 }
 .result-dir {
-   .file {
-      text-align: center;
-      margin: 5px 5px 0 5px;
-   }
+  .file {
+    text-align: center;
+    margin: 5px 5px 0 5px;
+  }
+}
+
+/* Medoid clades */
+.medoid-tree {
+  padding: 1em;
+  margin: 0;
+  .medoid {
+    font-size: 75%;
+    display: inline;
+    color: $gray-light;
+    a { color: $gray-light; }
+    .permalink { color: $gray-medium-light; }
+  }
+  li:hover > .medoid {
+    color: #0079A6;
+    a { color: #0079A6; }
+    .permalink { color: #0079A6; }
+  }
+  li {
+    padding: 1em;
+    margin: 0;
+  }
+  .datasets {
+    background: $gray-medium-light;
+    margin: 0.5em 0 0 0;
+    padding: 0.5em 1em;
+  }
 }

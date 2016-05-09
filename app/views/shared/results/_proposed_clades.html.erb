@@ -1,0 +1,27 @@
+<p>
+  MiGA proposes the following clade(s) at the species level based on ANI:
+</p>
+<ul class="medoid-tree list-group">
+<% i=0 %>
+<% File.open(res.file_path(:proposal), "r") do |f| %>
+  <% f.each_line do |ln| %>
+    <% i+=1 %>
+    <% r = ln.split /\s+/ %>
+    <li class="list-group-item"><b>Species clade <%= i %> (<%= r.count %> datasets):</b>
+      <span>
+        <i onclick='$(this).parent().children().toggle();'
+          class="glyphicon glyphicon-chevron-down btn btn-xs btn-default"> </i>
+        <i onclick='$(this).parent().children().toggle();'
+          style="display: none;" class="glyphicon glyphicon-chevron-up btn btn-xs btn-default"> </i>
+        <span style="display: none;">
+          <hr/>
+          <%= r.map do |ds| %>
+            <% link_to ds.unmiga_name,
+              reference_dataset_path(project.id, ds) %>
+          <% end.to_sentence.html_safe %>
+        </span>
+      </span>
+    </li>
+  <% end %>
+<% end %>
+</ul>

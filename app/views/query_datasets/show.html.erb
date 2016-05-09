@@ -1,47 +1,33 @@
-<% provide(:title, @query_dataset.name) %>
+<% provide(:title, @query_dataset.name.unmiga_name) %>
 <% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
-<% provide(:breadcrumb_2, link_to(truncate(@query_dataset.project.path_name, length:15), @query_dataset.project)) %>
+<% provide(:breadcrumb_2, link_to(
+  truncate(@query_dataset.project.path_name, length:15),
+  @query_dataset.project)) %>
 <div class="row query_dataset">
-   <aside class="col-md-4">
-      <section class="query_dataset_info">
-	 <ul class="query_datasets">
-	    <%= render @query_dataset %>
-	 </ul>
-      </section>
-      <section class="query_dataset_settings">
-	 <%= link_to "Remove dataset", @query_dataset, method: :delete, class: "btn btn-block btn-warning",
-	    data: { confirm: "Are you sure? This action cannot be undone." } %>
-      </section>
-   </aside>
-   <div class="col-md-8">
-      <% MiGA::Dataset.RESULT_DIRS.keys.each do |k| %>
-	 <% if res = @query_dataset.miga.result(k) %>
-	    <%= render partial: "shared/result", locals: { res:res, obj:@query_dataset, key:k } %>
-	 <% end %>
+  <aside class="col-md-4">
+    <section class="query_dataset_info">
+      <ul class="query_datasets">
+        <%= render @query_dataset %>
+      </ul>
+    </section>
+    <section class="query_dataset_settings">
+      <%= link_to "Remove dataset", @query_dataset,
+        method: :delete, class: "btn btn-block btn-warning",
+        data: { confirm: "Are you sure? This action cannot be undone." } %>
+    </section>
+  </aside>
+  <div class="col-md-8">
+    <% MiGA::Dataset.RESULT_DIRS.keys.each do |k| %>
+      <% if res = @query_dataset.miga.result(k) %>
+        <%= render partial: "shared/result",
+          locals: { res:res, obj:@query_dataset, key:k } %>
       <% end %>
+    <% end %>
 
-      <% unless @query_dataset.ready? %>
-	 <div class="result">
-	    <h3>
-	       <i class="glyphicon glyphicon-time"> </i>
-	       Currently running
-	    </h3>
-	    <% running = @query_dataset.miga.next_preprocessing %>
-	    <div class="result-body">
-	       <p><%= @query_dataset.name %> is currently being processed for <b><%= running %></b>.</p>
-	       <div class="panel panel-info">
-		  <div class="panel-heading">
-		     <%= link_to "Show partial #{running} log <span class='caret'></span>".html_safe, "#job-log-#{running}",
-			{ class: "btn btn-block", "data-toggle":"collapse" } %>
-		  </div>
-		  <div class="panel-body collapse" id="job-log-<%= running %>">
-		     <pre><%=
-			@query_dataset.job_log(running)
-		     %></pre>
-		  </div>
-	       </div>
-	    </div>
-	 </div>
-      <% end %>
-   </div>
+    <% unless @query_dataset.ready? %>
+      <%= render partial: "shared/partial_result",
+        locals: { obj:@query_dataset,
+        key:@query_dataset.miga.next_preprocessing } %>
+    <% end %>
+  </div>
 </div>

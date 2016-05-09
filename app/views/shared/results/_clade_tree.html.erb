@@ -1,0 +1,23 @@
+<% metric = ( job==:clade_finding ? "AAI" : "ANI" ) %>
+<% unless res.file_path(:medoids_1).nil? %>
+  <p>
+    MiGA found the following <%=
+      link_to(medoid_clade_path(project.id, metric, 0)) { %>
+        <b><%= metric %></b> medoid clade(s)<% } %>:
+  </p>
+  <ul class="medoid-tree list-group">
+    <% File.open(res.file_path(:medoids_1), "r") do |f| %>
+      <% i = 0 %>
+      <% f.each_line do |ln| %>
+        <% ln.chomp! %>
+        <% i += 1 %>
+        <li class="list-group-item">
+          <b><%= link_to "#{metric} clade #{i}",
+            medoid_clade_path(project.id, metric, i) %></b>
+          <span class=medoid>medoid: <%= link_to ln.unmiga_name,
+            reference_dataset_path(project.id, ln) %></span>
+        </li>
+      <% end %>
+    <% end %>
+  </ul>
+<% end %>
