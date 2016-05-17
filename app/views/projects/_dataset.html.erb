@@ -30,7 +30,12 @@
    <span class="metadata">
       <% dataset.metadata.each do |k,v| %>
 	 <% next if [:type, :ref, :created, :updated, :user, :tax].include? k %>
-	 <b><%= k %>:</b> <%= v %>
+	 <%
+	   if k==:comments and /(.*)Assembly: (\S+)(.*)/.match(v)
+	     v = "#{$1}<a href='http://www.ncbi.nlm.nih.gov/assembly/#{$2}/' target=_blank>Assembly: #{$2}</a>#{$3}"
+	   end
+	 %>
+	 <b><%= k.to_s.capitalize %>:</b> <%= v.html_safe %>
       <% end %>
    </span>
    <% unless noname %>
