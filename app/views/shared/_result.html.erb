@@ -76,16 +76,22 @@
 	 </p>
       <% when :distances %>
 	 <% db = {} %>
-	 <% begin %>
-	    <% db[:ani] = SQLite3::Database.new(res.file_path :ani_db) %>
-	    <% val = db[:ani].execute("SELECT seq2, ani FROM ani ORDER BY ani DESC LIMIT 2") %>
-	    <% val_m = "ANI" %>
-	 <% rescue %>
-            <% db[:aai] = SQLite3::Database.new(res.file_path :aai_db) %>
-	    <% val = db[:aai].execute("SELECT seq2, aai FROM aai ORDER BY aai DESC LIMIT 2") %>
-	    <% db[:ani] = nil %>
-	    <% val_m = "AAI" %>
-	 <% end %>
+	 <%
+	    if proj.miga.is_clade?
+               begin
+		  db[:ani] = SQLite3::Database.new(res.file_path :ani_db)
+		  val = db[:ani].execute("SELECT seq2, ani FROM ani ORDER BY ani DESC LIMIT 2")
+		  val_m = "ANI"
+	       rescue
+                  db[:ani] = nil
+               end
+            end
+            if db[:ani].nil?
+               db[:aai] = SQLite3::Database.new(res.file_path :aai_db)
+               val = db[:aai].execute("SELECT seq2, aai FROM aai ORDER BY aai DESC LIMIT 2")
+               val_m = "AAI"
+            end
+         %>
 	 <p>
 	    <% if val.second %>
 	       MiGA found that the closest relatives in the database were
