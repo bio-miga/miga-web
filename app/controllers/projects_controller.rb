@@ -44,7 +44,7 @@ class ProjectsController < ApplicationController
     @clade = params[:clade]
     @clade_name = "#{@metric} clade #{@clade}"
     @clade_miga = @clade.split("-").
-      map{ |i| "miga-project.1.sc-#{i}" }.join("/")
+      map{ |i| "miga-project.sc-#{i}" }.join("/")
   end
   
   # Loads a medoid clade for asynchronous display.

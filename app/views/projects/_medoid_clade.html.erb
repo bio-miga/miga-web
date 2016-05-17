@@ -1,6 +1,6 @@
 <% root_name += "-" unless root_name == "" %>
-<% medoids_file = File.expand_path("miga-project.1.medoids", root) %>
-<% classif_file = File.expand_path("../miga-project.1.classif", root) %>
+<% medoids_file = File.expand_path("miga-project.medoids", root) %>
+<% classif_file = File.expand_path("../miga-project.classif", root) %>
 <% if File.exist? medoids_file %>
   <ul class="medoid-tree list-group">
   <% File.open(medoids_file, "r") do |f| %>
@@ -19,7 +19,7 @@
 	    "#{root_name}#{i}")) %>
         <script>
           $('#link-<%= "#{metric}-#{root_name}#{i}" %>').click(function(event) {
-            var t = $($(this).data('target'));
+            var t = $($(this).data("target"));
             if(t.data('loaded')){
               t.toggle();
             }else{
@@ -46,7 +46,7 @@
             </script>
             <%= render partial: "medoid_clade",
 	      locals: { project: project, result: result, metric: metric,
-              target: target, root: "#{root}/miga-project.1.sc-#{i}",
+              target: target, root: "#{root}/miga-project.sc-#{i}",
               root_name: "#{root_name}#{i}" } %>
 	  <% end %>
 	</div>
