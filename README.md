@@ -48,21 +48,23 @@ what we use. You only need to specify where the data is:
 ```bash
 export MIGA_PROJECTS=$HOME/miga-data
 export SECRET_KEY_BASE=`rake secret`
-export MAIL_HOST=localhost
+export MAIL_HOST=localhost:3000
 rails s -e production Puma
 ```
 
 Now you can visit your MiGA Web interface at
 [localhost:3000](http://localhost:3000/). To use a world-accessible address,
-simply set the mail host to that address, and pass it to rails using -b. For
-example, this is how we launch our own
+simply set the mail host to that address, and pass it to rails using -b and -p.
+For example, this is how we launch our own
 [MiGA Web](http://enve-omics.ce.gatech.edu:3000):
 
 ```bash
+HOST_URL=enve-omics.ce.gatech.edu
+HOST_PORT=3000
 export MIGA_PROJECTS=$HOME/miga-data
 export SECRET_KEY_BASE=`rake secret`
-export MAIL_HOST=enve-omics.ce.gatech.edu
-rails s -e production -b $MAIL_HOST Puma
+export MAIL_HOST=$HOST_URL:$HOST_PORT
+rails s -e production -b $HOST_URL -p $HOST_PORT Puma
 ```
 
 ## Create admin users
