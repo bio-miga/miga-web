@@ -17,17 +17,17 @@
     </section>
   </aside>
   <div class="col-md-8">
-    <% MiGA::Dataset.RESULT_DIRS.keys.each do |k| %>
-      <% if res = @query_dataset.miga.result(k) %>
-        <%= render partial: "shared/result",
-          locals: { res:res, obj:@query_dataset, key:k } %>
-      <% end %>
-    <% end %>
-
     <% unless @query_dataset.ready? %>
       <%= render partial: "shared/partial_result",
         locals: { obj:@query_dataset,
         key:@query_dataset.miga.next_preprocessing } %>
+    <% end %>
+
+    <% MiGA::Dataset.RESULT_DIRS.keys.reverse_each do |k| %>
+      <% if res = @query_dataset.miga.result(k) %>
+        <%= render partial: "shared/result",
+          locals: { res:res, obj:@query_dataset, key:k } %>
+      <% end %>
     <% end %>
   </div>
 </div>
