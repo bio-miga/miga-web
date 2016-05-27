@@ -42,16 +42,18 @@ class QueryDatasetsController < ApplicationController
   end
    
   def new
-    @project = Project.find_by(id: params[:project_id])
+    @project ||= Project.find_by(id: params[:project_id])
     if @project.nil?
       redirect_to projects_path
     else
       @query_dataset = QueryDataset.new
     end
+    render "new"
   end
 
   def show
     @query_dataset = QueryDataset.find(params[:id])
+    @query_dataset.complete_seen!
   end
 
   def create
@@ -59,20 +61,26 @@ class QueryDatasetsController < ApplicationController
     if @project.nil?
       redirect_to root_url
     else
-      @query_dataset = @project.query_datasets.create(query_dataset_params)
-      flash[:success] = "It's saved" if @query_dataset.save!
-      if @query_dataset.save and not @query_dataset.miga.nil?
-        [:description,:comments,:type].each do |k|
-          @query_dataset.miga.metadata[k] = params[k] unless
-            params[k].nil? or params[k].empty?
+      if QueryDataset.by_user_and_project(current_user, @project).
+            find_by(name: params[:query_dataset][:name]).nil?
+        @query_dataset = @project.query_datasets.create(query_dataset_params)
+        flash[:success] = "It's saved" if @query_dataset.save!
+        if @query_dataset.save and not @query_dataset.miga.nil?
+          [:description,:comments,:type].each do |k|
+            @query_dataset.miga.metadata[k] = params[k] unless
+              params[k].nil? or params[k].empty?
+          end
+          @query_dataset.miga.save
+          flash[:success] = "Query dataset created."
+          redirect_to @query_dataset
+        else
+          params[:project_id] = query_dataset_params[:project_id]
+          flash[:danger] = "Query dataset couldn't be saved."
+          new
         end
-        @query_dataset.miga.save
-        flash[:success] = "Query dataset created."
-        redirect_to @query_dataset
       else
-        params[:project_id] = query_dataset_params[:project_id]
-        flash[:danger] = "Query dataset couldn't be saved."
-        render "new"
+        flash[:danger] = "Name already exists, please use a different name."
+        new
       end
     end
   end
@@ -84,7 +92,7 @@ class QueryDatasetsController < ApplicationController
     p.miga.unlink_dataset qd.miga.name
     qd.miga.remove!
     qd.destroy
-    redirect_to u
+    redirect_to p
   end
 
   def result
