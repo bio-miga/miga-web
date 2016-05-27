@@ -1,7 +1,7 @@
 <% provide(:title, @project.path_name) %>
 <% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
-<div class="row project">
-   <aside class="col-md-4 projects">
+<div class="row projects">
+   <aside class="col-md-4">
       <%= render partial: "shared/menu_datasets",
 	 locals: { project: @project, ds_counts: @project.dataset_counts(current_user),
 	 ref_datasets: false, qry_datasets: false } %>

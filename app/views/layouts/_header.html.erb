@@ -1,43 +1,56 @@
 <header class="navbar navbar-fixed-top navbar-inverse">
-   <div class="container">
-      <nav>
-	 <%= link_to "MiGA", "/", id: "logo" %>
-	 <div class="crumb">
-	    <% (0 .. 9).each do |i| %>
-	       <%= breadcrumb(yield "breadcrumb_#{i}".to_sym) %>
-	    <% end %>
-	    <%= breadcrumb(truncate(yield(:title), length:15)) %>
-	 </div>
-	 <ul class="nav navbar-nav navbar-right">
-	    <li><%= link_to "Home", root_path %></li>
-	    <li><%= link_to "Help", help_path %></li>
-	    <li><%= link_to "Projects", projects_path %></li>
-	    <% if logged_in? %>
-	       <li><%= link_to current_user.name, current_user %></li>
-	       <li>
-		  <a class="dropdown-toggle" data-toggle="dropdown" type="button">
-		      <span class="caret"></span>
-		  </a>
-		  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-		     <li><%= link_to current_user do %>
-			<i class="glyphicon glyphicon-dashboard"> </i> Dashboard
-		     <% end %></li>
-		     <li><%= link_to edit_user_path(current_user) do %>
-			<i class="glyphicon glyphicon-cog"> </i> Settings
-		     <% end %></li>
-		     <li><%= link_to query_datasets_path do %>
-			<i class="glyphicon glyphicon-list"> </i> Query datasets
-		     <% end %></li>
-		     <li class="divider"></li>
-		     <li><%= link_to logout_path, method: :delete do %>
-			<i class="glyphicon glyphicon-user"> </i> Log out
-		     <% end %></li>
-		  </ul>
-	       </li>
-	    <% else %>
-	       <li><%= link_to "Log in", login_path %></li>
-	    <% end %>
-	 </ul>
-      </nav>
-   </div>
+  <div class=container>
+    <nav>
+      <%= link_to "MiGA", "/", id: "logo" %>
+      <div class=crumb>
+        <% (0 .. 9).each do |i| %>
+          <%= breadcrumb(yield "breadcrumb_#{i}".to_sym) %>
+        <% end %>
+        <%= breadcrumb(truncate(yield(:title), length:15)) %>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        <li><%= link_to "Home", root_path %></li>
+        <li><%= link_to "Help", help_path %></li>
+        <li><%= link_to "Projects", projects_path %></li>
+        <% if logged_in? %>
+          <% new_ds = QueryDataset.complete_new_by_user(current_user).count %>
+          <% if new_ds > 0 %>
+            <li>
+              <%= link_to "#" do %>
+                <span class=badge><%= new_ds %> ready</span>
+              <% end %>
+            </li>
+          <% end %>
+          <li>
+            <%= link_to current_user do %>
+              <%= gravatar_for(current_user, size:20) %>
+              <%= current_user.name %>
+            <% end %>
+          </li>
+          <li>
+            <a class=dropdown-toggle data-toggle=dropdown type=button>
+              <span class=caret></span>
+            </a>
+            <ul class=dropdown-menu role=menu aria-labelledby=dropdownMenu>
+              <li><%= link_to current_user do %>
+                <i class="glyphicon glyphicon-dashboard"> </i> Dashboard
+              <% end %></li>
+              <li><%= link_to edit_user_path(current_user) do %>
+                <i class="glyphicon glyphicon-cog"> </i> Settings
+              <% end %></li>
+              <li><%= link_to query_datasets_path do %>
+                <i class="glyphicon glyphicon-list"> </i> Query datasets
+              <% end %></li>
+              <li class=divider></li>
+              <li><%= link_to logout_path, method: :delete do %>
+                <i class="glyphicon glyphicon-user"> </i> Log out
+              <% end %></li>
+            </ul>
+          </li>
+        <% else %>
+          <li><%= link_to "Log in", login_path %></li>
+        <% end %>
+      </ul>
+    </nav>
+  </div>
 </header>

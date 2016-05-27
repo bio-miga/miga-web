@@ -1,24 +1,27 @@
 <li id="project-<%= project.id %>">
-   <span class="label label-primary pull-left code" style="background:<%= project.code_color %>;"><%= project.code %></span>
-   <span class="path">
-      <% if project.daemon_active? %>
-	 <i class="glyphicon glyphicon-ok-sign" rel="tooltip"
-	    title="active <%= time_ago_in_words(project.daemon_last_alive)%> ago"> </i>
-      <% else %>
-	 <i class="glyphicon glyphicon-remove-sign" rel="tooltip" title="inactive"> </i>
-      <% end %>
-      <%= link_to project.path_name, project %>
-   </span>
-   <span class="description"><%= project.miga.metadata[:description] %></span>
-   <span class="datasets">
-      <b>Datasets:</b>
-      <%= pluralize(project.ref_datasets.size, "reference") %>
-      <% if logged_in? && current_user.admin? %>
-	 | <%= pluralize(project.dataset_counts(current_user)[:qry], "query") %>
-      <% end %>
-   </span>
-   <span class="timestamp">
-      Created <%= time_ago_in_words(project.created_at) %> ago by
-      <%= link_to project.user.name, project.user %>.
-   </span>
+  <span class="label label-primary pull-left code"
+    style="background:<%= project.code_color %>;"><%= project.code %></span>
+  <span class="path">
+    <% if project.daemon_active? %>
+      <i class="glyphicon glyphicon-ok-sign" rel="tooltip"
+        title="active <%=
+          time_ago_in_words(project.daemon_last_alive)%> ago"> </i>
+    <% else %>
+      <i class="glyphicon glyphicon-remove-sign" rel="tooltip"
+        title="inactive"> </i>
+    <% end %>
+    <%= link_to project.path_name, project,
+      rel:"tooltip", title:project.miga.metadata[:description] %>
+  </span>
+  <span class="datasets">
+    <b>Datasets:</b>
+    <%= pluralize(project.ref_datasets.size, "reference") %>
+    <% if logged_in? && current_user.admin? %>
+      | <%= pluralize(project.dataset_counts(current_user)[:qry], "query") %>
+    <% end %>
+  </span>
+  <span class="timestamp">
+    Created <%= time_ago_in_words(project.created_at) %> ago by
+    <%= link_to project.user.name, project.user %>.
+  </span>
 </li>
