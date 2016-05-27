@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151116191820) do
+ActiveRecord::Schema.define(version: 20160527051252) do
 
   create_table "projects", force: :cascade do |t|
     t.text     "path"
@@ -34,6 +34,8 @@ ActiveRecord::Schema.define(version: 20151116191820) do
     t.string   "input_file"
     t.string   "input_type"
     t.string   "input_file_2"
+    t.boolean  "notified",     default: false
+    t.boolean  "complete_new", default: false
   end
 
   add_index "query_datasets", ["project_id", "created_at"], name: "index_query_datasets_on_project_id_and_created_at"
@@ -55,6 +57,7 @@ ActiveRecord::Schema.define(version: 20151116191820) do
     t.datetime "activated_at"
     t.string   "reset_digest"
     t.datetime "reset_sent_at"
+    t.boolean  "notify",            default: true
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true
