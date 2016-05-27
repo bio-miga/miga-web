@@ -16,7 +16,7 @@
           <% new_ds = QueryDataset.complete_new_by_user(current_user).count %>
           <% if new_ds > 0 %>
             <li>
-              <%= link_to "#" do %>
+              <%= link_to query_datasets_path(complete_new:true) do %>
                 <span class=badge><%= new_ds %> ready</span>
               <% end %>
             </li>

@@ -17,6 +17,9 @@ class QueryDatasetsController < ApplicationController
         QueryDataset.all :
         current_user.query_datasets
     end
+    if params[:complete_new]
+      qd = qd.select{ |qd| qd.complete_new }
+    end
     @all_qd = qd.count
     params[:ready] ||= false
     if params[:ready]=="yes"
