@@ -254,6 +254,13 @@ input {
   margin-left: 0;
 }
 
+.form-inline-mixed {
+  width: 100%;
+  input{
+    width: auto;
+  }
+}
+
 /* Users index */
 .users {
   list-style: none;
@@ -402,7 +409,7 @@ input {
       border-bottom: 1px solid $gray-medium-light;
     }
   }
-  .result_dump {
+  .result-dump {
     overflow: auto;
     word-wrap: normal;
     white-space: pre;

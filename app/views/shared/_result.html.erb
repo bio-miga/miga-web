@@ -40,7 +40,7 @@
     </ul>
   <% when :essential_genes %>
     <p>Genes commonly found in Bacteria and Archaea detected:</p>
-    <pre class="result_dump"><%=
+    <pre class="result-dump"><%=
       File.read(res.file_path :report).
             gsub(/^! ([^:]+):/, "<b>\\1:</b>").html_safe
     %></pre>
@@ -55,7 +55,21 @@
               inject(Hash.new(0)){ |t,e| t[e] += 1 ; t }. # Count each
               map{ |l,c| pluralize c, l }.to_sentence # Human-readable
         %>
-        MiGA <%= s.empty? ? "didn't detect SSU sequences." : "found #{s}." %>
+        <% if s.empty? %>
+          MiGA didn't detect SSU sequences.
+        <% else %>
+          <%= form_tag("http://rdp.cme.msu.edu/classifier/classifierServlet",
+                  method: "post", target: "_blank",
+                  class: "form-inline-mixed") do %>
+            <% unless res.file_path(:longest_ssu_gene).nil? %>
+              <%= hidden_field_tag :sequence,
+                File.open(res.file_path(:longest_ssu_gene),"r"){ |f| f.read } %>
+              MiGA found <%= s %>.
+              <%= submit_tag("Classify with RDP",
+                  class: "btn btn-default btn-sm") %>
+            <% end %>
+          <% end %>
+        <% end %>
       </p>
       <div class="panel panel-info">
         <div class="panel-heading">
@@ -65,7 +79,7 @@
           <% end %>
         </div>
         <div class="panel-body collapse" id="job-res-ssu">
-          <pre class="result_dump"><%= gff %></pre>
+          <pre class="result-dump"><%= gff %></pre>
         </div>
       </div>
     <% end %>
