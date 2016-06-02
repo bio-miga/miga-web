@@ -99,7 +99,7 @@
   <% when :distances %>
     <% db = {} %>
     <%
-      if proj.miga.is_clade?
+      unless res.file_path(:ani_db).nil?
         begin
           db[:ani] = SQLite3::Database.new(res.file_path :ani_db)
           val = db[:ani].
@@ -109,7 +109,7 @@
           db[:ani] = nil
         end
       end
-      if db[:ani].nil? and not db[:ani].nil?
+      if val.nil? and not res.file_path(:aai_db).nil?
         db[:aai] = SQLite3::Database.new(res.file_path :aai_db)
         val = db[:aai].
             execute("SELECT seq2, aai FROM aai ORDER BY aai DESC LIMIT 2")
@@ -164,10 +164,10 @@
                       cell.round(2) %></span>
                   <% elsif cell.nil? or cell.empty? %>
                     <span class='text-muted'>(estimated)</span>
-                  <% else
-                    link_to cell.unmiga_name,
-                      reference_dataset_path(proj.id, cell)
-                  end %>
+                  <% else %>
+                    <%= link_to cell.unmiga_name,
+                      reference_dataset_path(proj.id, cell) %>
+                  <% end %>
                   </td>
                 <% end %>
                 </tr>
