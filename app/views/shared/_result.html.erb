@@ -1,206 +1,234 @@
 <div class="result">
-   <%
-      titles = {
-	 ssu: "Ribosomal RNA (small subunit)",
-	 cds: "Gene prediction",
-	 mytaxa_scan: "MyTaxa Scan",
-	 haai_distances: "hAAI distances",
-	 aai_distances: "AAI distances",
-	 ani_distances: "ANI distances",
-	 ogs: "Orthologous groups of proteins"
-      }
-      if obj.is_a? Project
-	 proj = obj
-      elsif not obj.is_a? MiGA::Dataset
-	 proj = obj.project
+
+<%
+  titles = {
+    ssu: "Ribosomal RNA (small subunit)",
+    cds: "Gene prediction",
+    mytaxa_scan: "MyTaxa Scan",
+    haai_distances: "hAAI distances",
+    aai_distances: "AAI distances",
+    ani_distances: "ANI distances",
+    ogs: "Orthologous groups of proteins"
+  }
+  if obj.is_a? Project
+    proj = obj
+  elsif not obj.is_a? MiGA::Dataset
+    proj = obj.project
+  end
+%>
+
+<h3>
+  <i class="glyphicon glyphicon-tasks" id="result-<%= key %>"> </i>
+  <%= titles[key].nil? ? key.to_s.gsub("_", " ").capitalize : titles[key] %>
+</h3>
+
+<div class="result-body">
+  <% case key %>
+  <% # Dataset results %>
+  <% when :read_quality %>
+    <p>FastQC reports:</p>
+    <ul>
+    <% Dir.new(res.file_path :fastqc).each_entry do |f| %>
+      <% next unless f =~ /\.html/ %>
+      <li>
+      <%= link_to f, obj.is_a?(MiGA::Dataset) ?
+          reference_dataset_result_path(proj.id, obj.name,
+            :read_quality, :fastqc, f:f) :
+          query_dataset_result_path(obj.id, :read_quality, :fastqc, f:f) %>
+      </li>
+    <% end %>
+    </ul>
+  <% when :essential_genes %>
+    <p>Genes commonly found in Bacteria and Archaea detected:</p>
+    <pre class="result_dump"><%=
+      File.read(res.file_path :report).
+            gsub(/^! ([^:]+):/, "<b>\\1:</b>").html_safe
+    %></pre>
+  <% when :ssu %>
+    <% unless res.file_path(:gff).nil? %>
+      <% gff = Zlib::GzipReader.open(res.file_path :gff){|gz| gz.read} %>
+      <p>
+        <%
+          s = gff.split(/\n/). # Each line
+              select{ |l| l !~ /^#/ }. # Ignore comments
+              map{ |l| l.gsub(/.*;product=([^;]+).*/,"\\1") }. # 16S/18S/&c
+              inject(Hash.new(0)){ |t,e| t[e] += 1 ; t }. # Count each
+              map{ |l,c| pluralize c, l }.to_sentence # Human-readable
+        %>
+        MiGA <%= s.empty? ? "didn't detect SSU sequences." : "found #{s}." %>
+      </p>
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <%= link_to "#job-res-ssu",
+                  { class: "btn btn-block", "data-toggle":"collapse"  } do %>
+            Show GFF3 file <span class=caret></span>
+          <% end %>
+        </div>
+        <div class="panel-body collapse" id="job-res-ssu">
+          <pre class="result_dump"><%= gff %></pre>
+        </div>
+      </div>
+    <% end %>
+  <% when :mytaxa_scan %>
+    <%
+      f_path = obj.is_a?(MiGA::Dataset) ?
+        reference_dataset_result_path(proj.id, obj.name,
+          :mytaxa_scan, :report) :
+        query_dataset_result_path(obj.id, :mytaxa_scan, :report)
+      regions = res.data[:files][:region_ids].nil? ? 0 :
+        File.readlines(res.file_path :region_ids).count
+    %>
+    <p>
+      MyTaxa Scan detected <%= pluralize regions, "region" %> with unusual
+      taxonomic distribution (<%= link_to "download PDF", f_path %>).
+    </p>
+  <% when :distances %>
+    <% db = {} %>
+    <%
+      if proj.miga.is_clade?
+        begin
+          db[:ani] = SQLite3::Database.new(res.file_path :ani_db)
+          val = db[:ani].
+              execute("SELECT seq2, ani FROM ani ORDER BY ani DESC LIMIT 2")
+          val_m = "ANI"
+        rescue
+          db[:ani] = nil
+        end
       end
-   %>
-
-   <h3>
-      <i class="glyphicon glyphicon-tasks" id="result-<%= key %>"> </i>
-      <%= titles[key].nil? ? key.to_s.gsub("_", " ").capitalize : titles[key] %>
-   </h3>
-
-   <div class="result-body">
-      <% case key %>
-      <% # Dataset results %>
-      <% when :read_quality %>
-	 <p>FastQC reports:</p>
-	 <ul>
-	 <% Dir.new(res.file_path :fastqc).each_entry do |f| %>
-	    <% next unless f =~ /\.html/ %>
-	    <li>
-	    <%= link_to f, obj.is_a?(MiGA::Dataset) ?
-		  reference_dataset_result_path(proj.id, obj.name, :read_quality, :fastqc, f:f) :
-		  query_dataset_result_path(obj.id, :read_quality, :fastqc, f:f) %>
-	    </li>
-	 <% end %>
-	 </ul>
-      <% when :essential_genes %>
-	 <p>Genes commonly found in Bacteria and Archaea detected:</p>
-	 <pre class="result_dump"><%=
-	    File.read(res.file_path :report).
-	      gsub(/^! ([^:]+):/, "<b>\\1:</b>").html_safe
-	 %></pre>
-      <% when :ssu %>
-	 <% unless res.file_path(:gff).nil? %>
-	    <% gff = Zlib::GzipReader.open(res.file_path :gff){ |gz| gz.read } %>
-	    <p>
-	       MiGA <%=
-		  # This code is ugly, I should make it prettier... eventually
-		  s = gff.split(/\n/).select{ |l| l !~ /^#/ }.map{ |l| l.gsub(/.*;product=([^;]+).*/,"\\1")
-		     }.inject(Hash.new(0)){ |t,e| t[e] += 1 ; t}.map{|l,c| pluralize c, l}.to_sentence
-		  s.empty? ? "didn't detect SSU sequences." : "found #{s}."
-	       %>
-	    </p>
-	    <div class="panel panel-info">
-	       <div class="panel-heading">
-		  <%= link_to "Show GFF3 file <span class='caret'></span>".html_safe, "#job-res-ssu",
-		     { class: "btn btn-block", "data-toggle":"collapse"  } %>
-	       </div>
-	       <div class="panel-body collapse" id="job-res-ssu">
-		  <pre class="result_dump"><%= gff %></pre>
-	       </div>
-	    </div>
-	 <% end %>
-      <% when :mytaxa_scan %>
-	 <%
-	    f_path = obj.is_a?(MiGA::Dataset) ?
-	       reference_dataset_result_path(proj.id, obj.name, :mytaxa_scan, :report) :
-	       query_dataset_result_path(obj.id, :mytaxa_scan, :report)
-	    regions = res.data[:files][:region_ids].nil? ? 0 : File.readlines(res.file_path :region_ids).count
-	 %>
-	 <p>
-	    MyTaxa Scan detected <%= pluralize regions, "region" %> with unusual taxonomic
-	    distribution (<%= link_to "download PDF", f_path %>).
-	 </p>
-      <% when :distances %>
-	 <% db = {} %>
-	 <%
-	    if proj.miga.is_clade?
-               begin
-		  db[:ani] = SQLite3::Database.new(res.file_path :ani_db)
-		  val = db[:ani].execute("SELECT seq2, ani FROM ani ORDER BY ani DESC LIMIT 2")
-		  val_m = "ANI"
-	       rescue
-                  db[:ani] = nil
-               end
-            end
-            if db[:ani].nil?
-               db[:aai] = SQLite3::Database.new(res.file_path :aai_db)
-               val = db[:aai].execute("SELECT seq2, aai FROM aai ORDER BY aai DESC LIMIT 2")
-               val_m = "AAI"
-            end
-         %>
-	 <p>
-	    <% if val.second %>
-	       MiGA found that the closest relatives in the database were
-	       <%= link_to val.first.first.unmiga_name,
-	         reference_dataset_path(proj.id, val.first.first) %>
-	       (<%= val.first.second.round 2 %>% <%= val_m %>) and
-	       <%= link_to val.second.first.unmiga_name,
-	         reference_dataset_path(proj.id, val.second.first) %>
-               (<%= val.second.second.round 2 %>% <%= val_m %>).
-	    <% elsif val.first %>
-	       MiGA found that the only close relative in the database was
-	       <%= link_to val.first.first.unmiga_name,
-                 reference_dataset_path(proj.id, val.first.first) %>
-               (<%= val.first.second.round 2 %>% <%= val_m %>).
-	    <% else %>
-	       MiGA couldn't find any close relatives registered in the database.
-	    <% end %>
-	 </p>
-	 <% %w(ani aai).each do |metric| %>
-	    <% next if db[metric.to_sym].nil? %>
-	    <div class="panel panel-info">
-	       <div class="panel-heading">
-		  <%= link_to(
-                    "Show #{metric.upcase} table <span class='caret'></span>".html_safe,
-                    "#job-res-distances-#{metric}",
-		    { class: "btn btn-block", "data-toggle":"collapse" }) %>
-	       </div>
-	       <div class="collapse" id="job-res-distances-<%= metric %>">
-		  <table class="table">
-		     <thead><tr>
-			<th>Dataset</th>
-			<th><%= metric.upcase %> (%)</th>
-			<th>Standard deviation (<%= metric.upcase %>%)</th>
-			<th>Fraction of <%= metric=="ani" ? "genome" : "proteins" %> shared (%)</th>
-		     </tr></thead>
-		     <tbody>
-			<% db[metric.to_sym].execute("SELECT seq2, #{metric}, sd, 100.0*n/omega " +
-						      "FROM #{metric} ORDER BY #{metric} DESC").each do |row| %>
-			   <tr>
-			      <% row.each do |cell| %>
-				 <td><%= cell.is_a?(Float) ?
-				    "<span rel='tooltip' title='#{cell}'>#{cell.round(2)}</span>".html_safe :
-				    (cell.nil? or cell.empty?) ? "<span class='text-muted'>(estimated)</span>".html_safe :
-				    link_to(cell.unmiga_name, reference_dataset_path(proj.id, cell)) %></td>
-			      <% end %>
-			   </tr>
-			<% end %>
-		     </tbody>
-		  </table>
-	       </div>
-	    </div>
-	 <% end %>
-      <% # Project-wide results %>
-      <% when :haai_distances %>
-	 <p>Distances between sets of conserved proteins in Bacteria and Archaea, as a heuristic approximation to AAI.</p>
-	 <%= plot_distances(res.file_path(:hist), {},
-	       {height:300, title:"Distribution of hAAI values"}) unless
-	       res.data[:files][:hist].nil? %>
-      <% when :aai_distances %>
-	 <p>Average Amino acid Identity between genomes.</p>
-	 <%= plot_distances(res.file_path(:hist), {},
-	       {height:300, title:"Distribution of AAI values"}) unless
-	       res.data[:files][:hist].nil? %>
-      <% when :ani_distances %>
-	 <p>Average Nucleotide Identity between genomes with AAI &ge; 90%.</p>
-	 <%= plot_distances(res.file_path(:hist), {},
-	       {height:300, title:"Distribution of ANI values"}) unless
-	       res.data[:files][:hist].nil? %>
-      <% when :clade_finding %>
-	 <%= render partial: "shared/results/clade_tree",
-	   locals: { res: res, job: key, project: proj } %>
-	 <%= render partial: "shared/results/proposed_clades",
-	   locals: { res: res, job: key, project: proj } %>
-      <% when :subclades %>
-	 <%= render partial: "shared/results/clade_tree",
-	   locals: { res: res, job: key, project: proj } %>
-      <% when :ogs %>
-	 <% unless res.data[:files][:stats].nil? %>
-	    <% stats = JSON.parse(File.read(res.file_path :stats), symbolize_names:true) %>
-	    <% knames = {pan: "Pangenome", core: "Core genome (100%)", core90pc: "Core genome (90%)", core80pc: "Core genome (80%)",
-		  avg: "Average genome", avg_pan: "Average/Pangenome", core_avg: "Core/Average", core_pan: "Core/Pangenome",
-		  ogs_shannon: "Average Information Content"} %>
-	    <p>MiGA found <%= stats[:pan] %> groups of orthology in <%= stats[:genomes] %> genomes with the following statistics:</p>
-	    <ul class="list-group" style="margin:15px;">
-	       <% stats.each do |k,v| %>
-		  <li class="list-group-item row">
-		     <div class="col-md-6" style="text-align:right;"><b><%= (knames[k] || k.to_s.gsub("_","/")).capitalize %></b></div>
-		     <div class="col-md-6"><%= v %></div>
-		  </li>
-	       <% end %>
-	    </ul>
-	 <% end %>
+      if db[:ani].nil? and not db[:ani].nil?
+        db[:aai] = SQLite3::Database.new(res.file_path :aai_db)
+        val = db[:aai].
+            execute("SELECT seq2, aai FROM aai ORDER BY aai DESC LIMIT 2")
+        val_m = "AAI"
+      end
+    %>
+    <p>
+      <% if not val.nil? and val.second %>
+        MiGA found that the closest relatives in the database were
+        <%= link_to val.first.first.unmiga_name,
+               reference_dataset_path(proj.id, val.first.first) %>
+        (<%= val.first.second.round 2 %>% <%= val_m %>) and
+        <%= link_to val.second.first.unmiga_name,
+               reference_dataset_path(proj.id, val.second.first) %>
+        (<%= val.second.second.round 2 %>% <%= val_m %>).
+      <% elsif not val.nil? and val.first %>
+        MiGA found that the only close relative in the database was
+        <%= link_to val.first.first.unmiga_name,
+               reference_dataset_path(proj.id, val.first.first) %>
+        (<%= val.first.second.round 2 %>% <%= val_m %>).
+      <% else %>
+        MiGA couldn't find any close relatives registered in the database.
       <% end %>
-   </div>
+    </p>
+    <% %w(ani aai).each do |metric| %>
+      <% next if db[metric.to_sym].nil? %>
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <%= link_to "#job-res-distances-#{metric}",
+                  { class: "btn btn-block", "data-toggle":"collapse" } do %>
+            Show <%= metric.upcase %> table <span class=caret></span>
+          <% end %>
+        </div>
+        <div class="collapse" id="job-res-distances-<%= metric %>">
+          <table class="table">
+            <thead><tr>
+              <th>Dataset</th>
+              <th><%= metric.upcase %> (%)</th>
+              <th>Standard deviation (<%= metric.upcase %>%)</th>
+              <th>Fraction of <%= metric=="ani" ? "genome" : "proteins" %>
+                shared (%)</th>
+            </tr></thead>
+            <tbody>
+              <% db[metric.to_sym].
+                    execute("SELECT seq2, #{metric}, sd, 100.0*n/omega " +
+                      "FROM #{metric} ORDER BY #{metric} DESC").each do |row| %>
+                <tr>
+                <% row.each do |cell| %>
+                  <td>
+                  <% if cell.is_a?(Float) %>
+                    <span rel=tooltip title='<%= cell %>'><%=
+                      cell.round(2) %></span>
+                  <% elsif cell.nil? or cell.empty? %>
+                    <span class='text-muted'>(estimated)</span>
+                  <% else
+                    link_to cell.unmiga_name,
+                      reference_dataset_path(proj.id, cell)
+                  end %>
+                  </td>
+                <% end %>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% end %>
+  <% # Project-wide results %>
+  <% when :haai_distances %>
+    <p>Distances between sets of conserved proteins in Bacteria and Archaea, as
+      a heuristic approximation to AAI.</p>
+    <%= plot_distances(res.file_path(:hist), {},
+        {height:300, title:"Distribution of hAAI values"}) unless
+        res.data[:files][:hist].nil? %>
+  <% when :aai_distances %>
+    <p>Average Amino acid Identity between genomes.</p>
+    <%= plot_distances(res.file_path(:hist), {},
+        {height:300, title:"Distribution of AAI values"}) unless
+        res.data[:files][:hist].nil? %>
+  <% when :ani_distances %>
+    <p>Average Nucleotide Identity between genomes with AAI &ge; 90%.</p>
+    <%= plot_distances(res.file_path(:hist), {},
+        {height:300, title:"Distribution of ANI values"}) unless
+        res.data[:files][:hist].nil? %>
+  <% when :clade_finding %>
+    <%= render partial: "shared/results/clade_tree",
+         locals: { res: res, job: key, project: proj } %>
+    <%= render partial: "shared/results/proposed_clades",
+         locals: { res: res, job: key, project: proj } %>
+  <% when :subclades %>
+    <%= render partial: "shared/results/clade_tree",
+         locals: { res: res, job: key, project: proj } %>
+  <% when :ogs %>
+    <% unless res.data[:files][:stats].nil? %>
+      <% stats = JSON.parse(File.read(res.file_path :stats),
+          symbolize_names:true) %>
+      <% knames = {pan: "Pangenome", core: "Core genome (100%)",
+          core90pc: "Core genome (90%)", core80pc: "Core genome (80%)",
+          avg: "Average genome", avg_pan: "Average/Pangenome",
+          core_avg: "Core/Average", core_pan: "Core/Pangenome",
+          ogs_shannon: "Average Information Content"} %>
+      <p>MiGA found <%= stats[:pan] %> groups of orthology in
+        <%= stats[:genomes] %> genomes with the following statistics:</p>
+      <ul class="list-group" style="margin:15px;">
+        <% stats.each do |k,v| %>
+          <li class="list-group-item row">
+            <div class="col-md-6" style="text-align:right;"><b><%=
+              (knames[k] || k.to_s.gsub("_","/")).capitalize %></b></div>
+            <div class="col-md-6"><%= v %></div>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+</div>
 
-   <div class="result-footer">
-      <i class="glyphicon glyphicon-download" title="downloads"> </i>
-      <%=
-	 res.data[:files].keys.map do |k|
-	    f = res.file_path(k)
-	    next unless File.size? f
-	    link_to(k, obj.is_a?(Project) ?
-	       project_result_path(obj.id, key, k) :
-	       obj.is_a?(MiGA::Dataset) ?
-	       reference_dataset_result_path(proj.id, obj.name, key, k) :
-	       query_dataset_result_path(obj.id, key, k), {rel: "tooltip",
-	       title: Dir.exist?(f) ? "Folder" : number_to_human_size(File.size f)})
-	 end.compact.to_sentence(two_words_connector:" or ", last_word_connector:", or ").html_safe
-      %>
-      <div class="timestamp"><%= time_ago_in_words res.data[:created] %> ago</div>
-   </div>
+<div class="result-footer">
+  <i class="glyphicon glyphicon-download" title="downloads"> </i>
+  <%=
+    res.data[:files].keys.map do |k|
+      f = res.file_path(k)
+      next unless File.size? f
+      link_to(k, obj.is_a?(Project) ?
+        project_result_path(obj.id, key, k) :
+        obj.is_a?(MiGA::Dataset) ?
+        reference_dataset_result_path(proj.id, obj.name, key, k) :
+        query_dataset_result_path(obj.id, key, k), {rel: "tooltip",
+        title: Dir.exist?(f) ? "Folder" : number_to_human_size(File.size f)})
+    end.compact.
+      to_sentence(two_words_connector:" or ", last_word_connector:", or ").
+      html_safe
+  %>
+  <div class="timestamp"><%= time_ago_in_words res.data[:created] %> ago</div>
+</div>
+
 </div>
