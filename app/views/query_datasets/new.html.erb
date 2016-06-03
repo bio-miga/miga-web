@@ -1,41 +1,44 @@
 <%= provide(:title, "New query dataset") %>
 <h1>New query dataset</h1>
 <div class="row">
-   <div class="col-md-6 col-md-offset-3">
-      <div class="projects"><%= render @project %></div>
+  <div class="col-md-6 col-md-offset-3">
+    <div class="projects"><%= render @project %></div>
+    <hr/>
+    <%= form_for(@query_dataset, html: { multipart: true }) do |f| %>
+      <%= render "shared/error_messages", object: f.object %>
+         
+      <%= f.hidden_field :user_id, value: current_user.id %>
+      <%= f.hidden_field :project_id, value: @project.id %>
+         
+      <%= f.label :name %>
+      <%= f.text_field :name, class: "form-control" %>
+
+      <%= label_tag :type, "Type of dataset" %>
+      <%= select_tag(:type,
+        options_for_select(
+        MiGA::Dataset.KNOWN_TYPES.
+          map{ |k,t| [k.to_s.capitalize + ": " + t[:description], k]}),
+        class: "form-control") %>
+
+      <%= f.label :input_type, "Type of input" %>
+      <%= f.collection_select(:input_type,
+        [[:raw_reads, "Raw reads in FastQ format."],
+          [:trimmed_fasta, "Trimmed reads in FastA format."],
+          [:assembly, "Assembly in FastA format."]],
+        :first, :last, {selected: :assembly}, { class: "form-control" }) %>
+      <%= f.label :input_file, "Input file(s)" %>
+      <%= f.file_field :input_file, class: "form-control" %>
+      <%= f.file_field :input_file_2, class: "form-control" %>
+         
       <hr/>
-      <%= form_for(@query_dataset, html: { multipart: true }) do |f| %>
-	 <%= render "shared/error_messages", object: f.object %>
-	 
-	 <%= f.hidden_field :user_id, value: current_user.id %>
-	 <%= f.hidden_field :project_id, value: @project.id %>
-	 
-	 <%= f.label :name %>
-	 <%= f.text_field :name, class: "form-control" %>
+      <h1>Optional information</h1>
+      <%= label_tag :description, "Description" %>
+      <%= text_field_tag :description, "", class: "form-control" %>
 
-	 <%= label_tag :type, "Type of dataset" %>
-	 <%= select_tag(:type,
-	    options_for_select(
-	    MiGA::Dataset.KNOWN_TYPES.map{ |k,t| [k.to_s.capitalize + ": " + t[:description], k]}),
-	    class: "form-control") %>
+      <%= label_tag :comments, "Comments" %>
+      <%= text_area_tag :comments, "", class: "form-control" %>
 
-	 <%= f.label :input_type, "Type of input" %>
-	 <%= f.collection_select(:input_type,
-	    [[:raw_reads, "Raw reads in FastQ format."], [:assembly, "Assembly in FastA format."]],
-	    :first, :last, {selected: :assembly}, { class: "form-control" }) %>
-	 <%= f.label :input_file, "Input file(s)" %>
-	 <%= f.file_field :input_file, class: "form-control" %>
-	 <%= f.file_field :input_file_2, class: "form-control" %>
-	 
-	 <hr/>
-	 <h1>Optional information</h1>
-	 <%= label_tag :description, "Description" %>
-	 <%= text_field_tag :description, "", class: "form-control" %>
-
-	 <%= label_tag :comments, "Comments" %>
-	 <%= text_area_tag :comments, "", class: "form-control" %>
-
-	 <%= f.submit "Upload new dataset", class: "btn btn-primary" %>
-      <% end %>
-   </div>
+      <%= f.submit "Upload new dataset", class: "btn btn-primary" %>
+    <% end %>
+  </div>
 </div>
