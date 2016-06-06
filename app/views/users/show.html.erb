@@ -1,54 +1,59 @@
 <% provide(:title, @user.name) %>
 <% provide(:breadcrumb_1, link_to("Users", users_path)) %>
 <div class="row">
-   <aside class="col-md-4">
-      <section class="user_info">
-	 <h1>
-	    <%= gravatar_for @user %>
-	    <%= @user.name %>
-	 </h1>
-      </section>
-   </aside>
-   <% if current_user? @user %>
-      <div class="col-md-8 user-dashboard list-group">
-	 <h1><i class="glyphicon glyphicon-dashboard"> </i> Dashboard</h1>
+  <aside class="col-md-4">
+    <section class="user-info row">
+      <%= gravatar_for @user %>
+      <div class="user-name col-sm-6">
+        <h1><%= @user.name %></h1>
+      </h1>
+    </section>
+  </aside>
+  <% if current_user? @user %>
+    <div class="col-md-8 user-dashboard list-group">
+      <h1><i class="glyphicon glyphicon-dashboard"> </i> Dashboard</h1>
 
-	 <% if current_user.admin? %>
-	    <%= link_to new_project_path, class: "list-group-item list-group-item-info" do %>
-	       <h4><i class="glyphicon glyphicon-star"> </i> Create new project</h4>
-	       <p>As an admin, you can create new projects for different species.</p>
-	    <% end %>
+      <% if current_user.admin? %>
+        <%= link_to new_project_path,
+                class: "list-group-item list-group-item-info" do %>
+          <h4><i class="glyphicon glyphicon-star"> </i> Create new project</h4>
+          <p>As an admin, you can create new projects for different species.</p>
+        <% end %>
 
-	    <%= link_to users_path, class: "list-group-item list-group-item-info" do %>
-	       <h4><i class="glyphicon glyphicon-list"> </i> Registered users</h4>
-	       <p>Only admins can see all the users in the system.</p>
-	    <% end %>
+        <%= link_to users_path,
+                class: "list-group-item list-group-item-info" do %>
+          <h4><i class="glyphicon glyphicon-list"> </i> Registered users</h4>
+          <p>Only admins can see all the users in the system.</p>
+        <% end %>
 
-	    <%= link_to query_datasets_path(all:true), class: "list-group-item list-group-item-info" do %>
-	       <h4><i class="glyphicon glyphicon-list"> </i> All query datasets</h4>
-	       <p>Only admins can see all the query datasets registered in the system.</p>
-	    <% end %>
-	 <% end %>
+        <%= link_to query_datasets_path(all:true),
+                class: "list-group-item list-group-item-info" do %>
+          <h4><i class="glyphicon glyphicon-list"> </i> All query datasets</h4>
+          <p>Only admins can see all the query datasets registered in the
+            system.</p>
+        <% end %>
+      <% end %>
 
-	 <%= link_to query_datasets_path, class: "list-group-item" do %>
-	    <h4><i class="glyphicon glyphicon-list"> </i> Query datasets</h4>
-	    <p>You can upload new datasets to any available project.</p>
-	 <% end %>
+      <%= link_to query_datasets_path, class: "list-group-item" do %>
+        <h4><i class="glyphicon glyphicon-list"> </i> Query datasets</h4>
+        <p>You can upload new datasets to any available project.</p>
+      <% end %>
 
-	 <%= link_to projects_path, class: "list-group-item" do %>
-	    <h4><i class="glyphicon glyphicon-list"> </i> Available projects</h4>
-	    <p>Browse available projects, or ask the admin to create new projects.</p>
-	 <% end %>
-	 
-	 <%= link_to edit_user_path(current_user), class: "list-group-item" do %>
-	    <h4><i class="glyphicon glyphicon-cog"> </i> Edit profile</h4>
-	    <p>Change your personal information.</p>
-	 <% end %>
-	 
-	 <%= link_to logout_path, method: :delete, class: "list-group-item" do %>
-	    <h4><i class="glyphicon glyphicon-user"> </i> Log out</h4>
-	    <p>Au revoir!</p>
-	 <% end %>
-      </div>
-   <% end %>
+      <%= link_to projects_path, class: "list-group-item" do %>
+        <h4><i class="glyphicon glyphicon-list"> </i> Available projects</h4>
+        <p>Browse available projects, or ask the admin to create new
+          projects.</p>
+      <% end %>
+         
+      <%= link_to edit_user_path(current_user), class: "list-group-item" do %>
+        <h4><i class="glyphicon glyphicon-cog"> </i> Edit profile</h4>
+        <p>Change your personal information.</p>
+      <% end %>
+         
+      <%= link_to logout_path, method: :delete, class: "list-group-item" do %>
+        <h4><i class="glyphicon glyphicon-user"> </i> Log out</h4>
+        <p>Au revoir!</p>
+      <% end %>
+    </div>
+  <% end %>
 </div>

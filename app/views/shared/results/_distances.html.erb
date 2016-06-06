@@ -42,7 +42,8 @@
     MiGA couldn't find any close relatives registered in the database.
   <% end %>
 </p>
-<div class="panel panel-default" id=distances>
+<div class="panel-group" id=distances role=tablist
+      aria-multiselectable=true>
 <% %w[ani aai].each do |metric| %>
   <%
     next if db[metric.to_sym].nil?
@@ -52,46 +53,48 @@
             "ORDER BY #{metric} DESC", [dataset.name])
     next if db_qry.empty?
   %>
-  <div class=panel-heading role=tab id="<%= metric %>-h">
-    <h4 class=panel-title>
-      <a role=button data-toggle=collapse data-parent="#distances"
-            class=btn href="#<%= metric %>-b" aria-expanded=false
-            aria-controls="<%= metric %>-b">
-        <%= metric.upcase %> table
-      </a>
-    </h4>
-  </div>
-  <div id="<%= metric %>-b" class="panel-collapse collapse"
-        role=tabpanel aria-labelledby="<%= metric %>-h">
-    <div class=panel-body>
-      <table class=table>
-        <thead><tr>
-          <th>Dataset</th>
-          <th><%= metric.upcase %> (%)</th>
-          <th>Standard deviation (<%= metric.upcase %>%)</th>
-          <th>Fraction of <%= metric=="ani" ? "genome" : "proteins" %>
-            shared (%)</th>
-        </tr></thead>
-        <tbody>
-        <% db_qry.each do |row| %>
-          <tr>
-            <% row.each do |cell| %>
-              <td>
-              <% if cell.is_a?(Float) %>
-                <span rel=tooltip title="<%= cell %>"><%=
-                  cell.round(2) %></span>
-              <% elsif cell.nil? or cell.empty? %>
-                <span class=text-muted>(estimated)</span>
-              <% else %>
-                <%= link_to cell.unmiga_name,
-                  reference_dataset_path(project.id, cell) %>
+  <div class="panel panel-default">
+    <div class=panel-heading role=tab id="<%= metric %>-h">
+      <h4 class=panel-title>
+        <a role=button data-toggle=collapse data-parent="#distances"
+              class=btn href="#<%= metric %>-b" aria-expanded=false
+              aria-controls="<%= metric %>-b">
+          <%= metric.upcase %> table
+        </a>
+      </h4>
+    </div>
+    <div id="<%= metric %>-b" class="panel-collapse collapse"
+          role=tabpanel aria-labelledby="<%= metric %>-h">
+      <div class="panel-body table-responsive">
+        <table class="table table-hover">
+          <thead><tr>
+            <th>Dataset</th>
+            <th><%= metric.upcase %> (%)</th>
+            <th>Standard deviation (<%= metric.upcase %>%)</th>
+            <th>Fraction of <%= metric=="ani" ? "genome" : "proteins" %>
+              shared (%)</th>
+          </tr></thead>
+          <tbody>
+          <% db_qry.each do |row| %>
+            <tr>
+              <% row.each do |cell| %>
+                <td>
+                <% if cell.is_a?(Float) %>
+                  <span rel=tooltip title="<%= cell %>"><%=
+                    cell.round(2) %></span>
+                <% elsif cell.nil? or cell.empty? %>
+                  <span class=text-muted>(estimated)</span>
+                <% else %>
+                  <%= link_to cell.unmiga_name,
+                    reference_dataset_path(project.id, cell) %>
+                <% end %>
+                </td>
               <% end %>
-              </td>
+              </tr>
             <% end %>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 <% end %>

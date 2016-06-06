@@ -183,8 +183,13 @@ footer {
 /* sidebar */
 
 aside {
-  section.user_info, section.project_info {
+  section.user-info, section.project_info {
     margin-top: 20px;
+    .user-name {
+      position: absolute;
+      bottom: 5px;
+      left: 65px;
+    }
   }
   section {
     padding: 10px 0;
@@ -418,6 +423,8 @@ input {
     overflow: auto;
     word-wrap: normal;
     white-space: pre;
+    background: white;
+    border: none;
   }
   table {
     td, th {

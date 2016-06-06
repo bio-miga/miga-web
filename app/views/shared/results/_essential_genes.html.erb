@@ -1,0 +1,49 @@
+<p>Genes commonly found in Bacteria and Archaea detected:</p>
+<% unless res.file_path(:report).nil? %>
+  <div class="panel panel-default" id="essential_genes">
+    <div class="panel-collapse" role=tabpanel>
+      <div class="panel-body" style="padding-bottom:0;">
+      <%
+        has_details = false
+        File.open(res.file_path(:report), "r") do |fh|
+          fh.each_line do |ln|
+            if fh.lineno == 4
+              has_details = true
+      %>
+      </div>
+    </div>
+    <div id=essential_genes-b class="panel-collapse collapse" role=tabpanel
+          aria-labelledby=essential_genes-h>
+      <div class="panel-body" style="padding-top:0;">
+      <%    end %>
+        <%= "<br/>".html_safe unless [1,4].include? fh.lineno %>
+        <%  if has_details and ln =~ /^!   (\d+ )?([^:]+): (\S+: )?(.*)/ %>
+              <%
+              url = $2[0..3] == "TIGR" ?
+                "http://www.jcvi.org/cgi-bin/tigrfams/HmmReportPage.cgi?acc=" :
+                "http://pfam.xfam.org/family/"
+              %>
+              &nbsp;&nbsp;<b><%= $1 %><a target=_blank
+                href="<%= "#{url}#{$2}" %>"><%= $2 %></a>: <%= $3 %></b>
+                <%= $4 %>
+        <%  else %>
+             <%= ln.gsub(/^! ([^:]+):/, "<b>\\1:</b>").html_safe %>
+        <%  end
+          end
+        end
+      %></div>
+    </div>
+    <% if has_details %>
+    <div class=panel-heading role=tab id=essential_genes-h
+            style="margin-top:1em;">
+      <h4 class=panel-title>
+        <a role=button data-toggle=collapse data-parent="#essential_genes"
+              class=btn href="#essential_genes-b" aria-expanded=false
+              aria-controls=essential_genes-b>
+          Full report
+        </a>
+      </h4>
+    </div>
+    <% end %>
+  </div>
+<% end %>

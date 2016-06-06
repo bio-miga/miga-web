@@ -39,11 +39,8 @@
     <% end %>
     </ul>
   <% when :essential_genes %>
-    <p>Genes commonly found in Bacteria and Archaea detected:</p>
-    <pre class="result-dump"><%=
-      File.read(res.file_path :report).
-            gsub(/^! ([^:]+):/, "<b>\\1:</b>").html_safe
-    %></pre>
+    <%= render partial: "shared/results/essential_genes",
+         locals: { res: res, job: key, project: proj } %>
   <% when :ssu %>
     <%= render partial: "shared/results/ssu",
          locals: { res: res, job: key, project: proj } %>

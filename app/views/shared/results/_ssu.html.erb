@@ -23,20 +23,37 @@
       <% end %>
     <% end %>
     </p>
-    <div class="panel panel-default" id="ssu">
-      <div class="panel-heading" role="tab" id="ssu-h">
-        <h4 class="panel-title">
+    <div class="panel panel-default" id=ssu>
+      <div class=panel-heading role=tab id=ssu-h>
+        <h4 class=panel-title>
           <a role=button data-toggle=collapse data-parent="#ssu"
                 class=btn href="#ssu-b" aria-expanded=false
                 aria-controls=ssu-b>
-            GFF file (feature locations)
+            Feature locations
           </a>
         </h4>
       </div>
       <div id=ssu-b class="panel-collapse collapse"
             role=tabpanel aria-labelledby=ssu-h>
-        <div class=panel-body>
-          <pre class=result-dump><%= gff %></pre>
+        <div class="panel-body table-responsive">
+          <table class="table table-hover">
+            <thead><tr>
+              <th>Contig</th>
+              <th>Location</th>
+              <th>Product</th>
+            </tr></thead>
+            <tbody>
+            <% gff.each_line do |ln| %>
+              <% next if ln =~ /^#/ %>
+              <% row = ln.chomp.split(/\t/) %>
+              <tr>
+                <td><%= row.first %></td>
+                <td><%= "#{row[3]}-#{row[4]} (#{row[6]})" %></td>
+                <td><%= row[8].gsub(/.*product=/, "") %></td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
