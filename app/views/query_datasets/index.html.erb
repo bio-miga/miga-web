@@ -14,7 +14,6 @@
    </aside>
    <div class="col-md-8">
       <% if @query_datasets.any? %>
-	 <h3><%= pluralize(@query_datasets.count, "query dataset") %></h3>
 	 <%= will_paginate @query_datasets %>
 	 <ol class="query_datasets">
 	    <%= render @query_datasets %>

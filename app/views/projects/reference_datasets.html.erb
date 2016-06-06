@@ -9,8 +9,6 @@
   </aside>
   <div class="col-md-8">
     <% if @project.ref_datasets.any? %>
-      <h3><%= pluralize(@project.ref_datasets.count,
-        "reference datasets") %></h3>
       <%= will_paginate @datasets %>
       <ol class="datasets">
         <% @datasets.each do |dataset| %>
