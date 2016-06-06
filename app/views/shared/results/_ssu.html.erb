@@ -1,0 +1,44 @@
+<% unless res.file_path(:gff).nil? %>
+  <% gff = Zlib::GzipReader.open(res.file_path :gff){|gz| gz.read} %>
+  <%
+    s = gff.split(/\n/). # Each line
+        select{ |l| l !~ /^#/ }. # Ignore comments
+        map{ |l| l.gsub(/.*;product=([^;]+).*/,"\\1") }. # 16S/18S/&c
+        inject(Hash.new(0)){ |t,e| t[e] += 1 ; t }. # Count each
+        map{ |l,c| pluralize c, l }.to_sentence # Human-readable
+  %>
+  <% if s.empty? %>
+    <p>MiGA didn't detect SSU sequences.</p>
+  <% else %>
+    <p>
+    <%= form_tag("http://rdp.cme.msu.edu/classifier/classifierServlet",
+            method: "post", target: "_blank",
+            class: "form-inline-mixed") do %>
+      <% unless res.file_path(:longest_ssu_gene).nil? %>
+        <%= hidden_field_tag :sequence,
+          File.open(res.file_path(:longest_ssu_gene),"r"){ |f| f.read } %>
+        MiGA found <%= s %>.
+        <%= submit_tag("Classify with RDP",
+            class: "btn btn-default btn-sm") %>
+      <% end %>
+    <% end %>
+    </p>
+    <div class="panel panel-default" id="ssu">
+      <div class="panel-heading" role="tab" id="ssu-h">
+        <h4 class="panel-title">
+          <a role=button data-toggle=collapse data-parent="#ssu"
+                class=btn href="#ssu-b" aria-expanded=false
+                aria-controls=ssu-b>
+            GFF file (feature locations)
+          </a>
+        </h4>
+      </div>
+      <div id=ssu-b class="panel-collapse collapse"
+            role=tabpanel aria-labelledby=ssu-h>
+        <div class=panel-body>
+          <pre class=result-dump><%= gff %></pre>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

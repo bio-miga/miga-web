@@ -45,44 +45,8 @@
             gsub(/^! ([^:]+):/, "<b>\\1:</b>").html_safe
     %></pre>
   <% when :ssu %>
-    <% unless res.file_path(:gff).nil? %>
-      <% gff = Zlib::GzipReader.open(res.file_path :gff){|gz| gz.read} %>
-      <%
-        s = gff.split(/\n/). # Each line
-            select{ |l| l !~ /^#/ }. # Ignore comments
-            map{ |l| l.gsub(/.*;product=([^;]+).*/,"\\1") }. # 16S/18S/&c
-            inject(Hash.new(0)){ |t,e| t[e] += 1 ; t }. # Count each
-            map{ |l,c| pluralize c, l }.to_sentence # Human-readable
-      %>
-      <% if s.empty? %>
-        <p>MiGA didn't detect SSU sequences.</p>
-      <% else %>
-        <p>
-        <%= form_tag("http://rdp.cme.msu.edu/classifier/classifierServlet",
-                method: "post", target: "_blank",
-                class: "form-inline-mixed") do %>
-          <% unless res.file_path(:longest_ssu_gene).nil? %>
-            <%= hidden_field_tag :sequence,
-              File.open(res.file_path(:longest_ssu_gene),"r"){ |f| f.read } %>
-            MiGA found <%= s %>.
-            <%= submit_tag("Classify with RDP",
-                class: "btn btn-default btn-sm") %>
-          <% end %>
-        <% end %>
-        </p>
-        <div class="panel panel-info">
-          <div class="panel-heading">
-            <%= link_to "#job-res-ssu",
-                    { class: "btn btn-block", "data-toggle":"collapse"  } do %>
-              Show GFF3 file <span class=caret></span>
-            <% end %>
-          </div>
-          <div class="panel-body collapse" id="job-res-ssu">
-            <pre class="result-dump"><%= gff %></pre>
-          </div>
-        </div>
-      <% end %>
-    <% end %>
+    <%= render partial: "shared/results/ssu",
+         locals: { res: res, job: key, project: proj } %>
   <% when :mytaxa_scan %>
     <%
       f_path = obj.is_a?(MiGA::Dataset) ?
@@ -97,86 +61,8 @@
       taxonomic distribution (<%= link_to "download PDF", f_path %>).
     </p>
   <% when :distances %>
-    <% db = {} %>
-    <%
-      unless res.file_path(:ani_db).nil?
-        begin
-          db[:ani] = SQLite3::Database.new(res.file_path :ani_db)
-          val = db[:ani].
-              execute("SELECT seq2, ani FROM ani ORDER BY ani DESC LIMIT 2")
-          val_m = "ANI"
-        rescue
-          db[:ani] = nil
-        end
-      end
-      if val.nil? and not res.file_path(:aai_db).nil?
-        db[:aai] = SQLite3::Database.new(res.file_path :aai_db)
-        val = db[:aai].
-            execute("SELECT seq2, aai FROM aai ORDER BY aai DESC LIMIT 2")
-        val_m = "AAI"
-      end
-    %>
-    <p>
-      <% if not val.nil? and val.second %>
-        MiGA found that the closest relatives in the database were
-        <%= link_to val.first.first.unmiga_name,
-               reference_dataset_path(proj.id, val.first.first) %>
-        (<%= val.first.second.round 2 %>% <%= val_m %>) and
-        <%= link_to val.second.first.unmiga_name,
-               reference_dataset_path(proj.id, val.second.first) %>
-        (<%= val.second.second.round 2 %>% <%= val_m %>).
-      <% elsif not val.nil? and val.first %>
-        MiGA found that the only close relative in the database was
-        <%= link_to val.first.first.unmiga_name,
-               reference_dataset_path(proj.id, val.first.first) %>
-        (<%= val.first.second.round 2 %>% <%= val_m %>).
-      <% else %>
-        MiGA couldn't find any close relatives registered in the database.
-      <% end %>
-    </p>
-    <% %w(ani aai).each do |metric| %>
-      <% next if db[metric.to_sym].nil? %>
-      <div class="panel panel-info">
-        <div class="panel-heading">
-          <%= link_to "#job-res-distances-#{metric}",
-                  { class: "btn btn-block", "data-toggle":"collapse" } do %>
-            Show <%= metric.upcase %> table <span class=caret></span>
-          <% end %>
-        </div>
-        <div class="collapse" id="job-res-distances-<%= metric %>">
-          <table class="table">
-            <thead><tr>
-              <th>Dataset</th>
-              <th><%= metric.upcase %> (%)</th>
-              <th>Standard deviation (<%= metric.upcase %>%)</th>
-              <th>Fraction of <%= metric=="ani" ? "genome" : "proteins" %>
-                shared (%)</th>
-            </tr></thead>
-            <tbody>
-              <% db[metric.to_sym].
-                    execute("SELECT seq2, #{metric}, sd, 100.0*n/omega " +
-                      "FROM #{metric} ORDER BY #{metric} DESC").each do |row| %>
-                <tr>
-                <% row.each do |cell| %>
-                  <td>
-                  <% if cell.is_a?(Float) %>
-                    <span rel=tooltip title='<%= cell %>'><%=
-                      cell.round(2) %></span>
-                  <% elsif cell.nil? or cell.empty? %>
-                    <span class='text-muted'>(estimated)</span>
-                  <% else %>
-                    <%= link_to cell.unmiga_name,
-                      reference_dataset_path(proj.id, cell) %>
-                  <% end %>
-                  </td>
-                <% end %>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    <% end %>
+    <%= render partial: "shared/results/distances",
+         locals: { res: res, job: key, project: proj, dataset: obj } %>
   <% # Project-wide results %>
   <% when :haai_distances %>
     <p>Distances between sets of conserved proteins in Bacteria and Archaea, as

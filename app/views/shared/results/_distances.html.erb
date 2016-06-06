@@ -1,0 +1,98 @@
+<%
+  db = {}
+  val = []
+  unless res.file_path(:ani_db).nil?
+    begin
+      db[:ani] = SQLite3::Database.new(res.file_path :ani_db)
+      val = db[:ani].
+          execute("SELECT seq2, ani FROM ani WHERE seq2 != ? " +
+            "ORDER BY ani DESC LIMIT 2", [dataset.name])
+      val_m = "ANI"
+    rescue
+      db[:ani] = nil
+    end
+  end
+  begin
+    db[:aai] = SQLite3::Database.new(res.file_path :aai_db)
+  rescue
+    db[:aai] = nil
+  end
+  if val.empty? and not res.file_path(:aai_db).nil?
+    val = db[:aai].
+        execute("SELECT seq2, aai FROM aai WHERE seq2 != ? " +
+          "ORDER BY aai DESC LIMIT 2", [dataset.name])
+    val_m = "AAI"
+  end
+%>
+<p>
+  <% if not val.empty? and val.second %>
+    MiGA found that the closest relatives in the database were
+    <%= link_to val.first.first.unmiga_name,
+           reference_dataset_path(project.id, val.first.first) %>
+    (<%= val.first.second.round 2 %>% <%= val_m %>) and
+    <%= link_to val.second.first.unmiga_name,
+           reference_dataset_path(project.id, val.second.first) %>
+    (<%= val.second.second.round 2 %>% <%= val_m %>).
+  <% elsif not val.empty? and val.first %>
+    MiGA found that the only close relative in the database was
+    <%= link_to val.first.first.unmiga_name,
+           reference_dataset_path(project.id, val.first.first) %>
+    (<%= val.first.second.round 2 %>% <%= val_m %>).
+  <% else %>
+    MiGA couldn't find any close relatives registered in the database.
+  <% end %>
+</p>
+<div class="panel panel-default" id=distances>
+<% %w[ani aai].each do |metric| %>
+  <%
+    next if db[metric.to_sym].nil?
+    db_qry = db[metric.to_sym].
+          execute("SELECT seq2, #{metric}, sd, 100.0*n/omega " +
+            "FROM #{metric} WHERE seq2 != ? " +
+            "ORDER BY #{metric} DESC", [dataset.name])
+    next if db_qry.empty?
+  %>
+  <div class=panel-heading role=tab id="<%= metric %>-h">
+    <h4 class=panel-title>
+      <a role=button data-toggle=collapse data-parent="#distances"
+            class=btn href="#<%= metric %>-b" aria-expanded=false
+            aria-controls="<%= metric %>-b">
+        <%= metric.upcase %> table
+      </a>
+    </h4>
+  </div>
+  <div id="<%= metric %>-b" class="panel-collapse collapse"
+        role=tabpanel aria-labelledby="<%= metric %>-h">
+    <div class=panel-body>
+      <table class=table>
+        <thead><tr>
+          <th>Dataset</th>
+          <th><%= metric.upcase %> (%)</th>
+          <th>Standard deviation (<%= metric.upcase %>%)</th>
+          <th>Fraction of <%= metric=="ani" ? "genome" : "proteins" %>
+            shared (%)</th>
+        </tr></thead>
+        <tbody>
+        <% db_qry.each do |row| %>
+          <tr>
+            <% row.each do |cell| %>
+              <td>
+              <% if cell.is_a?(Float) %>
+                <span rel=tooltip title="<%= cell %>"><%=
+                  cell.round(2) %></span>
+              <% elsif cell.nil? or cell.empty? %>
+                <span class=text-muted>(estimated)</span>
+              <% else %>
+                <%= link_to cell.unmiga_name,
+                  reference_dataset_path(project.id, cell) %>
+              <% end %>
+              </td>
+            <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% end %>
+</div>
