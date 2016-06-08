@@ -21,23 +21,36 @@
         end if File.size?(med_file)
       %>
       <% unless lowest_med.nil? or lowest_med.empty? %>
+        <%
+          clade = lowest_med[3].gsub(/\.?\/miga-project\.sc/,"").gsub(/^-/,"")
+        %>
         <p>
           The best available classification so far is:
-          <%= lowest_med.join(" | ") %>.
+          <%= link_to "Clade #{clade}",
+                medoid_clade_path(obj.project.id, metric.upcase, clade)%>
+          (<%= metric.upcase %> to <%= link_to lowest_med[1],
+                reference_dataset_path(obj.project.id, lowest_med[1]) %>:
+                <%= lowest_med[2].to_f.round 2 %>%).
         </p>
       <% end %>
     <% end %>
-    <div class="panel panel-info">
-      <div class="panel-heading">
-        <%= link_to("#job-log-#{key}",
-          { class: "btn btn-block", "data-toggle":"collapse" }) do %>
-            Show partial <%= key_name %> log <span class='caret'></span>
-        <% end %>
+    <div class="panel panel-default" id=partial>
+      <div class=panel-heading role=tab id=partial-h>
+        <h4 class=panel-title>
+          <a role=button data-toggle=collapse data-parent="#partial"
+                class=btn href="#partial-b" aria-expanded=false
+                aria-controls=partial-b>
+            Partial <%= key_name %> log
+          </a>
+        </h4>
       </div>
-      <div class="panel-body collapse" id="job-log-<%= key %>">
-        <pre><%=
-          obj.job_log(key_name)
-        %></pre>
+      <div id=partial-b class="panel-collapse collapse"
+            role=tabpanel aria-labelledby=partial-h>
+        <div class="panel-body">
+          <pre><%=
+            obj.job_log(key_name)
+          %></pre>
+        </div>
       </div>
     </div>
   </div>
