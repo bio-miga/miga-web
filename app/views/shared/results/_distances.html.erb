@@ -54,14 +54,21 @@
   <h4>Taxonomic classification
   <%= info_msg "Taxonomic classification of query datasets" do %>
     <p>
-      The taxonomic classification of the query datasets is inferred by the
-      maximum Average Amino Acid Identity (AAI) found. The p-value is estimated
-      from the empirical distribution observed in all the reference genomes of
-      NCBI's RefSeq at each taxonomic level, and indicates the probability of a
-      different classification with the observed AAI. More formally, the p-value
-      indicates the probability of any two genomes not being classified in the
-      same taxon at that taxonomic rank, given that the AAI between them is
-      greater than or equal to the one observed.
+      The taxonomic classification of your dataset is inferred by the maximum
+      Average Amino Acid Identity (AAI) found against all the genomes in the
+      database. The p-value is estimated from the empirical distribution
+      observed in all the reference genomes of NCBI's RefSeq at each taxonomic 
+      level, and indicates the probability of a different classification with
+      the observed AAI.
+    </p><p>
+      More formally, the p-value indicates the probability of
+      any two genomes not being classified in the same taxon at that taxonomic
+      rank, given that the AAI between them is greater than or equal to the one
+      observed. For example, a p-value of 0.01 for a genus classification
+      indicates that only 1% of all the pairs of genomes in RefSeq with AAI
+      above the observed value are from different genera; therefore the query
+      dataset most likely belongs to the same genus as the closest relative in
+      the database.
     </p>
   <% end %></h4>
   <p><%= aai_intax(max_val, project.id, max_val_ds) %></p>
@@ -69,20 +76,24 @@
   <%= info_msg "Taxonomic novelty of query datasets" do %>
     <p>
       The taxonomic novelty of the query dataset is an analysis indicating the
-      taxonomic rank at which the query dataset represents a novel taxon with
-      respect to the database. Note that the database does not contain genomes
-      for all described species, and the query dataset may belong to a
-      previously described taxon not represented in the database.
-    </p>
-    <p>
+      taxonomic rank at which your dataset represents a novel taxon with respect
+      to the database. Note that the database does not contain genomes for all
+      described species, and the query dataset may belong to a previously
+      described taxon not represented in the database.
+    </p><p>
       The taxonomic novelty is determined by the maximum Average Amino Acid
-      Identity (AAI) found. The p-value is estimated from the empirical
-      distribution observed in all the reference genomes of NCBI's RefSeq at
-      each taxonomic level, and indicates the probability of the observed AAI
-      between genomes in the same taxon. More formally, the p-value indicates
-      the probability of any two genomes having an AAI lesser than or equal to
-      the one observed, given that they are classified in the same taxon at that
-      taxonomic rank.
+      Identity (AAI) found against the genomes in the database. The p-value is
+      estimated from the empirical distribution observed in all the reference
+      genomes of NCBI's RefSeq at each taxonomic level, and indicates the
+      probability of the observed AAI between genomes in the same taxon.
+    </p><p>
+      More formally, the p-value indicates the probability of any two genomes
+      having an AAI lesser than or equal to the one observed, given that they
+      are classified in the same taxon at that taxonomic rank. For example, a
+      p-value of 0.01 for a novel family indicates that only 1% of all the
+      pairs of genomes in RefSeq classified in the same family have an AAI below
+      the observed value; therefore the query dataset most likely belongs to a
+      family not represented in the database.
     </p>
   <% end %></h4>
   <p><%= aai_novel(max_val) %></p>
