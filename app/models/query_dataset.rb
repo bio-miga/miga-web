@@ -35,6 +35,9 @@ class QueryDataset < ActiveRecord::Base
     load_miga_dataset
     miga_obj
   end
+  
+  # Always returns +false+.
+  def is_ref? ; false ; end
 
   # Checks if it's ready
   def ready?

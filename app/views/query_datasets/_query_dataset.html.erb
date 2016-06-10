@@ -1,20 +1,22 @@
 <li id="query_dataset-<%= query_dataset.id %>">
-   <%= link_to query_dataset.project.code, query_dataset.project,
-      class: "label label-primary pull-left code",
-      style: "background:#{query_dataset.project.code_color};",
-      title: query_dataset.project.path_name %></a>
-   <span class="name">
-      <% if query_dataset.ready? %>
-	 <i class="glyphicon glyphicon-ok" rel="tooltip" title="ready"> </i>
-      <% else %>
-	 <i class="glyphicon glyphicon-time" rel="tooltip"
-	    title="running <%= query_dataset.miga.next_preprocessing %>"> </i>
-      <% end %>
-      <b><%= link_to query_dataset.name, query_dataset,
+  <%= link_to query_dataset.project.code, query_dataset.project,
+    class: "label label-primary pull-left code",
+    style: "background:#{query_dataset.project.code_color};",
+    title: query_dataset.project.path_name %></a>
+  <span class="name">
+    <% if query_dataset.complete_new %>
+      <i class="glyphicon glyphicon-record" rel="tooltip" title="ready"> </i>
+    <% elsif query_dataset.ready? %>
+      <i class="glyphicon glyphicon-ok-circle" rel="tooltip" title="ready"> </i>
+    <% else %>
+      <i class="glyphicon glyphicon-time" rel="tooltip"
+        title="running <%= query_dataset.miga.next_preprocessing %>"> </i>
+    <% end %>
+    <b><%= link_to query_dataset.name, query_dataset,
         rel:"tooltip", title:query_dataset.miga.metadata[:description] %></b>
-   </span>
-   <span class="timestamp">
-      Created <%= time_ago_in_words(query_dataset.created_at) %> ago by
-      <%= link_to query_dataset.user.name, query_dataset.user %>.
-   </span>
+  </span>
+  <span class="timestamp">
+    Created <%= time_ago_in_words(query_dataset.created_at) %> ago by
+    <%= link_to query_dataset.user.name, query_dataset.user %>.
+  </span>
 </li>
