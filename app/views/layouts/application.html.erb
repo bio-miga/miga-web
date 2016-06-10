@@ -18,6 +18,7 @@
       <%= yield %>
       <div class="push"></div>
    </div>
+   <%= info_msg_content %>
    <%= render 'layouts/footer' %>
    <%= debug(params) if Rails.env.development? %>
    <script>

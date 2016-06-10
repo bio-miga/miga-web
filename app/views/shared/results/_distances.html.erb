@@ -51,9 +51,40 @@
   <% end %>
 </p>
 <% unless dataset.is_ref? or max_val_ds.nil? or project.miga.is_clade? %>
-  <h4>Taxonomic classification</h4>
+  <h4>Taxonomic classification
+  <%= info_msg "Taxonomic classification of query datasets" do %>
+    <p>
+      The taxonomic classification of the query datasets is inferred by the
+      maximum Average Amino Acid Identity (AAI) found. The p-value is estimated
+      from the empirical distribution observed in all the reference genomes of
+      NCBI's RefSeq at each taxonomic level, and indicates the probability of a
+      different classification with the observed AAI. More formally, the p-value
+      indicates the probability of any two genomes not being classified in the
+      same taxon at that taxonomic rank, given that the AAI between them is
+      greater than or equal to the one observed.
+    </p>
+  <% end %></h4>
   <p><%= aai_intax(max_val, project.id, max_val_ds) %></p>
-  <h4>Taxonomic novelty</h4>
+  <h4>Taxonomic novelty
+  <%= info_msg "Taxonomic novelty of query datasets" do %>
+    <p>
+      The taxonomic novelty of the query dataset is an analysis indicating the
+      taxonomic rank at which the query dataset represents a novel taxon with
+      respect to the database. Note that the database does not contain genomes
+      for all described species, and the query dataset may belong to a
+      previously described taxon not represented in the database.
+    </p>
+    <p>
+      The taxonomic novelty is determined by the maximum Average Amino Acid
+      Identity (AAI) found. The p-value is estimated from the empirical
+      distribution observed in all the reference genomes of NCBI's RefSeq at
+      each taxonomic level, and indicates the probability of the observed AAI
+      between genomes in the same taxon. More formally, the p-value indicates
+      the probability of any two genomes having an AAI lesser than or equal to
+      the one observed, given that they are classified in the same taxon at that
+      taxonomic rank.
+    </p>
+  <% end %></h4>
   <p><%= aai_novel(max_val) %></p>
 <% end %>
 <div class="panel-group" id=distances role=tablist

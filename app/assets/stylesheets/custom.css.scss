@@ -87,6 +87,11 @@ p {
   line-height: 1.7em;
 }
 
+/* Info messages */
+.info-msg-button {
+  cursor: pointer;
+}
+
 /* header */
 
 #logo {
@@ -305,10 +310,10 @@ input {
   .path {
     font-weight: bolder;
     .glyphicon-ok-sign {
-      color: #5cb85c;
+      color: $brand-success;
     }
     .glyphicon-remove-sign {
-      color: #f0ad4e;
+      color: $brand-warning;
     }
   }
   .timestamp {
@@ -368,11 +373,14 @@ input {
     border-top: 1px solid #e8e8e8;
   }
   .name {
-    .glyphicon-ok {
-      color: #5cb85c;
+    .glyphicon-record {
+      color: $brand-info;
+    }
+    .glyphicon-ok-circle {
+      color: $brand-success;
     }
     .glyphicon-time {
-      color: #5bc0de;
+      color: $brand-info;
     }
   }
   .code {
