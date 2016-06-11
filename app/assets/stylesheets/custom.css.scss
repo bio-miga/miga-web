@@ -126,15 +126,15 @@ header {
   min-height: 100%;
   height: auto !important;
   height: 100%;
-  margin: 0 auto -5em;
+  margin: 0 auto -5.5em;
 }
 
 .push {
-  height: 5em;
+  height: 5.5em;
 }
 
-footer {
-  height: 15em;
+.footer {
+  min-height: 15em;
   margin-top: 45px;
   padding: 5px 45px;
   border-top: 1px solid $gray-medium-light;
@@ -146,12 +146,6 @@ footer {
       color: #78B142;
     }
   }
-  small {
-    img {
-      float: right;
-    }
-    text-align: right;
-  }
   ul {
     float: left;
     list-style: none;
@@ -159,6 +153,15 @@ footer {
       float: right;
       margin-right: 15px;
     }
+  }
+  .right-col {
+    padding-right: 4em;
+    img {
+      margin-right: -1.5em;
+    }
+  }
+  .left-col {
+    padding-left: 4em;
   }
 }
 

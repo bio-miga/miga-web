@@ -15,7 +15,7 @@ module QueryDatasetsHelper
         o += "<b>#{MiGA::Taxonomy.LONG_RANKS[v.first]}</b> " +
           "<em>#{tax[v.first].unmiga_name}</em>"
       end
-      o += " (p-value: #{v.second.round 2})"
+      o += " (p-value: #{"%.2g" % v.second})"
       phrases << o
     end
     if phrases.empty?
@@ -33,7 +33,7 @@ module QueryDatasetsHelper
     res.each do |k,v|
       phrases << "" + k.to_s.unmiga_name +
         " belongs to a <b>#{MiGA::Taxonomy.LONG_RANKS[v.first]}</b> not " +
-        "represented in the database (p-value: #{v.second.round 2}), " +
+        "represented in the database (p-value: #{"%.2g" % v.second}), " +
         "highest taxonomic rank with p-value &le; #{thr[k]}"
     end
     if phrases.empty?
