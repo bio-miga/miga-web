@@ -22,13 +22,8 @@
             </li>
           <% end %>
           <li>
-            <%= link_to current_user do %>
-              <%= gravatar_for(current_user, size:20) %>
-              <%= current_user.name %>
-            <% end %>
-          </li>
-          <li>
             <a class=dropdown-toggle data-toggle=dropdown type=button>
+              <%= gravatar_for(current_user, size:20) %>
               <span class=caret></span>
             </a>
             <ul class=dropdown-menu role=menu aria-labelledby=dropdownMenu>

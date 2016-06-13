@@ -31,8 +31,9 @@ module QueryDatasetsHelper
     thr = {most_likely:0.01, probably:0.1, possibly_even:0.5}
     phrases = []
     res.each do |k,v|
+      rank = MiGA::Taxonomy.LONG_RANKS[v.first]
       phrases << "" + k.to_s.unmiga_name +
-        " belongs to a <b>#{MiGA::Taxonomy.LONG_RANKS[v.first]}</b> not " +
+        " belongs to #{rank[0]=="o" ? "an" : "a"} <b>#{rank}</b> not " +
         "represented in the database (p-value: #{"%.2g" % v.second}), " +
         "highest taxonomic rank with p-value &le; #{thr[k]}"
     end

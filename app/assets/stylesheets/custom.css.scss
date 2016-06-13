@@ -1,9 +1,13 @@
 @import "bootstrap-sprockets";
 @import "bootstrap";
+@import url(http://fonts.googleapis.com/css?family=PT+Sans+Caption:400,700);
+@import url(http://fonts.googleapis.com/css?family=Lato:400,700);
+@import url(http://fonts.googleapis.com/css?family=Wire+One);
 
 /* mixins, variables, etc. */
 
 $gray-medium-light: #eaeaea;
+
 
 @mixin box_sizing {
   -moz-box-sizing:    border-box;
@@ -17,8 +21,8 @@ $gray-medium-light: #eaeaea;
   margin-top: 0px;
   font-size: 250%;
   padding: 10px 10px 10px 15px;
-  font-weight: lighter !important;
-  font-family: 'Wire One';
+  font-weight: bold !important;
+  font-family: 'Wire One', condensed;
   width: 50px;
 }
 
@@ -34,6 +38,7 @@ html {
 }
 
 body {
+  font-family: "Lato", sans-serif;
   padding-top: 60px;
   overflow: auto;
   height: 100%;
@@ -62,8 +67,15 @@ textarea {
 
 /* typography */
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6,
+      .h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: "PT Sans Caption", sans-serif;
   line-height: 1;
+  font-weight: 700;
+}
+
+nav {
+  font-family: "PT Sans Caption", sans-serif;
 }
 
 h1 {
@@ -99,7 +111,6 @@ p {
   margin-right: 10px;
   font-size: 1.7em;
   color: #bbb;
-  text-transform: uppercase;
   letter-spacing: -1px;
   padding-top: 9px;
   font-weight: bold;
@@ -241,6 +252,10 @@ input, textarea, select, .uneditable-input {
 
 input {
   height: auto !important;
+}
+
+.help-block {
+  margin-top: -15px;
 }
 
 #error_explanation {

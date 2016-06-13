@@ -12,6 +12,8 @@
          
       <%= f.label :name %>
       <%= f.text_field :name, class: "form-control" %>
+      <p class=help-block>Dataset names can only contain alphanumerics and
+        underscores.</p>
 
       <%= label_tag :type, "Type of dataset" %>
       <%= select_tag(:type,
