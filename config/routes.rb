@@ -29,6 +29,9 @@ Rails.application.routes.draw do
   # Medoid clusters
   get "medoid_clade/:project_id/:metric/:clade"    => "projects#medoid_clade", as: :medoid_clade
   get "medoid_clade/:project_id/:metric/:clade/as" => "projects#medoid_clade_as", as: :medoid_clade_as
+  # RDP Classifier
+  get "rdp_classify/:project_id/:ds_name"          => "projects#rdp_classify", as: :rdp_classify
+  get "rdp_classify/:project_id/:ds_name/as"       => "projects#rdp_classify_as", as: :rdp_classify_as
   # Full resources
   resources :users
   resources :account_activations, only: [:edit]

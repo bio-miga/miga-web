@@ -1,7 +1,7 @@
 class ProjectsController < ApplicationController
   before_action :logged_in_user, only: [:new, :create, :destroy, :show, :result,
     :reference_datasets, :show_dataset, :reference_dataset_result,
-    :medoid_clade]
+    :medoid_clade, :medoid_clade_as, :rdp_classify, :rdp_classify_as]
   
   before_action :admin_user, only: [:new, :create, :destroy, :new_ncbi_download,
     :create_ncbi_download, :start_daemon, :stop_daemon]
@@ -54,6 +54,22 @@ class ProjectsController < ApplicationController
       locals: { project: @project, result: @result, metric: @metric,
         target: @clade, root: File.expand_path(@clade_miga, @result.dir),
 	root_name: @clade },
+      layout: false
+  end
+
+  # Loads an RDP classification for in-page display.
+  def rdp_classify
+    @project = Project.find(params[:project_id])
+    redirect_to root_url if @project.miga.nil?
+    @ds_name = params[:ds_name]
+    @result = @project.rdp_classify(@ds_name)
+  end
+  
+  # Loads an RDP classification for asynchronous display.
+  def rdp_classify_as
+    rdp_classify
+    render partial: "rdp_classify",
+      locals: { project: @project, ds_name: @ds_name, result: @result },
       layout: false
   end
   

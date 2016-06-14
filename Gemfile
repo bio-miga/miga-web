@@ -33,6 +33,8 @@ gem 'spawnling', '~> 2.1'
 gem 'chartkick', '~> 1.4'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
+# To contact RDP via SOAP (the REST client is heavier on RDP's servers)
+gem 'savon', '~> 2.11'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'

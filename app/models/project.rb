@@ -93,6 +93,22 @@ class Project < ActiveRecord::Base
       true
    end
 
+  # Returns the RDP classification of dataset with name +ds_name+ using RDP
+  # SOAP services.
+  def rdp_classify(ds_name)
+    ds_miga = miga.dataset(ds_name)
+    return if ds_miga.nil?
+    res = ds_miga.result(:ssu)
+    return if res.nil?
+    file = res.file_path(:all_ssu_genes)
+    file = res.file_path(:longest_ssu_gene) if file.nil?
+    return if file.nil?
+    seq = (file =~ /\.gz$/ ? Zlib::GzipReader : File).open(file).read
+    wsdl = "http://rdp.cme.msu.edu:80/services/classifier?wsdl"
+    client = Savon.client(wsdl: wsdl)
+    client.call(:classifier, message: seq)
+  end
+
    private
 
       def full_path

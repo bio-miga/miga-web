@@ -1,5 +1,13 @@
 module ApplicationHelper
-  def info_msg(title="")
+  def info_msg(title="", &blk)
+    info_msg_id = info_modal(title, &blk)
+    content_tag(:sup, "class"=>"info-msg-button") do
+      content_tag(:i, " ","class"=>"glyphicon glyphicon-info-sign text-info",
+            "data-toggle"=>"modal","data-target"=>info_msg_id)
+    end
+  end
+
+  def info_modal(title="")
     @info_msg ||= []
     info_msg_id = @info_msg.size
     @info_msg << content_tag(:div, "class"=>"modal fade",
@@ -21,10 +29,7 @@ module ApplicationHelper
         end
       end
     end
-    content_tag(:sup, "class"=>"info-msg-button") do
-      content_tag(:i, " ","class"=>"glyphicon glyphicon-info-sign text-info",
-            "data-toggle"=>"modal","data-target"=>"#info-msg-#{info_msg_id}")
-    end
+    "info-msg-#{info_msg_id}"
   end
 
   def info_msg_content
