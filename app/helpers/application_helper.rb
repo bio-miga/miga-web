@@ -3,7 +3,7 @@ module ApplicationHelper
     info_msg_id = info_modal(title, &blk)
     content_tag(:sup, "class"=>"info-msg-button") do
       content_tag(:i, " ","class"=>"glyphicon glyphicon-info-sign text-info",
-            "data-toggle"=>"modal","data-target"=>info_msg_id)
+            "data-toggle"=>"modal","data-target"=>"##{info_msg_id}")
     end
   end
 
