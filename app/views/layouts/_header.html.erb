@@ -10,7 +10,6 @@
       </div>
       <ul class="nav navbar-nav navbar-right">
         <li><%= link_to "Home", root_path %></li>
-        <li><%= link_to "Help", help_path %></li>
         <li><%= link_to "Projects", projects_path %></li>
         <% if logged_in? %>
           <% new_ds = QueryDataset.complete_new_by_user(current_user).count %>

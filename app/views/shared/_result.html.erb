@@ -43,7 +43,7 @@
          locals: { res: res, job: key, project: proj } %>
   <% when :ssu %>
     <%= render partial: "shared/results/ssu",
-         locals: { res: res, job: key, project: proj } %>
+         locals: { res: res, job: key, project: proj, obj: obj } %>
   <% when :mytaxa_scan %>
     <%
       f_path = obj.is_a?(MiGA::Dataset) ?
@@ -62,8 +62,8 @@
          locals: { res: res, job: key, project: proj, dataset: obj } %>
   <% # Project-wide results %>
   <% when :haai_distances %>
-    <p>Distances between sets of conserved proteins in Bacteria and Archaea, as
-      a heuristic approximation to AAI.</p>
+    <p>Average Identity between sets of conserved proteins in Bacteria and
+      Archaea, as a heuristic approximation to AAI.</p>
     <%= plot_distances(res.file_path(:hist), {},
         {height:300, title:"Distribution of hAAI values"}) unless
         res.data[:files][:hist].nil? %>

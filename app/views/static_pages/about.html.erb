@@ -1,5 +1,54 @@
 <%= provide(:title, "About") %>
-<div class='container text-center jumbotron'>
-   <h1>About MiGA Clades</h1>
-   <h2>Developed and maintained by Luis M. Rodriguez-R.</h2>
+<div class="container text-center jumbotron">
+  <h1>About MiGA Web</h1>
+  <h2>Web interface of MiGA, the Microbial Genomes Atlas.</h2>
 </div>
+
+<h1>Beta preview</h1>
+<p>
+  MiGA and the MiGA Web interface are currently under active development and
+  the interfaces and components can be modified without notice. Backward
+  compatibility is preferred in any changes, but cannot be ensure in the present
+  stage of development.
+</p>
+<br/>
+
+<h1>Citation</h1>
+<p>If you use MiGA in your research, please cite:</p>
+<blockquote><%= MiGA::CITATION %></blockquote>
+<br/>
+
+<h1>Behind MiGA</h1>
+<p>
+  MiGA web is developed and maintained by <%= link_to "Luis M. Rodriguez-R",
+  "http://lmrodriguezr.github.io/", target:"_blank" %>. The MiGA web codebase
+  is <%= link_to "freely available", "https://github.com/bio-miga/miga-web",
+  target:"_blank" %> under the terms of the terms of the
+  <%= link_to "Artistic License 2.0",
+  "https://github.com/bio-miga/miga-web/blob/master/LICENSE", target:"_blank"
+  %>.
+</p>
+<p>
+  MiGA is the result of a collaboration between the <%= link_to "Kostas Lab",
+  "http://enve-omics.gatech.edu/", target: "_blank" %> (<%=
+  link_to "Georgia Institute of Technology", "http://www.gatech.edu/",
+  target: "_blank" %>) and the <%= link_to "RDP team",
+  "http://rdp.cme.msu.edu/", target: "_blank" %> (<%=
+  link_to "Center for Microbial Ecology", "http://cme.msu.edu/",
+  target: "_blank" %>, <%= link_to "Michigan State University",
+  "https://msu.edu/", target: "_blank" %>). The MiGA project is funded by the
+  <%= link_to "US National Science Foundation", "http://nsf.gov/",
+  target: "_blank" %> (<%= link_to "Award #1356288",
+  "http://nsf.gov/awardsearch/showAward?AWD_ID=1356288", target: "_blank" %>).
+</p>
+<br/>
+
+<h1>Getting MiGA Web</h1>
+<p>
+  If you would like to host your own MiGA web server for your dedicated
+  projects, please visit the <%= link_to "GitHub repository",
+  "https://github.com/bio-miga/miga-web", target:"_blank" %> and the
+  <%= link_to "MiGA manual", "https://miga.gitbooks.io/miga/content/",
+  target: "_blank" %>.
+</p>
+<br/>
