@@ -14,14 +14,14 @@
   end
   begin
     db[:aai] = SQLite3::Database.new(res.file_path :aai_db)
+    if val.empty?
+      val = db[:aai].
+          execute("SELECT seq2, aai FROM aai WHERE seq2 != ? " +
+            "ORDER BY aai DESC LIMIT 2", [dataset.name])
+      val_m = "AAI"
+    end
   rescue
     db[:aai] = nil
-  end
-  if val.empty? and not res.file_path(:aai_db).nil?
-    val = db[:aai].
-        execute("SELECT seq2, aai FROM aai WHERE seq2 != ? " +
-          "ORDER BY aai DESC LIMIT 2", [dataset.name])
-    val_m = "AAI"
   end
 %>
 <p>

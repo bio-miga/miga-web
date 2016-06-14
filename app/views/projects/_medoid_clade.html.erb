@@ -7,18 +7,19 @@
     <% i = 0 %>
     <% f.each_line do |ln| %>
       <% i += 1 %>
+      <% sc_name = "#{root_name}#{i}" %>
       <% ln.chomp! %>
       <li class="list-group-item">
-        <%= link_to(
-	  ("<i class='glyphicon glyphicon-tree-deciduous'> </i> " +
-	    "#{metric} clade #{root_name}#{i}").html_safe,
-	  medoid_clade_url(project.id, metric, "#{root_name}#{i}"),
-	  :id => "link-#{metric}-#{root_name}#{i}",
-	  :remote => true, :"data-target" => "##{metric}-#{root_name}#{i}",
-	  :"data-url" => medoid_clade_as_url(project.id, metric,
-	    "#{root_name}#{i}")) %>
+        <%= link_to(medoid_clade_url(project.id, metric, sc_name),
+              :id => "link-#{metric}-#{root_name}#{i}",
+              :remote => true, :"data-target" => "##{metric}-#{sc_name}",
+              :"data-url" => medoid_clade_as_url(project.id,
+                  metric, sc_name)) do %>
+          <i class='glyphicon glyphicon-tree-deciduous'> </i>
+          <%= metric %> clade <%= sc_name %>
+        <% end %>
         <script>
-          $('#link-<%= "#{metric}-#{root_name}#{i}" %>').click(function(event) {
+          $('#link-<%= "#{metric}-#{sc_name}" %>').click(function(event) {
             var t = $($(this).data("target"));
             if(t.data('loaded')){
               t.toggle();
