@@ -8,7 +8,7 @@ class ProjectsReferenceDatasetsTest < ActionDispatch::IntegrationTest
     FileUtils.touch("#{ENV["MIGA_HOME"]}/.miga_rc")
     FileUtils.touch("#{ENV["MIGA_HOME"]}/.miga_daemon.json")
     # Setup Web
-    ENV["MIGA_PROJECTS"] = Rails.root.join("tmp").to_s
+    Settings.miga_projects = Rails.root.join("tmp").to_s
     @admin = users(:michael)
     @user = users(:archer)
     @project = @admin.projects.create(path: "foo_bar")

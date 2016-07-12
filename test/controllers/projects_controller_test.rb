@@ -8,7 +8,7 @@ class ProjectsControllerTest < ActionController::TestCase
     FileUtils.touch("#{ENV["MIGA_HOME"]}/.miga_rc")
     FileUtils.touch("#{ENV["MIGA_HOME"]}/.miga_daemon.json")
     # Setup Web
-    ENV["MIGA_PROJECTS"] = $tmp
+    Settings.miga_projects = $tmp
     @admin = users(:michael)
     @user = users(:archer)
     @project = @admin.projects.create(path: "foo_bar")

@@ -42,13 +42,16 @@ bundle exec rake db:migrate
 bundle exec rake assets:precompile
 ```
 
-Next, launch the server. We have had a great experience with Puma, so that's
-what we use. You only need to specify where the data is:
+Next, configure the server. Simply copy `config/settings.yml` to
+`config/settings.local.yml` and modify the necessary variables. If you modified
+the data location above (folder to host your projects), make sure to set the
+correct path for `miga_projects`.
+
+Finally, launch the server. We have had a great experience with Puma, so that's
+what we use.
 
 ```bash
-export MIGA_PROJECTS=$HOME/miga-data
-export SECRET_KEY_BASE=`rake secret`
-export MAIL_HOST=localhost:3000
+export SECRET_KEY_BASE=`bundle exec rake secret`
 rails s -e production Puma
 ```
 
@@ -59,12 +62,8 @@ For example, this is how we launch our own
 [MiGA Web](http://enve-omics.ce.gatech.edu:3000):
 
 ```bash
-HOST_URL=enve-omics.ce.gatech.edu
-HOST_PORT=3000
-export MIGA_PROJECTS=$HOME/miga-data
-export SECRET_KEY_BASE=`rake secret`
-export MAIL_HOST=$HOST_URL:$HOST_PORT
-rails s -e production -b $HOST_URL -p $HOST_PORT Puma
+export SECRET_KEY_BASE=`bundle exec rake secret`
+rails s -e production -b enve-omics.ce.gatech.edu -p 3000 Puma
 ```
 
 ## Create admin users

@@ -24,3 +24,9 @@
 
 Gemfile.lock
 *.swp
+
+# Ignore local settings
+/config/settings.local.yml
+
+# Ignore local home page contents
+/app/views/static_pages/_home_*.html.erb

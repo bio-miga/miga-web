@@ -12,7 +12,7 @@ class Project < ActiveRecord::Base
    default_scope -> { order(path: :asc) }
 
    def path_name
-      path.gsub(/_/," ").capitalize
+      path.tr("_"," ")
    end
 
    def miga
@@ -36,7 +36,9 @@ class Project < ActiveRecord::Base
    end
 
    def code
-      @code ||= path.gsub(/^(.)(?:.*_)?(.).*/,"\\1\\2")
+      @code ||= path =~ /.[A-Z]/ ?
+        path.gsub(/^(.)(?:[^A-Z]*)([A-Z]).*/,"\\1\\2") :
+        path.gsub(/^(.)(?:[^_]*_)?(.).*/,"\\1\\2")
    end
 
    def code_base_color
@@ -112,7 +114,7 @@ class Project < ActiveRecord::Base
    private
 
       def full_path
-	 File.expand_path(path, ENV["MIGA_PROJECTS"])
+	 File.expand_path(path, Settings.miga_projects)
       end
 
       def create_miga_project
