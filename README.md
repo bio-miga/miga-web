@@ -63,8 +63,8 @@ rails s -e production Puma
 
 Now you can visit your MiGA Web interface at
 [localhost:3000](http://localhost:3000/). To use a world-accessible address,
-simply set the mail host to that address, and pass it to rails using -b and -p.
-For example, this is how we launch our own
+simply set `mail_host` to that address in `config/settings.local.yml`, and pass
+it to rails using -b and -p. For example, this is how we launch our own
 [MiGA Web](http://enve-omics.ce.gatech.edu:3000):
 
 ```bash
