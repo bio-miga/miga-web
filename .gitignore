@@ -29,4 +29,5 @@ Gemfile.lock
 /config/settings.local.yml
 
 # Ignore local home page contents
-/app/views/static_pages/_home_*.html.erb
+/app/views/static_pages/_home_*
+!/app/views/static_pages/_home_default.html.erb

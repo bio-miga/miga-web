@@ -1,0 +1,19 @@
+<div class="center jumbotron">
+  <h1>Welcome to MiGA</h1>
+  <h2>Explore the Microbial Genomes Atlas for select species.</h2>
+  <div class="btn-group" role="group" aria-label="home-actions">
+    <% if logged_in? %>
+      <%= link_to pluralize(Project.all.count, "project"), projects_path,
+            class: "btn btn-lg btn-default", type: "button" %>
+      <% if current_user.admin? %>
+        <%= link_to "Create project", new_project_path,
+              class: "btn btn-lg btn-primary", type: "button" %>
+      <% end %>
+    <% else %>
+      <%= link_to "Create user", signup_path,
+            class: "btn btn-lg btn-primary", type: "button" %>
+      <%= link_to "Log in", login_path,
+            class: "btn btn-lg btn-default", type: "button" %>
+    <% end %>
+  </div>
+</div>
