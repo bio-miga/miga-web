@@ -28,7 +28,7 @@
           The best available classification so far is:
           <%= link_to "Clade #{clade}",
                 medoid_clade_path(obj.project.id, metric.upcase, clade)%>
-          (<%= metric.upcase %> to <%= link_to lowest_med[1],
+          (<%= metric.upcase %> to <%= link_to lowest_med[1].unmiga_name,
                 reference_dataset_path(obj.project.id, lowest_med[1]) %>:
                 <%= lowest_med[2].to_f.round 2 %>%).
         </p>

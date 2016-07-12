@@ -311,7 +311,11 @@ input {
 }
 
 /* Projects */
-
+.project-box {
+  span {
+    display: block;
+  }
+}
 .projects {
   list-style: none;
   padding: 0;
@@ -357,6 +361,11 @@ input {
 }
 
 /* Datasets */
+.dataset-box {
+  span {
+    display: block;
+  }
+}
 .datasets {
   list-style: none;
   padding: 0;
