@@ -28,6 +28,8 @@ bundle
 
 ## Deployment instructions
 
+### 1. Preparations
+
 Once your MiGA Web is ready, you can start the server. First, prepare the
 system:
 
@@ -42,10 +44,14 @@ bundle exec rake db:migrate
 bundle exec rake assets:precompile
 ```
 
+### 2. Settings
+
 Next, configure the server. Simply copy `config/settings.yml` to
 `config/settings.local.yml` and modify the necessary variables. If you modified
 the data location above (folder to host your projects), make sure to set the
 correct path for `miga_projects`.
+
+### 3. Launch
 
 Finally, launch the server. We have had a great experience with Puma, so that's
 what we use.
