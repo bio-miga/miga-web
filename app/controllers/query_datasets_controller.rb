@@ -1,6 +1,6 @@
 class QueryDatasetsController < ApplicationController
   before_action :logged_in_user, only: [:index, :new, :create, :show, :destroy,
-    :result]
+    :result, :run_mytaxa_scan]
   
   before_action :correct_user_or_admin, only: [:show, :destroy, :result]
 
@@ -130,6 +130,12 @@ class QueryDatasetsController < ApplicationController
       end
     end
     render :nothing => true, :status => 200, :content_type => "text/html"
+  end
+
+  def run_mytaxa_scan
+    @query_dataset = QueryDataset.find(params[:id])
+    @query_dataset.run_mytaxa_scan!
+    redirect_to(@query_dataset)
   end
 
   private

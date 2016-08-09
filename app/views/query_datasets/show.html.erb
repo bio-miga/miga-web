@@ -29,5 +29,10 @@
           locals: { res:res, obj:@query_dataset, key:k } %>
       <% end %>
     <% end %>
+    <% unless @query_dataset.run_mytaxa_scan? %>
+      <%= link_to "Execute MyTaxa scan analysis",
+        query_dataset_run_mytaxa_scan_path(@query_dataset.id),
+        type: "button", class: "btn btn-default btn-block" %>
+    <% end %>
   </div>
 </div>

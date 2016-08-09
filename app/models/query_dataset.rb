@@ -49,6 +49,21 @@ class QueryDataset < ActiveRecord::Base
     complete
   end
 
+  # Checks if MyTaxa scan is required for the dataset.
+  def run_mytaxa_scan?
+    return false if miga.nil?
+    !!(miga.metadata[:run_mytaxa_scan] || !miga.result(:mytaxa_scan).nil?)
+  end
+
+  # Tells MiGA to process MyTaxa scan for the dataset.
+  def run_mytaxa_scan!
+    return if run_mytaxa_scan?
+    miga.metadata[:run_mytaxa_scan] = true
+    miga.save
+    update_attribute(:complete, false) if complete
+    update_attribute(:complete_new, false) if complete_new
+  end
+
   # Sets the "new" flag off
   def complete_seen!
     update_attribute(:complete_new, false) if complete_new
