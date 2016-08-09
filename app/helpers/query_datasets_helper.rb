@@ -18,11 +18,16 @@ module QueryDatasetsHelper
       o += " (p-value: #{"%.2g" % v.second})"
       phrases << o
     end
+    all = "<div class='text-muted small'><b>P-values:</b> " +
+            MiGA::TaxDist.aai_pvalues(aai, :intax).map do |k,v|
+              "<b>#{MiGA::Taxonomy.LONG_RANKS[k]} <em>#{tax[k]}</em></b> #{
+                "%.3g" % v}"
+            end.join(", ") + ".</div>"
     if phrases.empty?
-      "The dataset doesn't have any close relative in the database "+
-        "that can be used to determine its taxonomy."
+      "The dataset doesn't have any close relative in the database " +
+        "that can be used to determine its taxonomy. #{all}".html_safe
     else
-      "The dataset #{phrases.to_sentence}.".html_safe
+      "The dataset #{phrases.to_sentence}. #{all}".html_safe
     end
   end
 
@@ -31,19 +36,24 @@ module QueryDatasetsHelper
     thr = {most_likely:0.01, probably:0.1, possibly_even:0.5}
     phrases = []
     res.each do |k,v|
+      next if [:d, :root].include? v.first
       rank = MiGA::Taxonomy.LONG_RANKS[v.first]
       phrases << "" + k.to_s.unmiga_name +
         " belongs to #{rank[0]=="o" ? "an" : "a"} <b>#{rank}</b> not " +
         "represented in the database (p-value: #{"%.2g" % v.second}), " +
         "highest taxonomic rank with p-value &le; #{thr[k]}"
     end
+    all = "<div class='text-muted small'><b>P-values:</b> " +
+            MiGA::TaxDist.aai_pvalues(aai, :novel).map do |k,v|
+              "<b>#{MiGA::Taxonomy.LONG_RANKS[k]}</b> #{"%.3g" % v}"
+            end.join(", ") + ".</div>"
     if phrases.empty?
       "The dataset doesn't have any determinable degree of novelty with " +
-        "respect to the database."
+        "respect to the database. #{all}".html_safe
     else
       conn = ". It "
       "The dataset #{phrases.to_sentence(words_connector:conn,
-            two_words_connector:conn, last_word_connector: conn)}.".html_safe
+        two_words_connector:conn, last_word_connector: conn)}. #{all}".html_safe
     end
   end
 end

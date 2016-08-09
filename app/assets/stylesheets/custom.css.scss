@@ -78,20 +78,24 @@ nav {
   font-family: "PT Sans Caption", sans-serif;
 }
 
-h1 {
+h1, .h1 {
   font-size: 3em;
   letter-spacing: -2px;
   margin-bottom: 30px;
   text-align: center;
 }
 
-h2 {
+h2, .h2 {
   font-size: 1.2em;
   letter-spacing: -1px;
   margin-bottom: 30px;
   text-align: center;
   font-weight: normal;
   color: $gray-light;
+}
+
+h4, .h4 {
+  margin-top: 20px;
 }
 
 p {
