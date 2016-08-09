@@ -308,6 +308,12 @@ input {
     border-bottom: 1px solid $gray-lighter;
   }
 }
+ul.users {
+  li.user-box {
+    display: inline-block;
+    min-width: 30%;
+  }
+}
 .user-dashboard {
   p {
     margin-left: 30px;
@@ -361,6 +367,12 @@ input {
     section {
       border-top: 1px solid $gray-medium-light;
     }
+  }
+}
+ul.projects {
+  li.project-box {
+    display: inline-block;
+    min-width: 48%;
   }
 }
 
