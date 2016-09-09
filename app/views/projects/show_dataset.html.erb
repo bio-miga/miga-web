@@ -1,4 +1,4 @@
-<% provide(:title, @dataset_miga.name) %>
+<% provide(:title, @dataset_miga.name.unmiga_name) %>
 <% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
 <% provide(:breadcrumb_2,
       link_to(truncate(@project.path_name, length:15), @project)) %>
