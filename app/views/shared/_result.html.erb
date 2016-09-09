@@ -1,3 +1,4 @@
+<% unless key.nil? or key==:stats %>
 <div class="result">
 
 <%
@@ -107,6 +108,15 @@
       </ul>
     <% end %>
   <% end %>
+  <% unless res[:stats].nil? or res[:stats].empty? %>
+    <p>
+    <% res[:stats].each do |k,v| %>
+      <% v = v.is_a?(Array) ? [v[0], " #{v[1]}"] : [v, ""] %>
+      <b><%= k.to_s.unmiga_name.capitalize %>:</b>
+      <%= number_with_delimiter(v[0]) %><%= v[1] %>.<br/>
+    <% end %>
+    </p>
+  <% end %>
 </div>
 
 <div class="result-footer">
@@ -127,5 +137,5 @@
   %>
   <div class="timestamp"><%= time_ago_in_words res.data[:created] %> ago</div>
 </div>
-
 </div>
+<% end %>
