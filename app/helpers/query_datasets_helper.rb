@@ -24,12 +24,11 @@ module QueryDatasetsHelper
               "<b>#{MiGA::Taxonomy.LONG_RANKS[k]} <em>#{tax[k]}</em></b> #{
                 "%.3g" % v}"
             end.join(", ") + ".</div>"
-    if phrases.empty?
-      "The dataset doesn't have any close relative in the database " +
-        "that can be used to determine its taxonomy. #{all}".html_safe
-    else
-      "The dataset #{phrases.to_sentence}. #{all}".html_safe
-    end
+    return (phrases.empty? ?
+            "The dataset doesn't have any close relative in the database " +
+              "that can be used to determine its taxonomy. #{all}" :
+            "The dataset #{phrases.to_sentence}. #{all}".html_safe
+      ).html_safe
   end
 
   def aai_novel(aai)
@@ -48,13 +47,12 @@ module QueryDatasetsHelper
             MiGA::TaxDist.aai_pvalues(aai, :novel).map do |k,v|
               "<b>#{MiGA::Taxonomy.LONG_RANKS[k]}</b> #{"%.3g" % v}"
             end.join(", ") + ".</div>"
-    if phrases.empty?
-      "The dataset doesn't have any determinable degree of novelty with " +
-        "respect to the database. #{all}".html_safe
-    else
-      conn = ". It "
-      "The dataset #{phrases.to_sentence(words_connector:conn,
-        two_words_connector:conn, last_word_connector: conn)}. #{all}".html_safe
-    end
+    conn = ". It "
+    return (phrases.empty? ?
+          "The dataset doesn't have any determinable degree of novelty with " +
+            "respect to the database. #{all}" :
+          "The dataset #{phrases.to_sentence(words_connector:conn,
+            two_words_connector:conn, last_word_connector: conn)}. #{all}"
+      ).html_safe
   end
 end
