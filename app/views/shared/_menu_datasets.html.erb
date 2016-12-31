@@ -41,7 +41,7 @@
       new_query_dataset_path(project_id: project.id), class: "btn btn-primary btn-block" %>
   <% end %>
 </section>
-<% if current_user.admin? and not project.nil? %>
+<% if not current_user.nil? and current_user.admin? and not project.nil? %>
   <section class="admin-zone">
     <h1>Admin zone</h1>
     <div class="btn-group btn-group-justified btn-block" role="group" aria-label="daemon-actions">

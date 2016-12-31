@@ -60,6 +60,7 @@ class Project < ActiveRecord::Base
    end
 
    def dataset_counts(user)
+      return {ref:0, qry:0, qry_yes:0, qry_no:0} if user.nil?
       qd = QueryDataset.by_user_and_project(user, self)
       o = {ref: ref_datasets.count}
       o[:qry] = qd.count

@@ -1,6 +1,5 @@
 class QueryDatasetsController < ApplicationController
-  before_action :logged_in_user, only: [:index, :new, :create, :show, :destroy,
-    :result, :run_mytaxa_scan]
+  before_action :logged_in_user, only: [:index, :destroy]
   
   before_action :correct_user_or_admin, only: [:show, :destroy, :result]
 
@@ -61,30 +60,33 @@ class QueryDatasetsController < ApplicationController
 
   def create
     @project = Project.find_by(id: query_dataset_params[:project_id])
+    params[:query_dataset][:name]+= "_"+SecureRandom.hex(4) if current_user.nil?
     if @project.nil?
       redirect_to root_url
-    else
-      if QueryDataset.by_user_and_project(current_user, @project).
-            find_by(name: params[:query_dataset][:name]).nil?
-        @query_dataset = @project.query_datasets.create(query_dataset_params)
-        flash[:success] = "It's saved" if @query_dataset.save!
-        if @query_dataset.save and not @query_dataset.miga.nil?
-          [:description,:comments,:type].each do |k|
-            @query_dataset.miga.metadata[k] = params[k] unless
-              params[k].nil? or params[k].empty?
-          end
-          @query_dataset.miga.save
-          flash[:success] = "Query dataset created."
-          redirect_to @query_dataset
-        else
-          params[:project_id] = query_dataset_params[:project_id]
-          flash[:danger] = "Query dataset couldn't be saved."
-          new
+    elsif params[:query_dataset][:name] =~ /[^A-Za-z0-9_]/
+      flash[:danger] = "Invalid name, please use only alphanumerics and " +
+        "underscores."
+      new
+    elsif QueryDataset.by_user_and_project(current_user, @project).
+          find_by(name: params[:query_dataset][:name]).nil?
+      @query_dataset = @project.query_datasets.create(query_dataset_params)
+      flash[:success] = "It's saved" if @query_dataset.save!
+      if @query_dataset.save and not @query_dataset.miga.nil?
+        [:description,:comments,:type].each do |k|
+          @query_dataset.miga.metadata[k] = params[k] unless
+            params[k].nil? or params[k].empty?
         end
+        @query_dataset.miga.save
+        flash[:success] = "Query dataset created."
+        redirect_to @query_dataset
       else
-        flash[:danger] = "Name already exists, please use a different name."
+        params[:project_id] = query_dataset_params[:project_id]
+        flash[:danger] = "Query dataset couldn't be saved."
         new
       end
+    else
+      flash[:danger] = "Name already exists, please use a different name."
+      new
     end
   end
 
@@ -148,6 +150,8 @@ class QueryDatasetsController < ApplicationController
     # Confirms the correct user
     def correct_user_or_admin
       @user = QueryDataset.find(params[:id]).user
-      redirect_to(root_url) unless current_user?(@user) or current_user.admin?
+      return true if current_user.nil? and @user.nil?
+      redirect_to(root_url) if current_user.nil? or
+        not( current_user?(@user) or current_user.admin? )
     end
 end

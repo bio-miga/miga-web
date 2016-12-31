@@ -1,25 +1,28 @@
 <% provide(:title, @project.path_name) %>
 <% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
 <div class="row projects">
-   <aside class="col-md-4">
-      <%= render partial: "shared/menu_datasets",
-	 locals: { project: @project, ds_counts: @project.dataset_counts(current_user),
-	 ref_datasets: false, qry_datasets: false } %>
-   </aside>
-   <div class="col-md-8">
-      <h3><%= @project.path_name %> project</h3>
-      <p>
-	 Initialized as
-	 <u rel="tooltip" title="<%=
-	    MiGA::Project.KNOWN_TYPES[ @project.miga.metadata.data[:type] ][:description]
-	 %>"><%= @project.miga.metadata.data[:type] %></u>
-	 <%= time_ago_in_words @project.miga.metadata.data[:created] %> ago, last updated
-	 <%= time_ago_in_words @project.miga.metadata.data[:updated] %> ago.
-      </p>
-      <% MiGA::Project.RESULT_DIRS.keys.each do |k| %>
-	 <% if res = @project.miga.result(k) %>
-	    <%= render partial: "shared/result", locals: { res:res, obj:@project, key:k } %>
-	 <% end %>
+  <aside class="col-md-4">
+    <%= render partial: "shared/menu_datasets",
+      locals: { project: @project,
+      ds_counts: @project.dataset_counts(current_user),
+      ref_datasets: false, qry_datasets: false } %>
+  </aside>
+  <div class="col-md-8">
+    <h3><%= @project.path_name %> project</h3>
+    <p>
+      Initialized as
+      <u rel="tooltip" title="<%=
+        MiGA::Project.KNOWN_TYPES[ @project.miga.metadata.data[:type] ][:description]
+      %>"><%= @project.miga.metadata.data[:type] %></u>
+      <%= time_ago_in_words @project.miga.metadata.data[:created] %> ago,
+      last updated
+      <%= time_ago_in_words @project.miga.metadata.data[:updated] %> ago.
+    </p>
+    <% MiGA::Project.RESULT_DIRS.keys.each do |k| %>
+      <% if res = @project.miga.result(k) %>
+        <%= render partial: "shared/result",
+          locals: { res:res, obj:@project, key:k } %>
       <% end %>
-   </div>
+    <% end %>
+  </div>
 </div>

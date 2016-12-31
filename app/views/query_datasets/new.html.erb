@@ -7,7 +7,18 @@
     <%= form_for(@query_dataset, html: { multipart: true }) do |f| %>
       <%= render "shared/error_messages", object: f.object %>
          
-      <%= f.hidden_field :user_id, value: current_user.id %>
+      <% if current_user.nil? %>
+        <div class="alert alert-warning">
+          You're currently not logged in. Datasets created without an associated
+          user are openly accessible and can be purged without warning. Please
+          be adviced that your data will be publicly available and can be
+          deleted at any point. If you find this undesirable, please
+          <%= link_to "log in", login_url %>.
+        </div>
+        <%= f.hidden_field :user_id, value: 0 %>
+      <% else %>
+        <%= f.hidden_field :user_id, value: current_user.id %>
+      <% end %>
       <%= f.hidden_field :project_id, value: @project.id %>
          
       <%= f.label :name %>

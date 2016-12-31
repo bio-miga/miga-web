@@ -17,6 +17,7 @@
   </span>
   <span class="timestamp">
     Created <%= time_ago_in_words(query_dataset.created_at) %> ago by
-    <%= link_to query_dataset.user.name, query_dataset.user %>.
+    <%= query_dataset.user.nil? ? "anonymous" :
+      link_to(query_dataset.user.name, query_dataset.user) %>.
   </span>
 </li>

@@ -1,7 +1,5 @@
 class ProjectsController < ApplicationController
-  before_action :logged_in_user, only: [:new, :create, :destroy, :show, :result,
-    :reference_datasets, :show_dataset, :reference_dataset_result,
-    :medoid_clade, :medoid_clade_as, :rdp_classify, :rdp_classify_as]
+  before_action :logged_in_user, only: [:new, :create, :destroy, :result]
   
   before_action :admin_user, only: [:new, :create, :destroy, :new_ncbi_download,
     :create_ncbi_download, :start_daemon, :stop_daemon]

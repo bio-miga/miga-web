@@ -14,15 +14,15 @@ class QueryDataset < ActiveRecord::Base
   before_save :create_miga_dataset
 
   def self.by_user_and_project(user, project)
-    QueryDataset.where(["user_id=? and project_id=?", user.id, project.id])
+    QueryDataset.where(["user_id=? and project_id=?", user.nil? ? 0 : user.id, project.id])
   end
 
   def self.complete_new_by_user(user)
-    QueryDataset.where(["user_id=? and complete_new=?", user.id, true])
+    QueryDataset.where(["user_id=? and complete_new=?", user.nil? ? 0 : user.id, true])
   end
 
   def self.unknown_ready_by_user(user)
-    QueryDataset.where(["user_id=? and ready=?", user.id, false])
+    QueryDataset.where(["user_id=? and ready=?", user.nil? ? 0 : user.id, false])
   end
 
   # Returns the MiGA name of the dataset

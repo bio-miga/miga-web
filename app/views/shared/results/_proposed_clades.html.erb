@@ -1,29 +1,48 @@
-<p>MiGA proposes the following clade(s) at the species level based on ANI:</p>
-<div class="panel-group medoid-tree" role="tablist" aria-multiseletable="true">
-<% i=0 %>
-<% File.open(res.file_path(:proposal), "r") do |f| %>
-  <% f.each_line do |ln| %>
-    <% i+=1 %>
-    <% r = ln.split /\s+/ %>
-    <div class="panel panel-default" id=proposed_clade>
-      <div class=panel-heading role=tab id="proposed_clade-h<%= i %>">
-        <h4 class=panel-title>
-          <a role=button data-toggle=collapse data-parent="#proposed_clade"
-                class=btn href="#proposed_clade-b<%= i %>" aria-expanded=false
-                aria-controls="proposed_clade-b<%= i %>">
-            Species clade <%= i %> (<%= r.count %> datasets)
-          </a>
-        </h4>
-      </div>
-      <div id="proposed_clade-b<%= i %>" class="panel-collapse collapse"
-            role=tabpanel aria-labelledby="proposed_clade-h<%= i %>">
-        <div class=panel-body>
-          <%= r.map do |ds| %>
-            <% link_to ds.unmiga_name, reference_dataset_path(project.id, ds) %>
-          <% end.to_sentence.html_safe %>
+<% n = File.foreach(res.file_path(:proposal)).count %>
+<% if n > 0 %>
+<p>MiGA proposes <%= pluralize(n, "clade") %> at the species
+      level based on ANI:</p>
+<div class="">
+  <div class="panel-group medoid-tree" role="tablist"
+        aria-multiseletable="true">
+  <% File.open(res.file_path(:proposal), "r") do |f| %>
+    <% i=0 %>
+    <% f.each_line do |ln| %>
+      <% i+=1 %>
+      <% r = ln.split /\s+/ %>
+      <div class="panel panel-default" id=proposed_clade>
+        <div class=panel-heading role=tab id="proposed_clade-h<%= i %>">
+          <h4 class=panel-title>
+            <a role=button data-toggle=collapse data-parent="#proposed_clade"
+                  class=btn href="#proposed_clade-b<%= i %>" aria-expanded=false
+                  aria-controls="proposed_clade-b<%= i %>">
+              <%
+                pref = r.map do |ds|
+                    ds.unmiga_name.gsub(/(\S+\s+\S+).*/,"\\1")
+                  end.uniq
+                if pref.size > 1
+                  pname = pref.first.gsub(/\s+.*/,"")
+                  pref = [ pref.first ] +
+                    pref[1..-1].map{ |n| n.gsub(/^#{pname} /,"#{pname[0]}. ") }
+                end
+                dss = pref.size <= 3 ? ": #{pref.to_sentence}" : ""
+              %>
+              Species clade <%= i %> (<%= r.count %> datasets<%= dss %>)
+            </a>
+          </h4>
+        </div>
+        <div id="proposed_clade-b<%= i %>" class="panel-collapse collapse"
+              role=tabpanel aria-labelledby="proposed_clade-h<%= i %>">
+          <div class=panel-body>
+            <%= r.map do |ds| %>
+              <% link_to ds.unmiga_name,
+                    reference_dataset_path(project.id, ds) %>
+            <% end.to_sentence.html_safe %>
+          </div>
         </div>
       </div>
-    </div>
+    <% end %>
   <% end %>
-<% end %>
+  </div>
 </div>
+<% end %>
