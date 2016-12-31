@@ -6,7 +6,7 @@
       db[:ani] = SQLite3::Database.new(res.file_path :ani_db)
       val = db[:ani].
           execute("SELECT seq2, ani FROM ani WHERE seq2 != ? " +
-            "ORDER BY ani DESC LIMIT 2", [dataset.name])
+            "GROUP BY seq2 ORDER BY ani DESC LIMIT 2", [dataset.name])
       val_m = "ANI"
     rescue
       db[:ani] = nil
@@ -17,7 +17,7 @@
     if val.empty?
       val = db[:aai].
           execute("SELECT seq2, aai FROM aai WHERE seq2 != ? " +
-            "ORDER BY aai DESC LIMIT 2", [dataset.name])
+            "GROUP BY seq2 ORDER BY aai DESC LIMIT 2", [dataset.name])
       val_m = "AAI"
     end
   rescue
@@ -106,7 +106,7 @@
     db_qry = db[metric.to_sym].
           execute("SELECT seq2, #{metric}, sd, 100.0*n/omega " +
             "FROM #{metric} WHERE seq2 != ? " +
-            "ORDER BY #{metric} DESC", [dataset.name])
+            "GROUP BY seq2 ORDER BY #{metric} DESC", [dataset.name])
     next if db_qry.empty?
   %>
   <div class="panel panel-default">
