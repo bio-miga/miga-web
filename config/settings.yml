@@ -13,3 +13,9 @@ mail_host: localhost:3000
 # "app/views/static_pages/_home_custom.html.erb".
 home_contents: default
 
+# Name of the partial with the login page contents message. If you change this
+# setting, make sure that the corresponding partial exists. For example, if you
+# change the value for "custom", the contents of the login message should be defined
+# in "app/views/sessions/_login_custom.html.erb".
+login_message: default
+

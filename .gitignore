@@ -31,3 +31,5 @@ Gemfile.lock
 # Ignore local home page contents
 /app/views/static_pages/_home_*
 !/app/views/static_pages/_home_default.html.erb
+/app/views/sessions/_login_*
+!/app/views/sessions/_login_default.html.erb
