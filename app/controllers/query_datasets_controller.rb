@@ -5,34 +5,7 @@ class QueryDatasetsController < ApplicationController
 
   def index
     # Find query datasets
-    if params[:project_id]
-      @project = Project.find(params[:project_id])
-      qd = params[:all] ?
-        @project.query_datasets.all :
-        QueryDataset.by_user_and_project(current_user, @project)
-    else
-      @project = nil
-      qd = params[:all] ?
-        QueryDataset.all :
-        current_user.query_datasets
-    end
-    if params[:complete_new]
-      qd = qd.select{ |qd| qd.complete_new }
-    end
-    @all_qd = qd.count
-    params[:ready] ||= false
-    if params[:ready]=="yes"
-      qd = qd.select{ |qd| qd.ready? }
-      @ready_qd = qd.count
-      @running_qd = @all_qd - @ready_qd
-    elsif params[:ready]=="no"
-      qd = qd.select{ |qd| not qd.ready? }
-      @running_qd = qd.count
-      @ready_qd = @all_qd - @running_qd
-    else
-      @ready_qd = qd.select{ |qd| qd.ready? }.count
-      @running_qd = @all_qd - @ready_qd
-    end
+    qd = list_query_datasets
     # Paginate
     cur_page = (params[:page] || 1).to_i
     per_page = (params[:per_page] || 30).to_i
@@ -93,7 +66,6 @@ class QueryDatasetsController < ApplicationController
   def destroy
     qd = QueryDataset.find(params[:id])
     p = qd.project
-    u = qd.user
     p.miga.unlink_dataset qd.miga.name
     qd.miga.remove!
     qd.destroy
@@ -102,8 +74,8 @@ class QueryDatasetsController < ApplicationController
 
   def result
     if qd = QueryDataset.find(params[:id]) and m = qd.miga
-      if res = m.result(params[:result])
-        if file = res.data[:files][params[:file].to_sym]
+      unless (res = m.result(params[:result])).nil?
+        unless (file = res.data[:files][params[:file].to_sym]).nil?
           f = File.expand_path(file, res.dir)
           if Dir.exist? f and params[:f] and not params[:f]=~/\//
             f = File.expand_path(params[:f], f)
@@ -145,6 +117,35 @@ class QueryDatasetsController < ApplicationController
     def query_dataset_params
       params.require(:query_dataset).permit(
         :name, :user_id, :project_id, :input_file, :input_file_2, :input_type)
+    end
+
+    def list_query_datasets
+      if params[:project_id]
+        @project = Project.find(params[:project_id])
+        qd = params[:all] ? @project.query_datasets.all :
+              QueryDataset.by_user_and_project(current_user, @project)
+      else
+        @project = nil
+        qd = params[:all] ? QueryDataset.all : current_user.query_datasets
+      end
+      if params[:complete_new]
+        qd = qd.select{ |i| i.complete_new }
+      end
+      @all_qd = qd.count
+      params[:ready] ||= false
+      if params[:ready]=="yes"
+        qd = qd.select{ |i| i.ready? }
+        @ready_qd = qd.count
+        @running_qd = @all_qd - @ready_qd
+      elsif params[:ready]=="no"
+        qd = qd.select{ |i| not i.ready? }
+        @running_qd = qd.count
+        @ready_qd = @all_qd - @running_qd
+      else
+        @ready_qd = qd.select{ |i| i.ready? }.count
+        @running_qd = @all_qd - @ready_qd
+      end
+      qd
     end
       
     # Confirms the correct user
