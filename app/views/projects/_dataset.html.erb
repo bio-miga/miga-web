@@ -1,46 +1,30 @@
 <% noname ||= false %>
+<% expand_side ||= false %>
 <li id="dataset-<%= dataset.name %>" class="dataset-box">
-   <% unless noname %>
-      <span class="name">
-	 <span class="project"><%= link_to project.code, project %> | </span>
-	 <%= link_to dataset.name.unmiga_name, reference_dataset_path(project.id, dataset.name) %>
-      </span>
-   <% end %>
-   <% unless dataset.metadata[:tax].nil? %>
-      <span class="taxonomy">
-	 <b>Taxonomy:</b>
-	 <% tax = dataset.metadata[:tax].sorted_ranks.map{ |r| r.join(": ")} %>
-	 <%= tax.first %>
-	 <% if tax.size > 1 %>
-	    &raquo;
-	    <% if tax.size > 2 %>
-	       <span onclick='$(this).children().toggle();'>
-		  <span style="display: none;">
-		     <% tax[1, tax.size-2].each do |r| %>
-			<%= r %> &raquo;
-		     <% end %>
-		  </span>
-		  <span>&hellip; &raquo;</span>
-	       </span>
-	    <% end %>
-	    <%= tax.last %>
-	 <% end %>
-      </span>
-   <% end %>
-   <span class="metadata">
-      <% dataset.metadata.each do |k,v| %>
-	 <% next if [:type, :ref, :created, :updated, :user, :tax].include? k %>
-	 <%
-	   if k==:comments and /(.*)Assembly: (\S+)(.*)/.match(v)
-	     v = "#{$1}<a href='http://www.ncbi.nlm.nih.gov/assembly/#{$2}/' target=_blank>Assembly: #{$2}</a>#{$3}"
-	   end
-	 %>
-	 <b><%= k.to_s.capitalize %>:</b> <%= v.html_safe %>
-      <% end %>
-   </span>
-   <% unless noname %>
-      <span class="timestamp">
-	 Updated <%= time_ago_in_words Date.parse(dataset.metadata[:updated]) %> ago.
-      </span>
-   <% end %>
+  <% unless noname %>
+    <span class="name">
+      <span class="project"><%= link_to project.code, project %> | </span>
+      <%= link_to dataset.name.unmiga_name,
+            reference_dataset_path(project.id, dataset.name) %>
+    </span>
+  <% end %>
+  <%= render partial: (expand_side ? "dataset_side" : "dataset_intax"),
+    locals: { project: project, dataset: dataset, noname: noname }%>
+  <span class="metadata">
+    <% dataset.metadata.each do |k,v| %>
+      <% next if [:type, :ref, :created, :updated, :user, :tax].include? k %>
+      <%
+        if k==:comments and /(.*)Assembly: (\S+)(.*)/.match(v)
+          v = "#{$1}<a href='http://www.ncbi.nlm.nih.gov/assembly/#{$2}/' " +
+                "target=_blank>Assembly: #{$2}</a>#{$3}"
+        end
+      %>
+      <b><%= k.to_s.capitalize %>:</b> <%= v.html_safe %>
+    <% end %>
+  </span>
+  <% unless noname %>
+    <span class="timestamp">
+      Updated <%= time_ago_in_words Date.parse(dataset.metadata[:updated]) %> ago.
+    </span>
+  <% end %>
 </li>

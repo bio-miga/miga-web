@@ -1,0 +1,21 @@
+<% unless dataset.metadata[:tax].nil? %>
+  <span class="taxonomy">
+    <b>Taxonomy:</b>
+    <% tax = dataset.metadata[:tax].sorted_ranks.map{ |r| r.join(": ")} %>
+    <%= tax.first %>
+    <% if tax.size > 1 %>
+      &raquo;
+      <% if tax.size > 2 %>
+        <span onclick='$(this).children().toggle();'>
+          <span style="display: none;">
+            <% tax[1, tax.size-2].each do |r| %>
+              <%= r %> &raquo;
+            <% end %>
+          </span>
+          <span>&hellip; &raquo;</span>
+        </span>
+      <% end %>
+      <%= tax.last %>
+    <% end %>
+  </span>
+<% end %>

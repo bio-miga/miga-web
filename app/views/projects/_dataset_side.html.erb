@@ -1,0 +1,39 @@
+<% unless dataset.metadata[:tax].nil? %>
+  <span class="taxonomy">
+    <b>Taxonomy:</b>
+    <ul>
+    <% tax = dataset.metadata[:tax].sorted_ranks.map{ |r| r.join(": ")} %>
+    <% tax.each do |r| %>
+      <% r = r.split(": ") %>
+      <li><span class=text-muted><%= r[0] %>:</span> <i><%= r[1] %></i></li>
+    <% end %>
+    </ul>
+  </span>
+<% end %>
+<% method = project.miga.is_clade? ? :subclades : :clade_finding %>
+<% unless (clade_r = dataset.project.result(method)).nil? %>
+  <% unless (clade_f = clade_r.file_path(:class_table)).nil? %>
+    <% File.open(clade_f,'r') do |fh| %>
+      <% clade = fh.each_line.
+            grep(/^#{dataset.name}\t/).first.chomp.split("\t") %>
+      <% unless clade.nil? or clade.empty? %>
+        <% metric = project.miga.is_clade? ? "ANI" : "AAI" %>
+        <span class=taxonomy>
+          <b><%= metric %> classification:</b>
+          <ul>
+          <% cmp = "" %>
+          <% clade.each_index do |i| %>
+            <% next if i==0 or clade[i]=="0" %>
+            <% cmp += "#{clade[i]}" %>
+            <li>
+              <span class=text-muted><%= i %>:</span>
+              <%= link_to cmp, medoid_clade_url(project.id, metric, cmp) %>
+            </li>
+            <% cmp += "-" %>
+          <% end %>
+          </ul>
+        </span>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
