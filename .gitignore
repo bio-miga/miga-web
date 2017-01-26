@@ -33,3 +33,5 @@ Gemfile.lock
 !/app/views/static_pages/_home_default.html.erb
 /app/views/sessions/_login_*
 !/app/views/sessions/_login_default.html.erb
+
+coverage/

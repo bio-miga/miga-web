@@ -61,7 +61,8 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger
   # console
   # gem 'byebug'
-  gem "codeclimate-test-reporter", require: nil
+  gem "simplecov"
+  gem "codeclimate-test-reporter", "~> 1.0.0"
 end
 
 group :development do
