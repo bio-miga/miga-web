@@ -23,6 +23,24 @@
   rescue
     db[:aai] = nil
   end
+
+  unless dataset.is_ref?
+    miga_p = dataset.project.miga
+    method = miga_p.is_clade? ? :subclades : :clade_finding
+    clades = miga_p.result(method)
+    unless clades.nil?
+      clades_t = DateTime.parse(clades.data[:created])
+      if DateTime.parse(res.data[:created]) < clades_t
+        %>
+        <div class="alert alert-info">
+          The database was updated <%= time_ago_in_words(clades_t) %> ago,
+          <%= link_to "recalculate distances",
+                query_dataset_run_distances_url(dataset) %>.
+        </div>
+        <%
+      end
+    end
+  end
 %>
 <p>
   <%

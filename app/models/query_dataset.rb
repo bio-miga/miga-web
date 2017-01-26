@@ -64,6 +64,19 @@ class QueryDataset < ActiveRecord::Base
     update_attribute(:complete_new, false) if complete_new
   end
 
+  # Checks if Distances is not scheduled yet.
+  def run_distances?
+    return false if miga.nil?
+    !(miga.result(:distances).nil?)
+  end
+
+  def run_distances!
+    return if run_distances?
+    miga.result(:distances).remove!
+    update_attribute(:complete, false) if complete
+    update_attribute(:complete_new, false) if complete_new
+  end
+
   # Sets the "new" flag off
   def complete_seen!
     update_attribute(:complete_new, false) if complete_new

@@ -73,42 +73,44 @@ class QueryDatasetsController < ApplicationController
   end
 
   def result
-    if qd = QueryDataset.find(params[:id]) and m = qd.miga
-      unless (res = m.result(params[:result])).nil?
-        unless (file = res.data[:files][params[:file].to_sym]).nil?
-          f = File.expand_path(file, res.dir)
-          if Dir.exist? f and params[:f] and not params[:f]=~/\//
-            f = File.expand_path(params[:f], f)
-            file = params[:f]
-          end
-          if Dir.exist? f
-            @path = f
-            @file = file
-            @res = res
-            render template: "shared/result_dir"
-          else
-            case File.extname(f)
-            when ".pdf"
-              send_file(f, filename:file, disposition:"inline",
-                type:"application/pdf", x_sendfile:true)
-            when ".html"
-              send_file(f, filename:file, disposition:"inline",
-                type:"text/html", x_sendfile:true)
-            else
-              send_file(f, filename:file, disposition:"inline",
-                type:"raw/text", x_sendfile:true)
-            end
-          end
-          return
-        end
+    qd  = QueryDataset.find(params[:id])
+    m   = qd.miga
+    res = m.result(params[:result])
+    unless res.nil?
+      abs_path = res.file_path(params[:file])
+      if Dir.exists?(abs_path) and params[:f] and not params[:f]=~/\//
+        abs_path = File.expand_path(params[:f], abs_path)
       end
+      if Dir.exists? abs_path
+        @path = abs_path
+        @file = File.basename abs_path
+        @res  = res
+        render template: "shared/result_dir"
+      else
+        type = case File.extname(abs_path)
+          when ".pdf" ; "application/pdf"
+          when ".html" ; "text/html"
+          else ; "raw/text"
+        end
+        send_file(abs_path, filename: File.basename(abs_path),
+          disposition: "inline", type: type, x_sendfile: true)
+      end
+      return
     end
     render :nothing => true, :status => 200, :content_type => "text/html"
   end
-
+  
+  # Execute the MyTaxa Scan step upon request.
   def run_mytaxa_scan
     @query_dataset = QueryDataset.find(params[:id])
     @query_dataset.run_mytaxa_scan!
+    redirect_to(@query_dataset)
+  end
+  
+  # Re-calculate the Distances step upon request.
+  def run_distances
+    @query_dataset = QueryDataset.find(params[:id])
+    @query_dataset.run_distances!
     redirect_to(@query_dataset)
   end
 

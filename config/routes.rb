@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   get 'query_datasets/all/:ready'                  => 'query_datasets#index', as: :query_datasets_ready
   get 'query_datasets/:id/result/:result/:file'    => 'query_datasets#result', as: :query_dataset_result
   get "query_datasets/:id/run_mytaxa_scan"         => "query_datasets#run_mytaxa_scan", as: :query_dataset_run_mytaxa_scan
+  get "query_datasets/:id/run_distances"           => "query_datasets#run_distances", as: :query_dataset_run_distances
   # Medoid clusters
   get "medoid_clade/:project_id/:metric/:clade"    => "projects#medoid_clade", as: :medoid_clade
   get "medoid_clade/:project_id/:metric/:clade/as" => "projects#medoid_clade_as", as: :medoid_clade_as
