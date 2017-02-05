@@ -14,7 +14,8 @@
             title: @project.path_name,
             style: "background:#{@project.code_color};" %></a>
           <span class="name">
-            <b>[Ref] <%= link_to @dataset_miga.name.unmiga_name,
+            <b><%= @dataset_miga.is_ref? ? "[Ref]" : "[Qry]" %>
+              <%= link_to @dataset_miga.name.unmiga_name,
               reference_dataset_path(@project.id, @dataset_miga.name) %></b>
           </span>
           <span class="timestamp">
