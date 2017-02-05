@@ -14,8 +14,8 @@
 <% unless (clade_r = dataset.project.result(method)).nil? %>
   <% unless (clade_f = clade_r.file_path(:class_table)).nil? %>
     <% File.open(clade_f,'r') do |fh| %>
-      <% clade = fh.each_line.
-            grep(/^#{dataset.name}\t/).first.chomp.split("\t") %>
+      <% clade = (fh.each_line.
+            grep(/^#{dataset.name}\t/).first || "").chomp.split("\t") %>
       <% unless clade.nil? or clade.empty? %>
         <% metric = project.miga.is_clade? ? "ANI" : "AAI" %>
         <span class=taxonomy>

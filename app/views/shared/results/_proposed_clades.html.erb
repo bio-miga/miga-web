@@ -18,8 +18,8 @@
                   aria-controls="proposed_clade-b<%= i %>">
               <%
                 pref = r.map do |ds|
-                    ds.unmiga_name.gsub(/(\S+\s+\S+).*/,"\\1")
-                  end.uniq
+                  ds.unmiga_name.gsub(/([A-Z][a-z]+\s+\S+).*/,"\\1")
+                end.uniq
                 if pref.size > 1
                   pname = pref.first.gsub(/\s+.*/,"")
                   pref = [ pref.first ] +
