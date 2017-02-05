@@ -75,7 +75,7 @@ class ProjectsController < ApplicationController
   def show_dataset
     @project = Project.find(params[:id])
     @dataset_miga = @project.miga.dataset(params[:dataset])
-    redirect_to root_url if @dataset_miga.nil? or not @dataset_miga.is_ref?
+    redirect_to root_url if @dataset_miga.nil?
   end
   
   # Create project.
