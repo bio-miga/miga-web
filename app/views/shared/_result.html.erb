@@ -113,7 +113,9 @@
     <% res[:stats].each do |k,v| %>
       <% v = v.is_a?(Array) ? [v[0], " #{v[1]}"] : [v, ""] %>
       <b><%= k.to_s.unmiga_name.capitalize %>:</b>
-      <%= number_with_delimiter(v[0]) %><%= v[1] %>.<br/>
+      <%= number_with_precision(v[0],
+            precision:4, strip_insignificant_zeros:true, delimiter:",")
+            %><%= v[1] %>.<br/>
     <% end %>
     </p>
   <% end %>

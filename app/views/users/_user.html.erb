@@ -7,6 +7,7 @@
             data: { confirm: "You sure?" } %>
     <% end %>
     <br/>
-    <span class=text-muted><%= user.email %>
+    <span class=text-muted><%= user.email %></span><br/>
+    <span class=text-muted><%= time_ago_in_words user.created_at %>.</span>
   <% end %>
 </li>
