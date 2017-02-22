@@ -52,6 +52,7 @@ class QueryDataset < ActiveRecord::Base
   # Checks if MyTaxa scan is required for the dataset.
   def run_mytaxa_scan?
     return false if miga.nil?
+    return false if miga.is_multi?
     !!(miga.metadata[:run_mytaxa_scan] || !miga.result(:mytaxa_scan).nil?)
   end
 
