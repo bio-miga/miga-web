@@ -9,6 +9,12 @@
       <ul class="query_datasets">
         <%= render @query_dataset %>
       </ul>
+      <% type = @query_dataset.miga.metadata[:type] unless
+              @query_dataset.miga.nil? %>
+      <% unless type.nil? %>
+        <p><%=  @query_dataset.name.unmiga_name %> is a <b><%= type %></b>:
+          <%= MiGA::Dataset.KNOWN_TYPES[type][:description] %></p>
+      <% end %>
     </section>
     <section class="query_dataset_settings">
       <%= link_to "Remove dataset", @query_dataset,
