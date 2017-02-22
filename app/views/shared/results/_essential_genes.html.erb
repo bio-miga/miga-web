@@ -13,10 +13,10 @@
     <div id=essential_genes-b class="panel-collapse collapse" role=tabpanel
           aria-labelledby=essential_genes-h>
       <div class="panel-body" style="padding-top:0;">
-      <%
+        <%
         File.open(res.file_path(:report), "r") do |fh|
           fh.each_line do |ln| %>
-        <%= "<br/>".html_safe unless fh.lineno==1 %>
+        <br/>
         <%  if ln =~ /^!   (\d+ )?([^:]+): (\S+: )?(.*)/
               url = $2[0..3] == "TIGR" ?
                 "http://www.jcvi.org/cgi-bin/tigrfams/HmmReportPage.cgi?acc=" :
