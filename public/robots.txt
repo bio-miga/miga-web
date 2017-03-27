@@ -2,4 +2,4 @@
 #
 User-agent: *
 Disallow: /projects/
-
+Disallow: /rdp_classify/
