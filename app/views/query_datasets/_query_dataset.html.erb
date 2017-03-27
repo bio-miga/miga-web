@@ -12,7 +12,7 @@
       <i class="glyphicon glyphicon-time" rel="tooltip"
         title="running <%= query_dataset.miga.next_preprocessing %>"> </i>
     <% end %>
-    <b><%= link_to query_dataset.name, query_dataset,
+    <b><%= link_to query_dataset.name.unmiga_name, query_dataset,
         rel:"tooltip", title:query_dataset.miga.metadata[:description] %></b>
   </span>
   <span class="timestamp">
