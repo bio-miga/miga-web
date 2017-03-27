@@ -153,7 +153,7 @@ class QueryDatasetsController < ApplicationController
     # Confirms the correct user
     def correct_user_or_admin
       @user = QueryDataset.find(params[:id]).user
-      return true if current_user.nil? and @user.nil?
+      return true if @user.nil?
       redirect_to(root_url) if current_user.nil? or
         not( current_user?(@user) or current_user.admin? )
     end
