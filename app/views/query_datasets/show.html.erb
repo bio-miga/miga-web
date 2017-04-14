@@ -36,6 +36,7 @@
       <% end %>
     <% end %>
     <% unless @query_dataset.run_mytaxa_scan? %>
+      <br/><br/>
       <%= link_to "Execute MyTaxa scan analysis",
         query_dataset_run_mytaxa_scan_path(@query_dataset.id),
         type: "button", class: "btn btn-default btn-block" %>

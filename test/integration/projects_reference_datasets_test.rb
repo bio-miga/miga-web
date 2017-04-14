@@ -34,7 +34,7 @@ class ProjectsReferenceDatasetsTest < ActionDispatch::IntegrationTest
     assert_select "ol.datasets li#dataset-vaz_1 span.name",
       /#{@project.code}\s+\|\s+vaz 1/
     assert_select "ol.datasets li span.timestamp",
-      /^Updated .* ago\./, count: 30
+      /Updated/, count: 30
   end
 
   test "should get last page" do

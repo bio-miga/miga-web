@@ -17,6 +17,11 @@
         if k==:comments and /(.*)Assembly: (\S+)(.*)/.match(v)
           v = "#{$1}<a href='http://www.ncbi.nlm.nih.gov/assembly/#{$2}/' " +
                 "target=_blank>Assembly: #{$2}</a>#{$3}"
+        elsif k==:ncbi_tax_id
+          v = v.split(",").map do |i|
+            "<a href='http://www.uniprot.org/taxonomy/#{i}' " +
+              "target=_blank>#{i}</a>"
+          end.join(", ")
         end
       %>
       <b><%= k.to_s.capitalize %>:</b> <%= v.html_safe %>
@@ -24,7 +29,8 @@
   </span>
   <% unless noname %>
     <span class="timestamp">
-      Updated <%= time_ago_in_words Date.parse(dataset.metadata[:updated]) %> ago.
+      Updated <%= time_ago_in_words Date.parse(dataset.metadata[:updated]) %>
+      ago.
     </span>
   <% end %>
 </li>

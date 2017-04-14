@@ -12,11 +12,11 @@
     <p>
       Initialized as
       <u rel="tooltip" title="<%=
-        MiGA::Project.KNOWN_TYPES[ @project.miga.metadata.data[:type] ][:description]
-      %>"><%= @project.miga.metadata.data[:type] %></u>
-      <%= time_ago_in_words @project.miga.metadata.data[:created] %> ago,
+        MiGA::Project.KNOWN_TYPES[@project.miga.metadata[:type] ][:description]
+      %>"><%= @project.miga.metadata[:type] %></u>
+      <%= time_ago_in_words @project.miga.metadata[:created] %> ago,
       last updated
-      <%= time_ago_in_words @project.miga.metadata.data[:updated] %> ago.
+      <%= time_ago_in_words @project.miga.metadata[:updated] %> ago.
     </p>
     <% MiGA::Project.RESULT_DIRS.keys.each do |k| %>
       <% if res = @project.miga.result(k) %>

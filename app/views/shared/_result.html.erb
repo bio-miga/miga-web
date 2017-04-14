@@ -1,5 +1,4 @@
 <% unless key.nil? or key==:stats %>
-<div class="result">
 
 <%
   titles = {
@@ -18,11 +17,14 @@
   end
 %>
 
-<h3>
-  <i class="glyphicon glyphicon-tasks" id="result-<%= key %>"> </i>
+<h3 role="button" data-toggle="collapse" class="result-title"
+      id="result-<%= key %>" href="#result-cnt-<%= key %>"
+      aria-expanded="false" aria-controls="result-cnt-<%= key %>">
+  <i class="glyphicon glyphicon-tasks"> </i>
   <%= titles[key].nil? ? key.to_s.gsub("_", " ").capitalize : titles[key] %>
 </h3>
 
+<div class="result collapse" id="result-cnt-<%= key %>">
 <div class="result-body">
   <% case key %>
   <% # Dataset results %>

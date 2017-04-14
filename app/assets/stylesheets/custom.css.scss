@@ -489,8 +489,14 @@ ul.projects {
 }
 
 /* Results */
+.result-title {
+  margin-bottom: 0;
+  .glyphicon {
+    font-size: 75%;
+  }
+}
 .result {
-  margin: 20px 0 40px;
+  margin: 0 0 40px 0;
   h3 {
     border-left: 1px solid $gray-medium-light;
     margin: 0;
