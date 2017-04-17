@@ -550,3 +550,21 @@ ul.projects {
     padding: 0.5em 1em;
   }
 }
+
+/* Taxonomy tree */
+.taxonomy-tree {
+  padding-left: 1em;
+  border-left: 1px solid $gray-medium-light;
+  .datasets {
+    background: $gray-medium-light;
+    margin: 0 1em 0 0;
+    padding: 0.5em 1em;
+  }
+  .taxonomy-tree-element {
+    padding-top: 0.1em;
+  }
+  .badge {
+    font-size: 70%;
+    margin-bottom: 0.1em;
+  }
+}

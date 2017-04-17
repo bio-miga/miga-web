@@ -15,16 +15,18 @@
   elsif not obj.is_a? MiGA::Dataset
     proj = obj.project
   end
+  r_open = [:distances, :project_stats].include? key
 %>
 
 <h3 role="button" data-toggle="collapse" class="result-title"
       id="result-<%= key %>" href="#result-cnt-<%= key %>"
-      aria-expanded="false" aria-controls="result-cnt-<%= key %>">
+      aria-expanded="<%= r_open ? "true" : "false" %>"
+      aria-controls="result-cnt-<%= key %>">
   <i class="glyphicon glyphicon-tasks"> </i>
   <%= titles[key].nil? ? key.to_s.gsub("_", " ").capitalize : titles[key] %>
 </h3>
 
-<div class="result collapse" id="result-cnt-<%= key %>">
+<div class="result<%= " collapse" unless r_open %>" id="result-cnt-<%= key %>">
 <div class="result-body">
   <% case key %>
   <% # Dataset results %>
@@ -64,6 +66,9 @@
     <%= render partial: "shared/results/distances",
          locals: { res: res, job: key, project: proj, dataset: obj } %>
   <% # Project-wide results %>
+  <% when :project_stats %>
+    <%= render partial: "shared/results/project_stats",
+         locals: { res: res, job: key, project: proj } %>
   <% when :haai_distances %>
     <p>Average Identity between sets of conserved proteins in Bacteria and
       Archaea, as a heuristic approximation to AAI.</p>

@@ -1,0 +1,63 @@
+<%
+
+$id_k = 0
+
+def print_tax_datasets(v, p)
+  return if v["datasets"].empty?
+  %>
+  <div class="datasets list-group-item">
+    <%= v["datasets"].map do |d| %>
+      <% link_to d.unmiga_name, reference_dataset_url(p.id, d) %>
+    <% end.to_sentence.html_safe %>
+  </div>
+  <br/>
+  <%
+end
+
+def print_tax_children(v, p, str_id)
+  return if v["children"].empty?
+  ch = v["children"].select{ |i| i["str"] !~ /:\?$/ } +
+       v["children"].select{ |i| i["str"] =~ /:\?$/ }
+  ds = ch.select{ |i| i["str"] =~ /^ds:/ }
+  tx = ch.select{ |i| i["str"] !~ /^ds:/ }
+  print_tax_datasets({"datasets"=>ds.map{ |i| i["datasets"] }.flatten}, p)
+  if str_id.nil?
+    tx.each { |i| print_tax_rank(i, p) }
+  else
+    %>
+    <div id="<%= str_id %>" class="collapse taxonomy-tree-element">
+      <% tx.each { |i| print_tax_rank(i, p) } %>
+    </div>
+    <%
+  end
+end
+
+def print_tax_rank(v, p)
+  return if v.nil?
+  if v["datasets"].empty? and (v["str"] =~ /:\?$/ or v["str"]=="root:biota")
+    print_tax_children(v, p, nil)
+    print_tax_datasets(v, p)
+  else
+    str_id = "tax-#{$id_k += 1}"
+    str = v["str"].split(":")
+    %>
+    <div class="taxonomy-tree">
+      <b><%= link_to "##{str_id}", "data-toggle"=>"collapse",
+                "aria-expanded"=>"false", "aria-controls"=>str_id do %>
+          <span class=badge><%= str[0] %></span>
+          <i><%= str[1].unmiga_name %></i>
+      <% end %></b>
+      <% print_tax_datasets(v, p) %>
+      <% print_tax_children(v, p, str_id) %>
+    </div>
+    <%
+  end
+end
+%>
+
+<% unless res.file_path(:taxonomy_index).nil? %>
+  <p>Taxonomy tree:</p>
+  <% tax = JSON.parse File.read res.file_path :taxonomy_index %>
+  <% print_tax_rank(tax["root"], project) %>
+  <br/>
+<% end %>
