@@ -109,15 +109,12 @@
           ogs_shannon: "Average Information Content"} %>
       <p>MiGA found <%= stats[:pan] %> groups of orthology in
         <%= stats[:genomes] %> genomes with the following statistics:</p>
-      <ul class="list-group" style="margin:15px;">
+      <dl class=dl-horizontal>
         <% stats.each do |k,v| %>
-          <li class="list-group-item row">
-            <div class="col-md-6" style="text-align:right;"><b><%=
-              (knames[k] || k.to_s.gsub("_","/")).capitalize %></b></div>
-            <div class="col-md-6"><%= v %></div>
-          </li>
+          <dt><%= (knames[k] || k.to_s.gsub("_","/")).capitalize %></dt>
+          <dd><%= v %></dd>
         <% end %>
-      </ul>
+      </dl>
     <% end %>
   <% end %>
   <% unless res[:stats].nil? or res[:stats].empty? %>

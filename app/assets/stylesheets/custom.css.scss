@@ -72,6 +72,11 @@ textarea {
   background: #f5f5f5;
 }
 
+.dl-horizontal dt {
+  text-overflow: initial;
+  white-space: normal;
+}
+
 /* typography */
 
 h1, h2, h3, h4, h5, h6,

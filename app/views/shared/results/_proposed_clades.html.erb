@@ -23,9 +23,10 @@
                   pref = [ pref.first ] +
                     pref[1..-1].map{ |n| n.gsub(/^#{pname} /,"#{pname[0]}. ") }
                 end
-                dss = pref.size <= 3 ? ": #{pref.to_sentence}" : ""
+                dss = pref.size <= 3 ? "<br/> #{pref.to_sentence}" : ""
               %>
-              Species clade <%= i %> (<%= r.count %> datasets<%= dss %>)
+              <b>Species clade <%= i %></b> (<%= r.count %> datasets)
+              <%= dss.html_safe %>
             </a>
           </h4>
         </div>
@@ -44,7 +45,8 @@
   </div>
 <% end %>
 In addition, MiGA found
-<%= link_to("##{ani_clades_id}","data-toggle"=>"modal","data-target"=>"##{ani_clades_id}") { %>
+<%= link_to("##{ani_clades_id}","data-toggle"=>"modal",
+                "data-target"=>"##{ani_clades_id}") { %>
   <%= pluralize(n, "clade") %> at the species level<% } %>
 based on <b>ANI</b> (above 95%).
 <% end %>
