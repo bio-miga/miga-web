@@ -86,13 +86,17 @@
         {height:300, title:"Distribution of ANI values"}) unless
         res.data[:files][:hist].nil? %>
   <% when :clade_finding %>
-    <%= render partial: "shared/results/clade_tree",
-         locals: { res: res, job: key, project: proj } %>
-    <%= render partial: "shared/results/proposed_clades",
-         locals: { res: res, job: key, project: proj } %>
+    <p>
+      <%= render partial: "shared/results/clade_tree",
+           locals: { res: res, job: key, project: proj } %>
+      <%= render partial: "shared/results/proposed_clades",
+           locals: { res: res, job: key, project: proj } %>
+    </p>
   <% when :subclades %>
-    <%= render partial: "shared/results/clade_tree",
-         locals: { res: res, job: key, project: proj } %>
+    <p>
+      <%= render partial: "shared/results/clade_tree",
+           locals: { res: res, job: key, project: proj } %>
+    </p>
   <% when :ogs %>
     <% unless res.data[:files][:stats].nil? %>
       <% stats = JSON.parse(File.read(res.file_path :stats),

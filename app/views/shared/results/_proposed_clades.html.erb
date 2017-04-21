@@ -1,8 +1,6 @@
 <% n = File.foreach(res.file_path(:proposal)).count %>
 <% if n > 0 %>
-<p>MiGA proposes <%= pluralize(n, "clade") %> at the species
-      level based on ANI:</p>
-<div class="">
+<% ani_clades_id = info_modal "Species level clades based on ANI" do %>
   <div class="panel-group medoid-tree" role="tablist"
         aria-multiseletable="true">
   <% File.open(res.file_path(:proposal), "r") do |f| %>
@@ -44,5 +42,9 @@
     <% end %>
   <% end %>
   </div>
-</div>
+<% end %>
+In addition, MiGA found
+<%= link_to("##{ani_clades_id}","data-toggle"=>"modal","data-target"=>"##{ani_clades_id}") { %>
+  <%= pluralize(n, "clade") %> at the species level<% } %>
+based on <b>ANI</b> (above 95%).
 <% end %>

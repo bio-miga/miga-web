@@ -19,15 +19,22 @@ module QueryDatasetsHelper
       o += " (p-value: #{"%.2g" % v.second})"
       phrases << o
     end
-    all = "<div class='text-muted small comment'><b>P-values:</b> " +
-            MiGA::TaxDist.aai_pvalues(aai, :intax).map do |k,v|
-              "<b>#{MiGA::Taxonomy.LONG_RANKS[k]} <em>#{tax[k]}</em></b> #{
-                "%.3g" % v}"
-            end.join(", ") + ".</div>"
+    all = "<div class='small comment'>"
+    all_c = ""
+    MiGA::TaxDist.aai_pvalues(aai, :intax).each do |k,v|
+      sig = ""
+      [0.5,0.1,0.05,0.01].each{ |i| sig << "*" if v<i }
+      all << "<div class='taxonomy-tree'>" +
+              "<b><span class=badge>#{MiGA::Taxonomy.LONG_RANKS[k]}</span> " +
+              "<i>#{tax[k]}</i> (p-value #{"%.3g" % v}#{sig})</b>"
+      all_c << "</div>"
+    end
+    all << "#{all_c}<br/><span class=text-muted>Significance at p-value " +
+            "below: *0.5, **0.1, ***0.05, ****0.01</span></div>"
     return (phrases.empty? ?
             "The dataset doesn't have any close relative in the database " +
               "that can be used to determine its taxonomy. #{all}" :
-            "The dataset #{phrases.to_sentence}. #{all}".html_safe
+            "The dataset #{phrases.to_sentence}. #{all}"
       ).html_safe
   end
 

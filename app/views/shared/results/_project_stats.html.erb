@@ -40,12 +40,14 @@ def print_tax_rank(v, p)
   else
     str_id = "tax-#{$id_k += 1}"
     str = v["str"].split(":")
+    str_rk = MiGA::Taxonomy.LONG_RANKS[str[0].to_sym]
+    str_rk = str[0] if str_rk.nil?
+    str_vl = str[1].unmiga_name
     %>
     <div class="taxonomy-tree">
       <b><%= link_to "##{str_id}", "data-toggle"=>"collapse",
                 "aria-expanded"=>"false", "aria-controls"=>str_id do %>
-          <span class=badge><%= str[0] %></span>
-          <i><%= str[1].unmiga_name %></i>
+          <span class=badge><%= str_rk %></span> <i><%= str_vl %></i>
       <% end %></b>
       <% print_tax_datasets(v, p) %>
       <% print_tax_children(v, p, str_id) %>
