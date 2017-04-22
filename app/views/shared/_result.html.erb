@@ -136,7 +136,7 @@
     res.data[:files].keys.map do |k|
       f = res.file_path(k)
       next unless File.size? f
-      link_to(k, obj.is_a?(Project) ?
+      link_to(k.to_s.unmiga_name, obj.is_a?(Project) ?
         project_result_path(obj.id, key, k) :
         obj.is_a?(MiGA::Dataset) ?
         reference_dataset_result_path(proj.id, obj.name, key, k) :

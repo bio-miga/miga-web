@@ -18,13 +18,42 @@ class ProjectsController < ApplicationController
   def show
     @project = Project.find(params[:id])
   end
+
+  # Queries reference datasets in the project
+  def search
+    # Query
+    @project = Project.find(params[:id])
+    @q       = params[:q]
+    @query   = @q.split(/\s(?=(?:[^"]|"[^"]*")*$)/).map do |i|
+      (i =~ /^(?:([A-Za-z_]+):)?"?(.*?)"?$/) ? [$2, $1] : [i, nil]
+    end
+    # Results
+    return if (m = @project.miga).nil? or
+              (r = m.result(:project_stats)).nil? or
+              (db_file = r.file_path(:metadata_index)).nil?
+    db = SQLite3::Database.new db_file
+    @results = nil
+    @query.each do |q|
+      q[0] = q[0].downcase.gsub(/[^A-Za-z0-9\-]+/, " ")
+      res = db.execute("select distinct(name) from metadata " +
+              "where value like ? #{"and field=?" unless q[1].nil?}",
+              ["% #{q[0]} %"] + (q[1].nil? ? [] : [q[1]])).flatten
+      @results.nil? ? @results=res :
+        @results.select!{ |i| res.include? i }
+    end
+    reference_datasets
+  end
   
   # Loads (paginated) list of reference datasets in a project.
   def reference_datasets
-    @project = Project.find(params[:project_id])
+    if @results.nil?
+      @project = Project.find(params[:project_id])
+      @ref_datasets = @project.ref_datasets
+    else
+      @ref_datasets = @results
+    end
     cur_page = (params[:page] || 1).to_i
     per_page = (params[:per_page] || 30).to_i
-    @ref_datasets = @project.ref_datasets
     @datasets = WillPaginate::Collection.create(
                         cur_page, per_page, @ref_datasets.size) do |pager|
       start = (cur_page - 1) * per_page

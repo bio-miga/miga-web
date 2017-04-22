@@ -58,7 +58,9 @@ end
 %>
 
 <% unless res.file_path(:taxonomy_index).nil? %>
-  <p>Taxonomy tree:</p>
+  <h4>Search in project</h4>
+  <%= render partial: "projects/search_bar" %>
+  <h4>Taxonomy tree</h4>
   <% tax = JSON.parse File.read res.file_path :taxonomy_index %>
   <% print_tax_rank(tax["root"], project) %>
   <br/>
