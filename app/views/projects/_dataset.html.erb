@@ -13,18 +13,26 @@
   <span class="metadata">
     <% dataset.metadata.each do |k,v| %>
       <% next if [:type, :ref, :created, :updated, :user, :tax].include? k %>
+      <% k_str = k.to_s.unmiga_name.capitalize %>
       <%
         if k==:comments and /(.*)Assembly: (\S+)(.*)/.match(v)
-          v = "#{$1}<a href='http://www.ncbi.nlm.nih.gov/assembly/#{$2}/' " +
+          v = "#{$1}<a href='https://www.ncbi.nlm.nih.gov/assembly/#{$2}/' " +
                 "target=_blank>Assembly: #{$2}</a>#{$3}"
         elsif k==:ncbi_tax_id
+          k_str = "NCBI TaxID"
           v = v.split(",").map do |i|
             "<a href='http://www.uniprot.org/taxonomy/#{i}' " +
               "target=_blank>#{i}</a>"
           end.join(", ")
+        elsif k==:ncbi_nuccore
+          k_str = "NCBI Nucleotide"
+          v = v.split(",").map do |i|
+            "<a href='https://www.ncbi.nlm.nih.gov/nuccore/#{i}' " +
+              "target=_blank>#{i}</a>"
+          end.join(", ")
         end
       %>
-      <b><%= k.to_s.capitalize %>:</b> <%= v.html_safe %>
+      <b><%= k_str %>:</b> <%= v.html_safe %>
     <% end %>
   </span>
   <% unless noname %>
