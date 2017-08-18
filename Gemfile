@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 
 # Use MiGA base code to communicate with the projects
-gem 'miga-base', '>= 0.2.6.4'
+gem 'miga-base', '~> 0.3'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.4'
 # Make it safe
@@ -77,6 +77,6 @@ end
 group :production do
   #gem 'pg', '0.17.1'
   gem 'rails_12factor', '0.0.2'
-  gem 'puma', '2.11.1'
+  gem 'puma', '3.8.2'
 end
 
