@@ -8,7 +8,7 @@ class QueryDatasetsController < ApplicationController
     qd = list_query_datasets
     # Paginate
     cur_page = (params[:page] || 1).to_i
-    per_page = (params[:per_page] || 30).to_i
+    per_page = (params[:per_page] || 10).to_i
     @query_datasets = WillPaginate::Collection.create(cur_page, per_page,
                             qd.size) do |pager|
       start = (cur_page-1)*per_page

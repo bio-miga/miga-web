@@ -14,7 +14,7 @@
       <%= pluralize(@results.size, "result") %>
     </p>
     <% if @results.any? %>
-      <%= will_paginate @datasets %>
+      <%= will_paginate @datasets, class: "center-block center" %>
       <ol class="datasets">
         <% @datasets.each do |dataset| %>
           <%= render partial: "dataset",
@@ -22,7 +22,7 @@
             locals: { project: @project } %>
         <% end %>
       </ol>
-      <%= will_paginate @datasets %>
+      <%= will_paginate @datasets, class: "center-block center" %>
     <% end %>
   </div>
 </div>

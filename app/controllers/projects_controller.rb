@@ -53,7 +53,7 @@ class ProjectsController < ApplicationController
       @ref_datasets = @results
     end
     cur_page = (params[:page] || 1).to_i
-    per_page = (params[:per_page] || 30).to_i
+    per_page = (params[:per_page] || 10).to_i
     @datasets = WillPaginate::Collection.create(
                         cur_page, per_page, @ref_datasets.size) do |pager|
       start = (cur_page - 1) * per_page

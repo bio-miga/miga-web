@@ -3,10 +3,11 @@
     <div class="col-md-8">
       <nav>
         <ul class="left-col">
-          <li><%= link_to "About", about_path %></li>
+          <li><%= link_to "Manual",
+                            "http://manual.microbial-genomes.org/" %></li>
+          <li><%= link_to "News", "http://enve-omics.ce.gatech.edu/miga" %></li>
           <li><%= link_to "Contact", contact_path %></li>
-          <li><%= link_to "News",
-                "http://enve-omics.ce.gatech.edu/miga" %></li>
+          <li><%= link_to "About", about_path %></li>
         </ul>
       </nav>
     </div>
@@ -21,27 +22,25 @@
       </small>
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-4">
-      <div class="left-col">
-        <h4>Funded by:</h4>
-        <%= link_to "US National Science Foundation",
-              "http://nsf.gov/", target: "_blank" %><br/>
-        <%= link_to "Award #1356288",
-              "http://nsf.gov/awardsearch/showAward?AWD_ID=1356288",
-              target: "_blank" %>
-      </div>
+  <div class="row center">
+    <div class="col-sm-4">
+      <%= link_to image_tag("MiGA.png", alt: "MiGA logo"),
+          "http://enve-omics.ce.gatech.edu/miga", target: "_blank" %>
     </div>
-    <div class="col-md-4 text-center">
+    <div class="col-sm-4">
+      <h4>Funded by:</h4>
+      <%= link_to "US National Science Foundation",
+            "http://nsf.gov/", target: "_blank" %><br/>
+      <%= link_to "Award #1356288",
+            "http://nsf.gov/awardsearch/showAward?AWD_ID=1356288",
+            target: "_blank" %>
+    </div>
+    <div class="col-sm-4">
       <h4>A collaboration between:</h4>
       <%= link_to image_tag("GT.png", alt: "Georgia Tech logo"),
             "http://enve-omics.gatech.edu/", target: "_blank" %>
       <%= link_to image_tag("RDP.png", alt: "RDP logo"),
             "http://rdp.cme.msu.edu/", target: "_blank" %>
-    </div>
-    <div class="col-md-4 right-col text-right">
-      <%= link_to image_tag("MiGA.png", alt: "MiGA logo"),
-          "http://enve-omics.ce.gatech.edu/miga", target: "_blank" %>
     </div>
   </div>
 </footer>

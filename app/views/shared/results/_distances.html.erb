@@ -49,7 +49,7 @@
     max_val_ds = nil
   %>
   <% if not val.empty? and val.second %>
-    MiGA found that the closest relatives in the database were
+    The closest relatives found by MiGA in the database were
     <%= link_to val.first.first.unmiga_name,
            reference_dataset_path(project.id, val.first.first) %>
     (<%= val.first.second.round 2 %>% <%= val_m %>) and
@@ -59,7 +59,7 @@
     <% max_val = val.first.second %>
     <% max_val_ds = project.miga.dataset(val.first.first) %>
   <% elsif not val.empty? and val.first %>
-    MiGA found that the only close relative in the database was
+    The closest relative found by MiGA in the database was
     <%= link_to val.first.first.unmiga_name,
            reference_dataset_path(project.id, val.first.first) %>
     (<%= val.first.second.round 2 %>% <%= val_m %>).
@@ -116,6 +116,21 @@
     </p>
   <% end %></h4>
   <p><%= aai_novel(max_val) %></p>
+<% end %>
+<h4>Genome relatedness
+<%= info_msg "Genome relatedness to database references" do %>
+  <p>
+    Average sequence identities to reference datasets in the database.
+  </p>
+<% end %></h4>
+<% unless res.file_path(:ref_tree_pdf).nil? %>
+  <p>
+    This dataset was placed in the context of some representative genomes from
+    the reference collection. See <%= link_to("BioNJ tree in PDF",
+    query_dataset_result_path(dataset.id, :distances, :ref_tree_pdf)) %> (or
+    <%= link_to("download it in Newick format",
+    query_dataset_result_path(dataset.id, :distances, :ref_tree)) %>).
+  </p>
 <% end %>
 <div class="panel-group" id=distances role=tablist
       aria-multiselectable=true>

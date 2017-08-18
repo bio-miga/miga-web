@@ -7,7 +7,7 @@
 /* mixins, variables, etc. */
 
 $gray-medium-light: #eaeaea;
-
+$blue-miga: #0079A6;
 
 @mixin box_sizing {
   -moz-box-sizing:    border-box;
@@ -75,6 +75,10 @@ textarea {
 .dl-horizontal dt {
   text-overflow: initial;
   white-space: normal;
+}
+
+.pagination {
+  font-size: 11px;
 }
 
 /* typography */
@@ -165,10 +169,10 @@ header {
   margin-top: 45px;
   padding: 5px 45px;
   border-top: 1px solid $gray-medium-light;
-  color: #0079A6;
+  color: $blue-miga;
   background: #361224;
   a {
-    color: #0079A6;
+    color: $blue-miga;
     &:hover {
       color: #78B142;
     }
@@ -499,6 +503,9 @@ ul.projects {
   .glyphicon {
     font-size: 75%;
   }
+  &:hover {
+    color: $blue-miga;
+  }
 }
 .result {
   margin: 0 0 40px 0;
@@ -519,6 +526,7 @@ ul.projects {
     .timestamp {
       color: $gray-light;
       text-align: right;
+      margin-top: -1.5em;
     }
   }
 }
@@ -541,9 +549,9 @@ ul.projects {
     .permalink { color: $gray-medium-light; }
   }
   li:hover > .medoid {
-    color: #0079A6;
-    a { color: #0079A6; }
-    .permalink { color: #0079A6; }
+    color: $blue-miga;
+    a { color: $blue-miga; }
+    .permalink { color: $blue-miga; }
   }
   li {
     padding: 1em;
