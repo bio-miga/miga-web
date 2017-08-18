@@ -1,0 +1,25 @@
+<% unless res.data[:files][:stats].nil? %>
+  <% stats = JSON.parse(File.read(res.file_path :stats),
+      symbolize_names:true) %>
+  <% knames = {pan: "Pangenome", core: "Core genome (100%)",
+      core90pc: "Core genome (90%)", core80pc: "Core genome (80%)",
+      unus: "Unus genome (once per genome)",
+      avg: "Average genome", avg_pan: "Average/Pangenome",
+      core_avg: "Core/Average", core_pan: "Core/Pangenome",
+      ogs_shannon: "Average Information Content"} %>
+  <p>MiGA found <%= stats[:pan] %> groups of orthology in
+    <%= stats[:genomes] %> genomes with the following statistics:</p>
+  <dl class=dl-horizontal>
+    <% stats.each do |k,v| %>
+      <dt><%= (knames[k] || k.to_s.gsub("_","/")).capitalize %></dt>
+      <dd><%= v %></dd>
+    <% end %>
+  </dl>
+<% end %>
+<% unless res.data[:files][:core_pan_plot].nil? %>
+  <p>
+    See the
+    <%= link_to "rarefied pangenome and core genome sizes",
+    project_result_path(project.id, :ogs, :core_pan_plot) %>.
+  </p>
+<% end %>

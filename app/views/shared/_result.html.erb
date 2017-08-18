@@ -26,7 +26,8 @@
   <%= titles[key].nil? ? key.to_s.gsub("_", " ").capitalize : titles[key] %>
 </h3>
 
-<div class="result<%= " collapse" unless r_open %>" id="result-cnt-<%= key %>">
+<div class="result collapse<%= " in" if r_open %>" id="result-cnt-<%= key %>"
+      aria-expanded="<%= r_open ? "true" : "false" %>">
 <div class="result-body">
   <% case key %>
   <% # Dataset results %>
@@ -98,24 +99,10 @@
            locals: { res: res, job: key, project: proj } %>
     </p>
   <% when :ogs %>
-    <% unless res.data[:files][:stats].nil? %>
-      <% stats = JSON.parse(File.read(res.file_path :stats),
-          symbolize_names:true) %>
-      <% knames = {pan: "Pangenome", core: "Core genome (100%)",
-          core90pc: "Core genome (90%)", core80pc: "Core genome (80%)",
-          unus: "Unus genome (once per genome)",
-          avg: "Average genome", avg_pan: "Average/Pangenome",
-          core_avg: "Core/Average", core_pan: "Core/Pangenome",
-          ogs_shannon: "Average Information Content"} %>
-      <p>MiGA found <%= stats[:pan] %> groups of orthology in
-        <%= stats[:genomes] %> genomes with the following statistics:</p>
-      <dl class=dl-horizontal>
-        <% stats.each do |k,v| %>
-          <dt><%= (knames[k] || k.to_s.gsub("_","/")).capitalize %></dt>
-          <dd><%= v %></dd>
-        <% end %>
-      </dl>
-    <% end %>
+    <p>
+      <%= render partial: "shared/results/ogs",
+           locals: { res: res, job: key, project: proj } %>
+    </p>
   <% end %>
   <% unless res[:stats].nil? or res[:stats].empty? %>
     <p>
@@ -146,6 +133,11 @@
       to_sentence(two_words_connector:" or ", last_word_connector:", or ").
       html_safe
   %>
+  <br/>
+  <i class="glyphicon glyphicon-info-sign" title="downloads"> </i>
+  <%= link_to "Learn more",
+    "http://manual.microbial-genomes.org/part5/workflow.html#" +
+      key.to_s.tr("_","-") %>
   <div class="timestamp"><%= time_ago_in_words res.data[:created] %> ago</div>
 </div>
 </div>
