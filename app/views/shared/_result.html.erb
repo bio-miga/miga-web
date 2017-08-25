@@ -5,6 +5,7 @@
     ssu: "Ribosomal RNA (small subunit)",
     cds: "Gene prediction",
     mytaxa_scan: "MyTaxa Scan",
+    mytaxa: "MyTaxa",
     haai_distances: "hAAI distances",
     aai_distances: "AAI distances",
     ani_distances: "ANI distances",
@@ -15,7 +16,7 @@
   elsif not obj.is_a? MiGA::Dataset
     proj = obj.project
   end
-  r_open = [:distances, :project_stats].include? key
+  r_open = [:distances, :project_stats, :mytaxa].include? key
 %>
 
 <h3 role="button" data-toggle="collapse" class="result-title"

@@ -29,8 +29,8 @@ class ProjectsReferenceDatasetsTest < ActionDispatch::IntegrationTest
     log_in_as @user
     get project_reference_datasets_path(@project)
     assert_template "projects/reference_datasets"
-    assert_select "div.pagination"
-    assert_select "ol.datasets li", count: 30
+    assert_select "ul.pagination"
+    assert_select "ol.datasets li", count: 10
     assert_select "ol.datasets li#dataset-vaz_1 span.name",
       /#{@project.code}\s+\|\s+vaz 1/
     assert_select "ol.datasets li span.timestamp",
@@ -41,7 +41,7 @@ class ProjectsReferenceDatasetsTest < ActionDispatch::IntegrationTest
     log_in_as @user
     get project_reference_datasets_path(@project), {page: 4}
     assert_template "projects/reference_datasets"
-    assert_select "div.pagination"
+    assert_select "ul.pagination"
     assert_select "ol.datasets li", count: 10
   end
 
