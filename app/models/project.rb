@@ -112,6 +112,10 @@ class Project < ActiveRecord::Base
     client.call(:classifier, message: seq)
   end
 
+  def readme_file
+    File.expand_path("README.md", full_path)
+  end
+
    private
 
       def full_path
