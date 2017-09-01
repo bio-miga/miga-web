@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang=en>
 <head>
    <title><%= full_title(yield :title) %></title>
    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
    <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
-   <%= javascript_include_tag 'https://cdn.plot.ly/plotly-latest.min.js', 'data-turbolinks-track' => true %>
+   <%= javascript_include_tag 'https://cdn.plot.ly/plotly-latest.min.js', 'data-turbolinks-track' => true, 'async' => true %>
    <%= render 'layouts/shim' %>
    <%= csrf_meta_tags %>
    <%= yield :head %>

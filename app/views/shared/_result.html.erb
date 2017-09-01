@@ -57,13 +57,23 @@
         reference_dataset_result_path(proj.id, obj.name,
           :mytaxa_scan, :report) :
         query_dataset_result_path(obj.id, :mytaxa_scan, :report)
+      f_path = nil if res.file_path(:report).nil?
       regions = res.data[:files][:region_ids].nil? ? 0 :
         File.readlines(res.file_path :region_ids).count
     %>
     <p>
       MyTaxa Scan detected <%= pluralize regions, "region" %> with unusual
-      taxonomic distribution (<%= link_to "download PDF", f_path %>).
+      taxonomic distribution (<%= f_path.nil? ? "No report available" :
+        link_to("download PDF", f_path) %>).
     </p>
+  <% when :mytaxa %>
+    <%
+      f_path = obj.is_a?(MiGA::Dataset) ?
+        reference_dataset_result_path(proj.id, obj.name, :mytaxa, :krona) :
+        query_dataset_result_path(obj.id, :mytaxa, :krona)
+    %>
+    <p>MiGA classified the assembled contigs at species, genus, and phylum
+    levels using MyTaxa (<%= link_to "see distribution", f_path %>).</p>
   <% when :distances %>
     <%= render partial: "shared/results/distances",
          locals: { res: res, job: key, project: proj, dataset: obj } %>
