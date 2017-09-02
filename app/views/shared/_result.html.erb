@@ -45,6 +45,9 @@
       </li>
     <% end %>
     </ul>
+  <% when :assembly %>
+    <%= plot_assembly(res[:stats][:n50][0], res[:stats][:total_length][0]
+          ) unless res.data[:stats][:n50].nil? %>
   <% when :essential_genes %>
     <%= render partial: "shared/results/essential_genes",
          locals: { res: res, job: key, project: proj } %>
