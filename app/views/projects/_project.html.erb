@@ -3,11 +3,11 @@
     style="background:<%= project.code_color %>;"><%= project.code %></span>
   <span class="path">
     <% if project.daemon_active? %>
-      <i class="glyphicon glyphicon-ok-sign" rel="tooltip"
+      <i class="glyphicon glyphicon-ok-sign text-light-success" rel="tooltip"
         title="active <%=
           time_ago_in_words(project.daemon_last_alive)%> ago"> </i>
     <% else %>
-      <i class="glyphicon glyphicon-remove-sign" rel="tooltip"
+      <i class="glyphicon glyphicon-remove-sign text-light-warning" rel="tooltip"
         title="inactive"> </i>
     <% end %>
     <%= link_to project.path_name, project,

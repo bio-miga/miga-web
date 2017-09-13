@@ -4,6 +4,13 @@
   <% unless noname %>
     <span class="name">
       <span class="project"><%= link_to project.code, project %> | </span>
+      <% qi = dataset.metadata[:quality_interval] %>
+      <% unless qi.nil? %>
+        <i class="glyphicon glyphicon-adjust small text-light-<%=
+            {excellent:"success", high:"info",
+              intermediate:"warning", low:"danger"}[qi.to_sym]
+        %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
+      <% end %>
       <%= link_to dataset.name.unmiga_name,
             reference_dataset_path(project.id, dataset.name) %>
     </span>
@@ -12,7 +19,8 @@
     locals: { project: project, dataset: dataset, noname: noname }%>
   <span class="metadata">
     <% dataset.metadata.each do |k,v| %>
-      <% next if [:type, :ref, :created, :updated, :user, :tax].include? k %>
+      <% next if [:type, :ref, :created, :updated, :user, :tax,
+            :quality_interval].include? k %>
       <% k_str = k.to_s.unmiga_name.capitalize %>
       <%
         if k==:comments and /(.*)Assembly: (\S+)(.*)/.match(v)

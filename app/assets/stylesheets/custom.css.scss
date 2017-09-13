@@ -81,6 +81,22 @@ textarea {
   font-size: 11px;
 }
 
+.text-light-success {
+  color: $brand-success;
+}
+
+.text-light-info {
+  color: $brand-info;
+}
+
+.text-light-warning {
+  color: $brand-warning;
+}
+
+.text-light-danger {
+  color: $brand-danger;
+}
+
 /* typography */
 
 h1, h2, h3, h4, h5, h6,
@@ -354,12 +370,6 @@ ul.users {
   }
   .path {
     font-weight: bolder;
-    .glyphicon-ok-sign {
-      color: $brand-success;
-    }
-    .glyphicon-remove-sign {
-      color: $brand-warning;
-    }
   }
   .timestamp {
     color: $gray-light;
@@ -427,17 +437,6 @@ ul.projects {
   li {
     padding: 10px 0;
     border-top: 1px solid #e8e8e8;
-  }
-  .name {
-    .glyphicon-record {
-      color: $brand-info;
-    }
-    .glyphicon-ok-circle {
-      color: $brand-success;
-    }
-    .glyphicon-time {
-      color: $brand-info;
-    }
   }
   .code {
     @include project_code;
