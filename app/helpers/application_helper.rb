@@ -104,4 +104,26 @@ module ApplicationHelper
     } unless n50==len
     plotly(trace1, layout)
   end
+
+  def plot_quality(comp, cont, qual)
+    cols = ["rgba(92,184,92,1)", "rgba(91,192,222,1)",
+      "rgba(240,173,78,1)", "rgba(217,83,79,1)"]
+    comp_l = comp > 80.0 ? 0 : comp > 50.0 ? 1 : comp > 20.0 ? 2 : 3
+    cont_l = cont <  4.0 ? 0 : cont < 10.0 ? 1 : cont < 16.0 ? 2 : 3
+    qual_l = qual > 80.0 ? 0 : qual > 50.0 ? 1 : qual > 20.0 ? 2 : 3
+    comp_n = ["very high", "high", "intermediate", "low"][comp_l]
+    cont_n = ["very low", "low", "intermediate", "high"][cont_l]
+    qual_n = ["excellent", "high", "intermediate", "low"][qual_l]
+    trace1 = {
+      x: [
+        "completeness (#{comp_n})",
+        "contamination (#{cont_n})",
+        "quality (#{qual_n})"],
+      y: [comp, cont, qual],
+      marker:{ color: [cols[comp_l], cols[cont_l], cols[qual_l]] },
+      type: "bar"
+    }
+    plotly(trace1)
+  end
+
 end

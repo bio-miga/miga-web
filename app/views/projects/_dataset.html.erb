@@ -4,7 +4,7 @@
   <% unless noname %>
     <span class="name">
       <span class="project"><%= link_to project.code, project %> | </span>
-      <% qi = dataset.metadata[:quality_interval] %>
+      <% qi = dataset.metadata[:quality] %>
       <% unless qi.nil? %>
         <i class="glyphicon glyphicon-adjust small text-light-<%=
             {excellent:"success", high:"info",
@@ -20,7 +20,7 @@
   <span class="metadata">
     <% dataset.metadata.each do |k,v| %>
       <% next if [:type, :ref, :created, :updated, :user, :tax,
-            :quality_interval].include? k %>
+            :quality].include? k %>
       <% k_str = k.to_s.unmiga_name.capitalize %>
       <%
         if k==:comments and /(.*)Assembly: (\S+)(.*)/.match(v)

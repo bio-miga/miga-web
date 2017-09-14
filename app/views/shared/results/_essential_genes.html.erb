@@ -1,3 +1,7 @@
+<%= plot_quality(
+      res[:stats][:completeness][0], res[:stats][:contamination][0],
+      res[:stats][:quality]) unless res[:stats][:quality].nil? %>
+
 <p>Genes commonly found in Bacteria and Archaea detected:</p>
 <% unless res.file_path(:report).nil? %>
   <div class="panel panel-default" id="essential_genes">

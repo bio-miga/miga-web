@@ -5,14 +5,16 @@
     title: query_dataset.project.path_name %></a>
   <span class="name">
     <% if query_dataset.complete_new %>
-      <i class="glyphicon glyphicon-record small text-light-info" rel="tooltip" title="ready"> </i>
+      <i class="glyphicon glyphicon-record small text-light-info"
+        rel="tooltip" title="ready"> </i>
     <% elsif query_dataset.ready? %>
-      <i class="glyphicon glyphicon-ok-circle small text-light-success" rel="tooltip" title="ready"> </i>
+      <i class="glyphicon glyphicon-ok-circle small text-light-success"
+        rel="tooltip" title="ready"> </i>
     <% else %>
       <i class="glyphicon glyphicon-time small text-light-info" rel="tooltip"
         title="running <%= query_dataset.miga.next_preprocessing %>"> </i>
     <% end %>
-    <% qi = query_dataset.miga.metadata[:quality_interval] %>
+    <% qi = query_dataset.miga.metadata[:quality] %>
     <% unless qi.nil? %>
       <i class="glyphicon glyphicon-adjust small text-light-<%=
           {excellent:"success", high:"info",
