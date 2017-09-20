@@ -61,11 +61,17 @@ end
   <h4>Search in project</h4>
   <%= render partial: "projects/search_bar" %>
   <% unless project.miga.is_multi? %>
-    Or filter by quality:
-    <% %w(excellent high intermediate low).each do |i| %>
-      <%= link_to i,
-        project_search_path(project.id, q:"quality:#{i}") %>
-    <% end %>
+    <br/>
+    <div class="help-block">
+      &nbsp;Or filter by quality:
+      <% q_tag = {excellent:"success", high:"info",
+        intermediate:"warning", low:"danger"} %>
+      <% q_tag.keys.each do |i| %>
+        <%= link_to i,
+          project_search_path(project.id, q:"quality:#{i}"),
+          class: "btn btn-q-#{i} btn-xs" %>
+      <% end %>
+    </div>
   <% end %>
   <h4>Taxonomy tree</h4>
   <% tax = JSON.parse File.read res.file_path :taxonomy_index %>

@@ -97,6 +97,34 @@ textarea {
   color: $brand-danger;
 }
 
+/* genome quality */
+
+.btn-q-excellent {
+  @extend .btn-default;
+  &:hover{
+    @extend .btn-success;
+  }
+}
+
+.btn-q-high {
+  @extend .btn-default;
+  &:hover{
+    @extend .btn-info;
+  }
+}
+.btn-q-intermediate {
+  @extend .btn-default;
+  &:hover{
+    @extend .btn-warning;
+  }
+}
+.btn-q-low {
+  @extend .btn-default;
+  &:hover{
+    @extend .btn-danger;
+  }
+}
+
 /* typography */
 
 h1, h2, h3, h4, h5, h6,
