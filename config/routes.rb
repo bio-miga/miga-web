@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   get 'projects/:project_id/query_datasets'        => 'query_datasets#index', as: :project_query_datasets
   get 'projects/:project_id/query_datasets/:ready' => 'query_datasets#index', as: :project_query_datasets_ready
   get 'projects/:id/result/:result/:file'          => 'projects#result', as: :project_result
+  get 'projects/:id/result/:result'                => 'projects#result_partial', as: :project_result_partial
   get 'projects/:id/ncbi_download'                 => 'projects#new_ncbi_download', as: :project_new_ncbi_download
   post 'projects/:id/ncbi_download'                => 'projects#create_ncbi_download', as: :project_create_ncbi_download
   post 'projects/:id/start_daemon'                 => 'projects#start_daemon', as: :project_start_daemon

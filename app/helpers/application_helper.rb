@@ -1,20 +1,20 @@
 module ApplicationHelper
-  def info_msg(title="", &blk)
-    info_msg_id = info_modal(title, &blk)
+  def info_msg(title="", opts={}, &blk)
+    info_msg_id = info_modal(title, opts, &blk)
     content_tag(:sup, "class"=>"info-msg-button") do
       content_tag(:i, " ","class"=>"glyphicon glyphicon-info-sign text-info",
             "data-toggle"=>"modal","data-target"=>"##{info_msg_id}")
     end
   end
 
-  def info_modal(title="")
+  def info_modal(title="", opts={})
     @info_msg ||= []
-    info_msg_id = @info_msg.size
+    info_msg_id = SecureRandom.uuid
     @info_msg << content_tag(:div, "class"=>"modal fade",
           "id"=>"info-msg-#{info_msg_id}","tabindex"=>"-1", "role"=>"dialog",
           "aria-labelledby"=>"info-msg-#{info_msg_id}-h") do
-      content_tag(:div, "class"=>"modal-dialog", "role"=>"document") do
-        content_tag(:div, "class"=>"modal-content") do
+      content_tag(:div, "class"=>"modal-dialog #{opts[:dialog_class]}", "role"=>"document") do
+        content_tag(:div, "class"=>"modal-content #{opts[:content_class]}") do
           content_tag(:div, "class"=>"modal-header") do
             button_tag("type"=>"button", "class"=>"close",
                   "data-dismiss"=>"modal", "aria-label"=>"Close") do
@@ -33,7 +33,10 @@ module ApplicationHelper
   end
 
   def info_msg_content
-    @info_msg.inject(:+) unless @info_msg.nil?
+    @info_msg ||= []
+    o = @info_msg
+    @info_msg = []
+    o.empty? ? "" : o.inject(:+) 
   end
    
   def full_title(page_title="")
@@ -105,7 +108,7 @@ module ApplicationHelper
     plotly(trace1, layout)
   end
 
-  def plot_quality(comp, cont, qual)
+  def plot_quality_deprecated(comp, cont, qual)
     cols = ["rgba(92,184,92,1)", "rgba(91,192,222,1)",
       "rgba(240,173,78,1)", "rgba(217,83,79,1)"]
     comp_l = comp > 80.0 ? 0 : comp > 50.0 ? 1 : comp > 20.0 ? 2 : 3
@@ -124,6 +127,40 @@ module ApplicationHelper
       type: "bar"
     }
     plotly(trace1)
+  end
+
+  def plot_quality(comp, cont, qual)
+    css_class = ["success","info","warning","danger"]
+    comp_l = comp > 80.0 ? 0 : comp > 50.0 ? 1 : comp > 20.0 ? 2 : 3
+    cont_l = cont <  4.0 ? 0 : cont < 10.0 ? 1 : cont < 16.0 ? 2 : 3
+    qual_l = qual > 80.0 ? 0 : qual > 50.0 ? 1 : qual > 20.0 ? 2 : 3
+    comp_n = ["very high", "high", "intermediate", "low"][comp_l]
+    cont_n = ["very low", "low", "intermediate", "high"][cont_l]
+    qual_n = ["excellent", "high", "intermediate", "low"][qual_l]
+    trace = [
+      {v:comp, n:comp_n, l:comp_l, k:"Completeness"},
+      {v:cont, n:cont_n, l:cont_l, k:"Contamination"},
+      {v:qual, n:qual_n, l:qual_l, k:"Quality"}
+    ]
+    
+    content_tag :div, style: "margin: 2em 0;" do
+      trace.each do |t|
+        concat content_tag(:div, class: "row", style:"margin-bottom:10px;"){
+          concat content_tag(:strong, t[:k], class: "col-sm-4 text-right")
+          concat content_tag(:div, class: "col-sm-4"){
+            concat content_tag(:div, class:"progress", style:"margin-bottom:0;"){
+              concat content_tag(:div, " ",
+                class: "progress-bar progress-bar-#{css_class[t[:l]]}",
+                role: "progressbar",
+                aria:{ valuenow:t[:v], valuemin:0, valuemax:100 },
+                style: "width: #{t[:v]}%;")
+            }
+          }
+          concat content_tag(:div, "#{t[:v]}% (#{t[:n]})",
+            class: "col-sm-4 text-#{css_class[t[:l]]}")
+        }
+      end
+    end
   end
 
 end

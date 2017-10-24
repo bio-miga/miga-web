@@ -18,11 +18,25 @@
       last updated
       <%= time_ago_in_words @project.miga.metadata[:updated] %> ago.
     </p>
+    <% results_to_load = [] %>
     <% MiGA::Project.RESULT_DIRS.keys.each do |k| %>
       <% if res = @project.miga.result(k) %>
-        <%= render partial: "shared/result",
-          locals: { res:res, obj:@project, key:k } %>
+        <div id="project_result_<%= k %>">
+          <h3 class="result-title">
+            <i class="glyphicon glyphicon-tasks"> </i>
+            <%= image_tag("loading.gif") %>
+            <%= k.to_s.unmiga_name.capitalize %>
+          </h3>
+        </div>
+        <% results_to_load << k %>
       <% end %>
     <% end %>
+    <script>
+      <% results_to_load.each do |k| %>
+        $.ajax(
+          { url: "<%= project_result_partial_path(@project, k) %>" }
+        ).done(function(data){ $("#project_result_<%= k %>").html(data) });
+      <% end %>
+    </script>
   </div>
 </div>

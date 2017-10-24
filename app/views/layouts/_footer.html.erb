@@ -15,9 +15,11 @@
       <small>
         <p>
           <%= link_to "MiGA Web by Luis M. Rodriguez-R",
-                "https://github.com/bio-miga/miga-web", target: "_blank" %><br/>
+                "https://github.com/bio-miga/miga-web",
+                target: "_blank", rel: "noopener" %><br/>
           Powered by <%= link_to MiGA::MiGA.LONG_VERSION.gsub(/ - \S+$/,""),
-                "https://github.com/bio-miga/miga", target: "_blank" %>
+                "https://github.com/bio-miga/miga",
+                target: "_blank", rel: "noopener" %>
         </p>
       </small>
     </div>
@@ -25,22 +27,25 @@
   <div class="row center">
     <div class="col-sm-4">
       <%= link_to image_tag("MiGA.png", alt: "MiGA logo"),
-          "http://enve-omics.ce.gatech.edu/miga", target: "_blank" %>
+          "http://enve-omics.ce.gatech.edu/miga",
+          target: "_blank", rel: "noopener" %>
     </div>
     <div class="col-sm-4">
       <h4>Funded by:</h4>
       <%= link_to "US National Science Foundation",
-            "http://nsf.gov/", target: "_blank" %><br/>
+            "http://nsf.gov/", target: "_blank", rel: "noopener" %><br/>
       <%= link_to "Award #1356288",
             "http://nsf.gov/awardsearch/showAward?AWD_ID=1356288",
-            target: "_blank" %>
+            target: "_blank", rel: "noopener" %>
     </div>
     <div class="col-sm-4">
       <h4>A collaboration between:</h4>
       <%= link_to image_tag("GT.png", alt: "Georgia Tech logo"),
-            "http://enve-omics.gatech.edu/", target: "_blank" %>
+            "http://enve-omics.gatech.edu/",
+            target: "_blank", rel: "noopener" %>
       <%= link_to image_tag("RDP.png", alt: "RDP logo"),
-            "http://rdp.cme.msu.edu/", target: "_blank" %>
+            "http://rdp.cme.msu.edu/",
+            target: "_blank", rel: "noopener" %>
     </div>
   </div>
 </footer>

@@ -15,6 +15,13 @@
             style: "background:#{@project.code_color};" %></a>
           <span class="name">
             <b><%= @dataset_miga.is_ref? ? "[Ref]" : "[Qry]" %>
+              <% qi = @dataset_miga.metadata[:quality] %>
+              <% unless qi.nil? %>
+                <i class="glyphicon glyphicon-adjust small text-light-<%=
+                    {excellent:"success", high:"info",
+                      intermediate:"warning", low:"danger"}[qi.to_sym]
+                %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
+              <% end %>
               <%= link_to @dataset_miga.name.unmiga_name,
               reference_dataset_path(@project.id, @dataset_miga.name) %></b>
           </span>
@@ -34,11 +41,25 @@
     </section>
   </aside>
   <div class="col-md-8">
+    <% results_to_load = [] %>
     <% MiGA::Dataset.RESULT_DIRS.keys.reverse_each do |k| %>
       <% if res = @dataset_miga.result(k) %>
-        <%= render partial: "shared/result",
-              locals: { res:res, obj:@dataset_miga, proj:@project, key:k } %>
+        <div id="reference_dataset_result_<%= k %>_<%= @dataset_miga.name %>">
+          <h3 class="result-title">
+            <i class="glyphicon glyphicon-tasks"> </i>
+            <%= image_tag("loading.gif") %>
+            <%= k.to_s.unmiga_name.capitalize %>
+          </h3>
+        </div>
+        <% results_to_load << k %>
       <% end %>
     <% end %>
+    <script>
+      <% results_to_load.each do |k| %>
+        $.ajax(
+          { url: "<%= project_result_partial_path(@project, k, r_ds: @dataset_miga.name) %>" }
+        ).done(function(data){ $("#reference_dataset_result_<%= k %>_<%= @dataset_miga.name %>").html(data) });
+      <% end %>
+    </script>
   </div>
 </div>

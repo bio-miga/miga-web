@@ -26,7 +26,7 @@
                 "http://www.jcvi.org/cgi-bin/tigrfams/HmmReportPage.cgi?acc=" :
                 "http://pfam.xfam.org/family/"
               %>
-              &nbsp;&nbsp;<b><%= $1 %><a target=_blank
+              &nbsp;&nbsp;<b><%= $1 %><a target=_blank rel=noopener
                 href="<%= "#{url}#{$2}" %>"><%= $2 %></a>: <%= $3 %></b>
                 <%= $4 %>
         <%  else %>

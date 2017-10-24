@@ -146,6 +146,29 @@ class ProjectsController < ApplicationController
     render :nothing => true, :status => 200, :content_type => "text/html"
   end
 
+  # Displays the result as a partial for asynchronous loading
+  def result_partial
+    begin
+      if params[:q_ds].nil?
+        obj = Project.find(params[:id])
+        proj = obj
+        unless params[:r_ds].nil?
+          obj = obj.miga.dataset(params[:r_ds])
+          obj_miga = obj
+        end
+      else
+        obj = QueryDataset.find(params[:q_ds])
+      end
+      obj_miga ||= obj.miga
+      res = obj_miga.result(params[:result])
+      render partial: "shared/result",
+        locals: { res: res, key: params[:result].to_sym, obj: obj, proj: proj },
+        layout: false
+    rescue
+      render :nothing => true, :status => 200, :content_type => "text/html"
+    end
+  end
+
   # Loads a result from a reference dataset in a project.
   def reference_dataset_result
     if p = Project.find(params[:id]) and m = p.miga

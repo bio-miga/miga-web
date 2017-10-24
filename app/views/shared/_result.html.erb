@@ -3,6 +3,7 @@
 <%
   titles = {
     ssu: "Ribosomal RNA (small subunit)",
+    essential_genes: "Quality (essential genes)",
     cds: "Gene prediction",
     mytaxa_scan: "MyTaxa Scan",
     mytaxa: "MyTaxa",
@@ -122,7 +123,8 @@
     <p>
     <% res[:stats].each do |k,v| %>
       <% v = v.is_a?(Array) ? [v[0], " #{v[1]}"] : [v, ""] %>
-      <b><%= k.to_s.unmiga_name.capitalize %>:</b>
+      <b><%= k.to_s.unmiga_name.capitalize.
+              gsub(/g c content/i, "G+C content") %>:</b>
       <%= number_with_precision(v[0],
             precision:4, strip_insignificant_zeros:true, delimiter:",")
             %><%= v[1] %>.<br/>
@@ -155,4 +157,5 @@
   <div class="timestamp"><%= time_ago_in_words res.data[:created] %> ago</div>
 </div>
 </div>
+<%= info_msg_content %>
 <% end %>

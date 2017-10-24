@@ -29,12 +29,29 @@
         key:@query_dataset.miga.next_preprocessing } %>
     <% end %>
 
+    <% results_to_load = [] %>
     <% MiGA::Dataset.RESULT_DIRS.keys.reverse_each do |k| %>
       <% if res = @query_dataset.miga.result(k) %>
-        <%= render partial: "shared/result",
-          locals: { res:res, obj:@query_dataset, key:k } %>
+        <div id="query_dataset_result_<%= k %>_<%= @query_dataset.id %>">
+          <h3 class="result-title">
+            <i class="glyphicon glyphicon-tasks"> </i>
+            <%= image_tag("loading.gif") %>
+            <%= k.to_s.unmiga_name.capitalize %>
+          </h3>
+        </div>
+        <% results_to_load << k %>
       <% end %>
     <% end %>
+    <script>
+      <% results_to_load.each do |k| %>
+        $.ajax(
+          { url: "<%= project_result_partial_path(
+            @query_dataset.project, k, {q_ds: @query_dataset.id}) %>" }
+        ).done(function(data){
+          $("#query_dataset_result_<%= k %>_<%= @query_dataset.id %>").
+            html(data) });
+      <% end %>
+    </script>
     <% unless @query_dataset.run_mytaxa_scan? %>
       <br/><br/>
       <%= link_to "Execute MyTaxa scan analysis",
