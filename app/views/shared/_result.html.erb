@@ -127,7 +127,8 @@
               gsub(/g c content/i, "G+C content") %>:</b>
       <%= number_with_precision(v[0],
             precision:4, strip_insignificant_zeros:true, delimiter:",")
-            %><%= v[1] %>.<br/>
+            %><%= v[1] %>
+      <br/>
     <% end %>
     </p>
   <% end %>

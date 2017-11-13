@@ -25,7 +25,8 @@ module QueryDatasetsHelper
       sig = ""
       [0.5,0.1,0.05,0.01].each{ |i| sig << "*" if v<i }
       all << "<div class='taxonomy-tree'>" +
-              "<b><span class=badge>#{MiGA::Taxonomy.LONG_RANKS[k]}</span> <i>"
+              "<b" + (v>0.5 ? " class='text-muted'" : "") +
+              "><span class=badge>#{MiGA::Taxonomy.LONG_RANKS[k]}</span> <i>"
       all << link_to(tax[k],
               project_search_path(project_id, q:"tax:\"#{tax[k]}\"")) if tax[k]
       all << "</i> (p-value #{"%.3g" % v}#{sig})</b>"

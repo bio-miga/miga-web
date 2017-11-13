@@ -17,7 +17,8 @@
           obj.miga.project.path)
         lowest_med = nil
         File.open(med_file, "r") do |f|
-          lowest_med = f.readlines.last.chomp.split(/\s+/)
+          med = f.readlines.last.chomp.split(/\s+/)
+          lowest_med = med unless med[3].nil?
         end if File.size?(med_file)
       %>
       <% unless lowest_med.nil? or lowest_med.empty? %>
