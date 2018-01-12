@@ -25,6 +25,16 @@ class QueryDataset < ActiveRecord::Base
     QueryDataset.where(["user_id=? and ready=?", user.nil? ? 0 : user.id, false])
   end
 
+  # Generate a random new accession number
+  def self.new_acc
+    "M:" + SecureRandom.urlsafe_base64(5).upcase.tap{ |i| i[3]="_" }
+  end
+
+  def to_param
+    self.update(acc:QueryDataset.new_acc) if self.acc.nil?
+    self.acc
+  end
+
   # Returns the MiGA name of the dataset
   def miga_name
     "qG_#{name}_u#{user_id}"
@@ -95,44 +105,47 @@ class QueryDataset < ActiveRecord::Base
 
     def create_miga_dataset
       f = { 1=>input_file.path, 2=>input_file_2.path }
+      t = input_type.to_sym
       return if MiGA::Dataset.exist? project.miga, miga_name
       MiGA::Dataset.new(project.miga, miga_name, false,
         {user: user_id, type: :genome})
-      project.miga.add_dataset(miga.name)
-      return unless MiGA::Dataset.RESULT_DIRS.keys.include? input_type.to_sym
+      project.miga.add_dataset(miga_name)
+      return unless MiGA::Dataset.RESULT_DIRS.keys.include? t
       r_base = File.join(project.miga.path, "data",
         MiGA::Dataset.RESULT_DIRS[input_type.to_sym], miga_name)
       
-      # ToDo: Add support for .gz!
-      case input_type.to_sym
+      case t
       when :raw_reads
-        FileUtils.copy(f[1], "#{r_base}.1.fastq")
-        FileUtils.copy(f[2], "#{r_base}.2.fastq") unless f[2].nil?
+        copy_to_miga(f[1], "#{r_base}.1.fastq")
+        copy_to_miga(f[2], "#{r_base}.2.fastq") unless f[2].nil?
       when :trimmed_fasta
         if f[2].nil?
-          FileUtils.copy(f[1], "#{r_base}.SingleReads.fa")
+          copy_to_miga(f[1], "#{r_base}.SingleReads.fa")
         else
-          FileUtils.copy(f[1], "#{r_base}.1.fasta")
-          FileUtils.copy(f[2], "#{r_base}.2.fasta")
+          copy_to_miga(f[1], "#{r_base}.1.fasta")
+          copy_to_miga(f[2], "#{r_base}.2.fasta")
         end
       when :assembly
-        FileUtils.copy(f[1], "#{r_base}.LargeContigs.fna")
+        copy_to_miga(f[1], "#{r_base}.LargeContigs.fna")
       else
         return
       end
       File.open("#{r_base}.done", "w") { |fh| fh.puts Time.now.to_s }
-      miga.add_result input_type.to_sym
+      miga.add_result t
     ensure
       # Empty input files
-      if f
-        File.open(f[1], "r"){ |fh| fh.print "" } unless f[1].nil?
-        File.open(f[2], "r"){ |fh| fh.print "" } unless f[2].nil?
-      end
+      f ||= {}
+      f.each{ |_,i| File.open(i, "r"){ |fh| fh.print "" } unless i.nil? }
     end
-    
+ 
     def load_miga_dataset
       self.miga_obj = project.miga.dataset(miga_name) if
         miga_obj.nil? and MiGA::Dataset.exist?(project.miga, miga_name)
+    end
+
+    def copy_to_miga(input, output)
+      output += ".gz" if input =~ /\.gz\z/
+      FileUtils.copy(input, output)
     end
 
 end

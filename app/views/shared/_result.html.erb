@@ -62,13 +62,11 @@
           :mytaxa_scan, :report) :
         query_dataset_result_path(obj.id, :mytaxa_scan, :report)
       f_path = nil if res.file_path(:report).nil?
-      regions = res.data[:files][:region_ids].nil? ? 0 :
-        File.readlines(res.file_path :region_ids).count
     %>
     <p>
-      MyTaxa Scan detected <%= pluralize regions, "region" %> with unusual
-      taxonomic distribution (<%= f_path.nil? ? "No report available" :
-        link_to("download PDF", f_path) %>).
+      MyTaxa Scan detected regions with unusual taxonomic distribution
+      (<%= f_path.nil? ? "No report available" :
+            link_to("download PDF", f_path) %>).
     </p>
   <% when :mytaxa %>
     <%

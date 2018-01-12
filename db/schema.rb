@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160527051252) do
+ActiveRecord::Schema.define(version: 20171231232106) do
 
   create_table "projects", force: :cascade do |t|
     t.text     "path"
@@ -36,8 +36,10 @@ ActiveRecord::Schema.define(version: 20160527051252) do
     t.string   "input_file_2"
     t.boolean  "notified",     default: false
     t.boolean  "complete_new", default: false
+    t.string   "acc"
   end
 
+  add_index "query_datasets", ["acc"], name: "index_query_datasets_on_acc", unique: true
   add_index "query_datasets", ["project_id", "created_at"], name: "index_query_datasets_on_project_id_and_created_at"
   add_index "query_datasets", ["project_id", "user_id", "name"], name: "index_query_datasets_on_project_id_and_user_id_and_name", unique: true
   add_index "query_datasets", ["project_id"], name: "index_query_datasets_on_project_id"

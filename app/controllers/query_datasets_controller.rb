@@ -1,7 +1,8 @@
 class QueryDatasetsController < ApplicationController
   before_action :logged_in_user, only: [:index, :destroy]
   
-  before_action :correct_user_or_admin, only: [:show, :destroy, :result]
+  before_action :set_query_dataset, only: [:show, :destroy, :result, :run_mytaxa_scan, :run_distances]
+  before_action :correct_user_or_admin, only: [:show, :destroy, :result, :run_mytaxa_scan, :run_distances]
 
   def index
     # Find query datasets
@@ -27,7 +28,6 @@ class QueryDatasetsController < ApplicationController
   end
 
   def show
-    @query_dataset = QueryDataset.find(params[:id])
     @query_dataset.complete_seen!
   end
 
@@ -64,7 +64,7 @@ class QueryDatasetsController < ApplicationController
   end
 
   def destroy
-    qd = QueryDataset.find(params[:id])
+    qd = @query_dataset
     p = qd.project
     p.miga.unlink_dataset qd.miga.name
     qd.miga.remove!
@@ -73,7 +73,7 @@ class QueryDatasetsController < ApplicationController
   end
 
   def result
-    qd  = QueryDataset.find(params[:id])
+    qd  = @query_dataset
     m   = qd.miga
     res = m.result(params[:result])
     unless res.nil?
@@ -102,14 +102,12 @@ class QueryDatasetsController < ApplicationController
   
   # Execute the MyTaxa Scan step upon request.
   def run_mytaxa_scan
-    @query_dataset = QueryDataset.find(params[:id])
     @query_dataset.run_mytaxa_scan!
     redirect_to(@query_dataset)
   end
   
   # Re-calculate the Distances step upon request.
   def run_distances
-    @query_dataset = QueryDataset.find(params[:id])
     @query_dataset.run_distances!
     redirect_to(@query_dataset)
   end
@@ -149,10 +147,21 @@ class QueryDatasetsController < ApplicationController
       end
       qd
     end
+
+    # Sets the query dataset by ID or accession
+    def set_query_dataset
+      if params[:id] =~ /\AM:/
+        @query_dataset = QueryDataset.find_by(acc: params[:id])
+      else
+        @query_dataset = QueryDataset.find(params[:id])
+        flash.now[:warning]= "Entry IDs are being phased out, please update your links"
+        # redirect_to root_url and return
+      end
+    end
       
     # Confirms the correct user
     def correct_user_or_admin
-      @user = QueryDataset.find(params[:id]).user
+      @user = @query_dataset.user
       return true if @user.nil?
       redirect_to(root_url) if current_user.nil? or
         not( current_user?(@user) or current_user.admin? )
