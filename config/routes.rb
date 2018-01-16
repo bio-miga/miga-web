@@ -18,7 +18,6 @@ Rails.application.routes.draw do
   get 'projects/:id/reference_datasets/:dataset/result/:result/:file' => 'projects#reference_dataset_result', as: :reference_dataset_result
   get 'projects/:id/search'                        => 'projects#search', as: :project_search
   get 'projects/:project_id/query_datasets'        => 'query_datasets#index', as: :project_query_datasets
-  get 'projects/:project_id/query_datasets/:ready' => 'query_datasets#index', as: :project_query_datasets_ready
   get 'projects/:id/result/:result/:file'          => 'projects#result', as: :project_result
   get 'projects/:id/result/:result'                => 'projects#result_partial', as: :project_result_partial
   get 'projects/:id/ncbi_download'                 => 'projects#new_ncbi_download', as: :project_new_ncbi_download
@@ -26,7 +25,6 @@ Rails.application.routes.draw do
   post 'projects/:id/start_daemon'                 => 'projects#start_daemon', as: :project_start_daemon
   post 'projects/:id/stop_daemon'                  => 'projects#stop_daemon', as: :project_stop_daemon
   # Query datasets
-  get 'query_datasets/all/:ready'                  => 'query_datasets#index', as: :query_datasets_ready
   get 'query_datasets/:id/result/:result/:file'    => 'query_datasets#result', as: :query_dataset_result
   get "query_datasets/:id/run_mytaxa_scan"         => "query_datasets#run_mytaxa_scan", as: :query_dataset_run_mytaxa_scan
   get "query_datasets/:id/run_distances"           => "query_datasets#run_distances", as: :query_dataset_run_distances
