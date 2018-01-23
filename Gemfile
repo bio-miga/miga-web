@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 # Use MiGA base code to communicate with the projects
 gem 'miga-base', '~> 0.3.1.5'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.4'
+gem 'rails', '4.2.7.1'
 # Make it safe
 gem 'bcrypt', '3.1.7'
 # Mock-up users
