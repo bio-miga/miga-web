@@ -58,7 +58,7 @@ what we use.
 
 ```bash
 export SECRET_KEY_BASE=`bundle exec rake secret`
-rails s -e production Puma
+bundle exec rails server -e production Puma
 ```
 
 Now you can visit your MiGA Web interface at
@@ -69,7 +69,7 @@ it to rails using -b and -p. For example, this is how we launch our own
 
 ```bash
 export SECRET_KEY_BASE=`bundle exec rake secret`
-rails s -e production -b enve-omics.ce.gatech.edu -p 3000 Puma
+bundle exec rails server -e production -b enve-omics.ce.gatech.edu -p 3000 Puma
 ```
 
 ## Create admin users
@@ -78,10 +78,9 @@ Once you create your first user from the website, you may want to make it an
 admin. You can do so from the console:
 
 ```ruby
-RAILS_ENV=production rails c
+bundle exec rails console -e production
 irb> u = User.find(1) # Change the 1 for the actual ID of your user
-irb> u.admin = true
-irb> u.save
+irb> u.update(admin: true)
 ```
 
 ## How to run the test suite
