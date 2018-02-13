@@ -40,7 +40,7 @@ module ApplicationHelper
   end
    
   def full_title(page_title="")
-    page_title + (" | " unless page_title.empty?) + "MiGA Clades"
+    page_title + (" | " unless page_title.empty?) + "MiGA Online"
   end
    
   def breadcrumb(location="")
