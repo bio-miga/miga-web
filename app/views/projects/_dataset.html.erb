@@ -23,20 +23,29 @@
             :quality].include? k %>
       <% k_str = k.to_s.unmiga_name.capitalize %>
       <%
-        if k==:comments and /(.*)Assembly: (\S+)(.*)/.match(v)
-          v = "#{$1}<a href='https://www.ncbi.nlm.nih.gov/assembly/#{$2}/' " +
-                "target=_blank>Assembly: #{$2}</a>#{$3}"
-        elsif k==:ncbi_tax_id
+        case k
+        when :comments
+          if /(.*)Assembly: (\S+)(.*)/.match(v)
+            v = "#{$1}<a href='https://www.ncbi.nlm.nih.gov/assembly/#{$2}/' " +
+                  "target=_blank>Assembly: #{$2}</a>#{$3}"
+          end
+        when :ncbi_tax_id
           k_str = "NCBI TaxID"
-          v = v.split(",").map do |i|
+          v = v.split(/[,;]/).map do |i|
             "<a href='http://www.uniprot.org/taxonomy/#{i}' " +
               "target=_blank>#{i}</a>"
           end.join(", ")
-        elsif k==:ncbi_nuccore
+        when :ncbi_nuccore
           k_str = "NCBI Nucleotide"
-          v = v.split(",").map do |i|
+          v = v.split(/[,;]/).map do |i|
             "<a href='https://www.ncbi.nlm.nih.gov/nuccore/#{i}' " +
               "target=_blank>#{i}</a>"
+          end.join(", ")
+        when :see_also
+          k_str = "See also"
+          v = v.split(/[,;]/).map do |i|
+            l = i.split(/:/, 2)
+            "<a href='#{l[1]}' target=_blank>#{l[0]}</a>"
           end.join(", ")
         end
       %>
