@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 
 # Use MiGA base code to communicate with the projects
-gem 'miga-base', '~> 0.3.1.5'
+gem 'miga-base', '~> 0.3.1.7'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 4.2'
 # Make it safe

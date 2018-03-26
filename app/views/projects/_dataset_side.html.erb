@@ -5,7 +5,14 @@
     <% tax = dataset.metadata[:tax].sorted_ranks.map{ |r| r.join(": ")} %>
     <% tax.each do |r| %>
       <% r = r.split(": ") %>
-      <li><span class=text-muted><%= r[0] %>:</span> <i><%= r[1] %></i></li>
+      <li>
+        <span class=text-muted><%= r[0] %>:</span>
+        <% if r[1] =~ /^(Candidatus) (.*)/ %>
+          <i><%= $1 %></i> <%= $2 %>
+        <% else %>
+          <i><%= r[1] %></i>
+        <% end %>
+      </li>
     <% end %>
     </ul>
   </span>

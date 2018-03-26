@@ -23,23 +23,25 @@
             :quality].include? k %>
       <% k_str = k.to_s.unmiga_name.capitalize %>
       <%
+        ext_links = {
+          ncbi_tax_id: ["NCBI TaxID", "http://www.uniprot.org/taxonomy/"],
+          ncbi_nuccore: ["NCBI Nucleotide",
+                "https://www.ncbi.nlm.nih.gov/nuccore/"],
+          ebi_ena: ["EBI ENA", "https://www.ebi.ac.uk/ena/data/view/"],
+          ebi_embl: ["EBI EMBL", "https://www.ebi.ac.uk/embl/data/view/"],
+          dprotologue: ["Digital Protologue Database",
+                "http://imedea.uib-csic.es/dprotologue/getPdfTX.php?taxonumber="]
+        }
         case k
         when :comments
           if /(.*)Assembly: (\S+)(.*)/.match(v)
             v = "#{$1}<a href='https://www.ncbi.nlm.nih.gov/assembly/#{$2}/' " +
                   "target=_blank>Assembly: #{$2}</a>#{$3}"
           end
-        when :ncbi_tax_id
-          k_str = "NCBI TaxID"
+        when *ext_links.keys
+          k_str = ext_links[k][0]
           v = v.split(/[,;]/).map do |i|
-            "<a href='http://www.uniprot.org/taxonomy/#{i}' " +
-              "target=_blank>#{i}</a>"
-          end.join(", ")
-        when :ncbi_nuccore
-          k_str = "NCBI Nucleotide"
-          v = v.split(/[,;]/).map do |i|
-            "<a href='https://www.ncbi.nlm.nih.gov/nuccore/#{i}' " +
-              "target=_blank>#{i}</a>"
+            "<a href='#{ext_links[k][1]}#{i}' target=_blank>#{i}</a>"
           end.join(", ")
         when :see_also
           k_str = "See also"
@@ -49,7 +51,7 @@
           end.join(", ")
         end
       %>
-      <b><%= k_str %>:</b> <%= v.html_safe %>
+      <b><%= k_str %>:</b> <%= v.to_s.html_safe %>
     <% end %>
   </span>
   <% unless noname %>
