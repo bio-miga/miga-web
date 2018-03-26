@@ -19,7 +19,8 @@
 <% unless res.data[:files][:core_pan_plot].nil? %>
   <p>
     See the
-    <%= link_to "rarefied pangenome and core genome sizes",
-    project_result_path(project.id, :ogs, :core_pan_plot) %>.
+    <%= link_to("rarefied pangenome and core genome sizes",
+          project_result_path(project.id, :ogs, :core_pan_plot),
+          target: "_blank") %>.
   </p>
 <% end %>

@@ -50,8 +50,8 @@ module ApplicationHelper
   def plotly(data, layout={})
     id = SecureRandom.uuid
     content_tag(:div, id:id) do
-      javascript_tag "Plotly.plot('#{id}', [#{data.to_json}], " +
-        "#{layout.to_json});"
+      javascript_tag "$( Plotly.plot('#{id}', [#{data.to_json}], " +
+        "#{layout.to_json}) );"
     end
   end
    

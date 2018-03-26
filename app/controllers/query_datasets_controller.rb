@@ -76,7 +76,9 @@ class QueryDatasetsController < ApplicationController
     qd  = @query_dataset
     m   = qd.miga
     res = m.result(params[:result])
-    unless res.nil?
+    if res.nil?
+      render :nothing => true, :status => 200, :content_type => "text/html"
+    else
       abs_path = res.file_path(params[:file])
       if Dir.exists?(abs_path) and params[:f] and not params[:f]=~/\//
         abs_path = File.expand_path(params[:f], abs_path)
@@ -93,11 +95,9 @@ class QueryDatasetsController < ApplicationController
           else ; "raw/text"
         end
         send_file(abs_path, filename: File.basename(abs_path),
-          disposition: "inline", type: type, x_sendfile: true)
+          disposition: "attachment", type: type, x_sendfile: true)
       end
-      return
     end
-    render :nothing => true, :status => 200, :content_type => "text/html"
   end
   
   # Execute the MyTaxa Scan step upon request.

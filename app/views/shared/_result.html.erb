@@ -66,7 +66,7 @@
     <p>
       MyTaxa Scan detected regions with unusual taxonomic distribution
       (<%= f_path.nil? ? "No report available" :
-            link_to("download PDF", f_path) %>).
+            link_to("download PDF", f_path, target: "_blank") %>).
     </p>
   <% when :mytaxa %>
     <%
@@ -142,7 +142,8 @@
         project_result_path(obj.id, key, k) :
         obj.is_a?(MiGA::Dataset) ?
         reference_dataset_result_path(proj.id, obj.name, key, k) :
-        query_dataset_result_path(obj.id, key, k), {rel: "tooltip",
+        query_dataset_result_path(obj.id, key, k),
+        {rel: "tooltip", target: "_blank",
         title: Dir.exist?(f) ? "Folder" : number_to_human_size(File.size f)})
     end.compact.
       to_sentence(two_words_connector:" or ", last_word_connector:", or ").

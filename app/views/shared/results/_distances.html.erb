@@ -127,9 +127,11 @@
   <p>
     This dataset was placed in the context of some representative genomes from
     the reference collection. See <%= link_to("BioNJ tree in PDF",
-    query_dataset_result_path(dataset.id, :distances, :ref_tree_pdf)) %> (or
+          query_dataset_result_path(dataset.id, :distances, :ref_tree_pdf),
+          target: "_blank") %> (or
     <%= link_to("download it in Newick format",
-    query_dataset_result_path(dataset.id, :distances, :ref_tree)) %>).
+          query_dataset_result_path(dataset.id, :distances, :ref_tree),
+          target: "_blank") %>).
   </p>
 <% end %>
 <div class="panel-group" id=distances role=tablist
