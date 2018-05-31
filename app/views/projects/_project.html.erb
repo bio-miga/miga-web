@@ -28,7 +28,8 @@
     <% end %>
   </span>
   <span class="timestamp">
-    Created <%= time_ago_in_words(project.created_at) %> ago by
-    <%= link_to project.user.name, project.user %>.
+    <% unless project.last_db_update.nil? %>
+      Last updated <%= time_ago_in_words(project.last_db_update) %> ago
+    <% end %>
   </span>
 </li>

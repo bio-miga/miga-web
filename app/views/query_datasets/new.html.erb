@@ -29,7 +29,7 @@
       <%= f.label :name %>
       <%= f.text_field :name, class: "form-control" %>
       <p class=help-block>Dataset names can only contain alphanumerics and
-        underscores.</p>
+        underscores</p>
 
       <%= label_tag :type, "Type of dataset" %>
       <%= select_tag(:type,
@@ -50,6 +50,7 @@
       <%= f.label :input_file, "Input file(s)" %>
       <%= f.file_field :input_file, class: "form-control" %>
       <%= f.file_field :input_file_2, class: "form-control" %>
+      <p class=help-block>GZ compression supported (with .gz extension)</p>
          
       <hr/>
       <h1>Optional information</h1>
@@ -58,6 +59,15 @@
 
       <%= label_tag :comments, "Comments" %>
       <%= text_area_tag :comments, "", class: "form-control" %>
+
+      <hr/>
+      <div class='alert alert-info'>
+        <h3>Data privacy</h3>
+        We intend to keep your data private, but your data may be subject to
+        public disclosure due to security issues, programming error, human
+        error, or other reasons. Please keep an up-to-date offline backup of
+        your data at all times.
+      </div>
 
       <%= f.submit "Upload new dataset", class: "btn btn-primary" %>
     <% end %>

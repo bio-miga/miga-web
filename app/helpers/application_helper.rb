@@ -146,6 +146,7 @@ module ApplicationHelper
     content_tag :div, style: "margin: 2em 0;" do
       trace.each do |t|
         concat content_tag(:div, class: "row", style:"margin-bottom:10px;"){
+          concat content_tag(:hr) if t[:k]=='Quality'
           concat content_tag(:strong, t[:k], class: "col-sm-4 text-right")
           concat content_tag(:div, class: "col-sm-4"){
             concat content_tag(:div, class:"progress", style:"margin-bottom:0;"){

@@ -104,9 +104,9 @@ class QueryDataset < ActiveRecord::Base
   private
 
     def create_miga_dataset
-      f = { 1=>input_file.path, 2=>input_file_2.path }
+      return if MiGA::Dataset.exist?(project.miga, miga_name)
+      f = { 1=>input_file, 2=>input_file_2 }
       t = input_type.to_sym
-      return if MiGA::Dataset.exist? project.miga, miga_name
       MiGA::Dataset.new(project.miga, miga_name, false,
         {user: user_id, type: :genome})
       project.miga.add_dataset(miga_name)
@@ -117,9 +117,9 @@ class QueryDataset < ActiveRecord::Base
       case t
       when :raw_reads
         copy_to_miga(f[1], "#{r_base}.1.fastq")
-        copy_to_miga(f[2], "#{r_base}.2.fastq") unless f[2].nil?
+        copy_to_miga(f[2], "#{r_base}.2.fastq") unless f[2].path.nil?
       when :trimmed_fasta
-        if f[2].nil?
+        if f[2].path.nil?
           copy_to_miga(f[1], "#{r_base}.SingleReads.fa")
         else
           copy_to_miga(f[1], "#{r_base}.1.fasta")
@@ -135,7 +135,9 @@ class QueryDataset < ActiveRecord::Base
     ensure
       # Empty input files
       f ||= {}
-      f.each{ |_,i| File.open(i, "r"){ |fh| fh.print "" } unless i.nil? }
+      f.values.each do |i|
+        File.open(i.path, "r"){ |fh| fh.print "" } unless i.path.nil?
+      end
     end
  
     def load_miga_dataset
@@ -144,8 +146,8 @@ class QueryDataset < ActiveRecord::Base
     end
 
     def copy_to_miga(input, output)
-      output += ".gz" if input =~ /\.gz\z/
-      FileUtils.copy(input, output)
+      output += ".gz" if input.filename =~ /\.gz\z/
+      FileUtils.copy(input.path, output)
     end
 
 end

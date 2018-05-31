@@ -5,7 +5,15 @@
       <%= form_for(@user) do |f| %>
 	 <%= render "shared/error_messages", object: f.object %>
 	 
-	 <%= f.label :name %>
+	 <div class='alert alert-info'>
+           <h3>Data privacy</h3>
+           We intend to keep your data private, but your data may be subject to
+           public disclosure due to security issues, programming error, human
+           error, or other reasons. Please keep an up-to-date offline backup of
+           your data at all times.
+         </div>
+         
+         <%= f.label :name %>
 	 <%= f.text_field :name, class: "form-control" %>
 
 	 <%= f.label :email %>

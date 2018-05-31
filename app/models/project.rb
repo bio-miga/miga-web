@@ -116,6 +116,14 @@ class Project < ActiveRecord::Base
     File.expand_path("README.md", full_path)
   end
 
+  def last_db_update
+    return if miga.nil?
+    res = miga.result(:subclades)
+    res ||= miga.result(:clade_finding)
+    return if res.nil?
+    DateTime.parse res[:updated]
+  end
+
    private
 
       def full_path

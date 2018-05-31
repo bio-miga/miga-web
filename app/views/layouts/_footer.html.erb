@@ -3,11 +3,11 @@
     <div class="col-md-8">
       <nav>
         <ul class="left-col">
-          <li><%= link_to "Manual",
-                            "http://manual.microbial-genomes.org/" %></li>
-          <li><%= link_to "News", "http://enve-omics.ce.gatech.edu/miga" %></li>
+          <li><%= link_to "Help", "https://help.microbial-genomes.org/" %></li>
+          <li><%= link_to "News", "http://miga.microbial-genomes.org/" %></li>
           <li><%= link_to "Contact", contact_path %></li>
           <li><%= link_to "About", about_path %></li>
+          <li><%= link_to "Roadmap", "http://roadmap.microbial-genomes.org/" %></li>
         </ul>
       </nav>
     </div>
@@ -15,10 +15,10 @@
       <small>
         <p>
           <%= link_to "MiGA Web by Luis M. Rodriguez-R",
-                "https://github.com/bio-miga/miga-web",
+                "http://code.microbial-genomes.org/miga-web",
                 target: "_blank", rel: "noopener" %><br/>
           Powered by <%= link_to MiGA::MiGA.LONG_VERSION.gsub(/ - \S+$/,""),
-                "https://github.com/bio-miga/miga",
+                "http://code.microbial-genomes.org/miga",
                 target: "_blank", rel: "noopener" %>
         </p>
       </small>
@@ -27,8 +27,8 @@
   <div class="row center">
     <div class="col-sm-4">
       <%= link_to image_tag("MiGA.png", alt: "MiGA logo"),
-          "http://enve-omics.ce.gatech.edu/miga",
-          target: "_blank", rel: "noopener" %>
+            "http://miga.microbial-genomes.org/",
+            target: "_blank", rel: "noopener" %>
     </div>
     <div class="col-sm-4">
       <h4>Funded by:</h4>
