@@ -11,8 +11,7 @@
               intermediate:"warning", low:"danger"}[qi.to_sym]
         %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
       <% end %>
-      <%= link_to dataset.name.unmiga_name,
-            reference_dataset_path(project.id, dataset.name) %>
+      <%= link_to_reference_dataset(project, dataset.name) %>
     </span>
   <% end %>
   <%= render partial: (expand_side ? "dataset_side" : "dataset_intax"),
@@ -20,7 +19,7 @@
   <span class="metadata">
     <% dataset.metadata.each do |k,v| %>
       <% next if [:type, :ref, :created, :updated, :user, :tax,
-            :quality].include? k %>
+            :quality, :is_type].include? k %>
       <% k_str = k.to_s.unmiga_name.capitalize %>
       <%
         ext_links = {

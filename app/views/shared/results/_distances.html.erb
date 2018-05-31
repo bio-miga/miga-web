@@ -50,18 +50,15 @@
   %>
   <% if not val.empty? and val.second %>
     The closest relatives found by MiGA in the database were
-    <%= link_to val.first.first.unmiga_name,
-           reference_dataset_path(project.id, val.first.first) %>
+    <%= link_to_reference_dataset(project, val.first.first) %>
     (<%= val.first.second.round 2 %>% <%= val_m %>) and
-    <%= link_to val.second.first.unmiga_name,
-           reference_dataset_path(project.id, val.second.first) %>
+    <%= link_to_reference_dataset(project, val.second.first) %>
     (<%= val.second.second.round 2 %>% <%= val_m %>).
     <% max_val = val.first.second %>
     <% max_val_ds = project.miga.dataset(val.first.first) %>
   <% elsif not val.empty? and val.first %>
     The closest relative found by MiGA in the database was
-    <%= link_to val.first.first.unmiga_name,
-           reference_dataset_path(project.id, val.first.first) %>
+    <%= link_to_reference_dataset(project, val.first.first) %>
     (<%= val.first.second.round 2 %>% <%= val_m %>).
     <% max_val = val.first.second %>
     <% max_val_ds = project.miga.dataset(val.first.first) %>

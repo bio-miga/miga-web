@@ -22,8 +22,7 @@
                       intermediate:"warning", low:"danger"}[qi.to_sym]
                 %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
               <% end %>
-              <%= link_to @dataset_miga.name.unmiga_name,
-              reference_dataset_path(@project.id, @dataset_miga.name) %></b>
+              <%= link_to_reference_dataset(@project, @dataset_miga.name) %></b>
           </span>
           <span class="timestamp">
             Created
