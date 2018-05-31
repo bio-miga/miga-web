@@ -18,5 +18,21 @@ module ProjectsHelper
     [ @estimated_wait_time[project_id],
           @estimated_wait_time_last_check[project_id] ]
   end
+
+  def link_to_reference_dataset(project, dataset_name)
+    pm = project.miga
+    dataset_miga = pm.dataset(dataset_name) unless pm.nil?
+    if dataset_miga.nil?
+      content_tag(:del, dataset_name, title: 'Reference dataset removed')
+    else
+      link_to reference_dataset_path(project.id, dataset_name) do
+        content_tag(:span, dataset_name.unmiga_name,
+              style: 'display:inline;') +
+              (dataset_miga.metadata[:is_type] ?
+                content_tag(:sup, 'T', title: 'Type strain',
+                      style: 'font-weight:bold;') : nil)
+      end
+    end
+  end
 end
 

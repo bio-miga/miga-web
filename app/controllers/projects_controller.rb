@@ -6,7 +6,13 @@ class ProjectsController < ApplicationController
 
   # Initiate (paginated) list of projects.
   def index
-    @projects = Project.paginate(page: params[:page])
+    if params[:type]
+      @projects = Project.select{ |i|
+            !i.miga.nil? and i.miga.type.to_s==params[:type] }.
+            paginate(page: params[:page])
+    else
+      @projects = Project.paginate(page: params[:page])
+    end
   end
   
   # Create an empty abstract project.
