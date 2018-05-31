@@ -95,7 +95,8 @@ class QueryDatasetsController < ApplicationController
           else ; "raw/text"
         end
         send_file(abs_path, filename: File.basename(abs_path),
-          disposition: "attachment", type: type, x_sendfile: true)
+          disposition: type=='text/html'?'inline':'attachment',
+          type: type, x_sendfile: type!='text/html')
       end
     end
   end

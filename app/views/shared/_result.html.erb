@@ -75,7 +75,8 @@
         query_dataset_result_path(obj.id, :mytaxa, :krona)
     %>
     <p>MiGA classified the assembled contigs at species, genus, and phylum
-    levels using MyTaxa (<%= link_to "see distribution", f_path %>).</p>
+    levels using MyTaxa (<%= link_to "see distribution", f_path,
+          target: '_blank' %>).</p>
   <% when :distances %>
     <%= render partial: "shared/results/distances",
          locals: { res: res, job: key, project: proj, dataset: obj } %>
