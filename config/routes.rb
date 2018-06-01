@@ -26,8 +26,8 @@ Rails.application.routes.draw do
   post 'projects/:id/stop_daemon'                  => 'projects#stop_daemon', as: :project_stop_daemon
   # Query datasets
   get 'query_datasets/:id/result/:result/:file'    => 'query_datasets#result', as: :query_dataset_result
-  get "query_datasets/:id/run_mytaxa_scan"         => "query_datasets#run_mytaxa_scan", as: :query_dataset_run_mytaxa_scan
-  get "query_datasets/:id/run_distances"           => "query_datasets#run_distances", as: :query_dataset_run_distances
+  get 'query_datasets/:id/run_mytaxa_scan'         => 'query_datasets#run_mytaxa_scan', as: :query_dataset_run_mytaxa_scan
+  get 'query_datasets/:id/run_distances'           => 'query_datasets#run_distances', as: :query_dataset_run_distances
   # Medoid clusters
   get "medoid_clade/:project_id/:metric/:clade"    => "projects#medoid_clade", as: :medoid_clade
   get "medoid_clade/:project_id/:metric/:clade/as" => "projects#medoid_clade_as", as: :medoid_clade_as
