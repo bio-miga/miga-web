@@ -28,7 +28,9 @@
     <% end %>
   </span>
   <span class="timestamp">
-    <% unless project.last_db_update.nil? %>
+    <% if project.last_db_update.nil? %>
+      Index unavailable
+    <% else %>
       Last updated <%= time_ago_in_words(project.last_db_update) %> ago
     <% end %>
   </span>
