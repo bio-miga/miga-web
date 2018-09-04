@@ -4,7 +4,10 @@
     style: "background:#{query_dataset.project.code_color};",
     title: query_dataset.project.path_name %></a>
   <span class="name">
-    <% if query_dataset.complete_new %>
+    <% if not query_dataset.miga.is_active? %>
+      <i class="glyphicon glyphicon-remove-circle small text-light-danger"
+        rel="tooltip" title="inactive"> </i>
+    <% elsif query_dataset.complete_new %>
       <i class="glyphicon glyphicon-record small text-light-info"
         rel="tooltip" title="ready"> </i>
     <% elsif query_dataset.ready? %>

@@ -1,39 +1,53 @@
+<% key ||= obj.miga.metadata[:_step] %>
 <% key_name = key.to_s.unmiga_name %>
 <h3 class="result-title">
   <i class="glyphicon glyphicon-time"> </i>
-  Currently running
+  <% if obj.miga.is_active? %>
+    Currently running
+  <% else %>
+    Logs for <%= key_name %>
+  <% end %>
 </h3>
 <div class="result">
   <div class="result-body">
-    <p>
-      <%= obj.name.unmiga_name %> is currently being processed for
-      <b><%= key_name %></b>.
-    </p>
-    <% if key==:distances %>
-      <%
-        metric = obj.miga.project.metadata[:type]==:clade ? "ani" : "aai"
-        med_file = File.expand_path(
-          "data/09.distances/#{obj.miga.name}.#{metric}-medoids.tsv",
-          obj.miga.project.path)
-        lowest_med = nil
-        File.open(med_file, "r") do |f|
-          med = f.readlines.last.chomp.split(/\s+/)
-          lowest_med = med unless med[3].nil?
-        end if File.size?(med_file)
-      %>
-      <% unless lowest_med.nil? or lowest_med.empty? %>
+    <% if obj.miga.is_active? %>
+      <p>
+        <%= obj.name.unmiga_name %> is currently being processed for
+        <b><%= key_name %></b>
+        <% unless obj.miga.metadata["_try_#{key}"].nil? %>
+          (<%= pluralize obj.miga.metadata["_try_#{key}"], "attempt" %>)
+        <% end %>.
+      </p>
+      <% if key==:distances %>
         <%
-          clade = lowest_med[3].gsub(/\.?\/miga-project\.sc/,"").gsub(/^-/,"")
+          metric = obj.miga.project.metadata[:type]==:clade ? "ani" : "aai"
+          med_file = File.expand_path(
+            "data/09.distances/#{obj.miga.name}.#{metric}-medoids.tsv",
+            obj.miga.project.path)
+          lowest_med = nil
+          File.open(med_file, "r") do |f|
+            med = f.readlines.last.chomp.split(/\s+/)
+            lowest_med = med unless med[3].nil?
+          end if File.size?(med_file)
         %>
-        <p>
-          The best available classification so far is:
-          <%= link_to "Clade #{clade}",
-                medoid_clade_path(obj.project.id, metric.upcase, clade)%>
-          (<%= metric.upcase %> to <%= link_to lowest_med[1].unmiga_name,
-                reference_dataset_path(obj.project.id, lowest_med[1]) %>:
-                <%= lowest_med[2].to_f.round 2 %>%).
-        </p>
+        <% unless lowest_med.nil? or lowest_med.empty? %>
+          <%
+            clade = lowest_med[3].gsub(/^.*?(\/miga-project\.sc)/,'\1').
+                  gsub(/\.?\/miga-project\.sc/,'').gsub(/^-/,'')
+          %>
+          <p>
+            The best available classification so far is:
+            <%= link_to "Clade #{clade}",
+                  medoid_clade_path(obj.project.id, metric.upcase, clade)%>
+            (<%= metric.upcase %> to <%= link_to lowest_med[1].unmiga_name,
+                  reference_dataset_path(obj.project.id, lowest_med[1]) %>:
+                  <%= lowest_med[2].to_f.round 2 %>%).
+          </p>
+        <% end %>
       <% end %>
+    <% else %>
+      <p>This task was attempted <%= obj.miga.metadata["_try_#{key}"] || 0 %>
+      times.</p>
     <% end %>
     <div class="panel panel-default" id=partial>
       <div class=panel-heading role=tab id=partial-h>

@@ -15,6 +15,16 @@
         <p><%=  @query_dataset.name.unmiga_name %> is a <b><%= type %></b>:
           <%= MiGA::Dataset.KNOWN_TYPES[type][:description] %></p>
       <% end %>
+      <% unless @query_dataset.miga.metadata[:comments].nil? %>
+        <p class='alert alert-info'>
+          <%= @query_dataset.miga.metadata[:comments] %>
+        </p>
+      <% end %>
+      <% unless @query_dataset.miga.metadata[:warn].nil? %>
+        <p class='alert alert-danger'>
+          <%= @query_dataset.miga.metadata[:warn] %>
+        </p>
+      <% end %>
     </section>
     <section class="query_dataset_settings">
       <%= link_to "Remove dataset", @query_dataset,
@@ -23,11 +33,23 @@
     </section>
   </aside>
   <div class="col-md-8">
-    <% unless @query_dataset.ready? %>
+    <% unless @query_dataset.miga.is_active? %>
+      <br/>
+      <div class='alert alert-warning'>
+        <h3>Dataset inactive</h3>
+        <p>This dataset was inactivated by the system due to an excessive
+        number of errors. If you believe this is a mistake, please contact
+        the administrators to reactivate the dataset.</p>
+      </div>
+      <br/>
+    <% end %>
+
+    <% unless @query_dataset.ready? and @query_dataset.miga.is_active? %>
       <%= render partial: "shared/partial_result",
         locals: { obj:@query_dataset,
         key:@query_dataset.miga.next_preprocessing } %>
     <% end %>
+
 
     <% results_to_load = [] %>
     <% MiGA::Dataset.RESULT_DIRS.keys.reverse_each do |k| %>
