@@ -52,7 +52,7 @@ class QueryDataset < ActiveRecord::Base
   # Checks if it's ready
   def ready?
     return true if complete
-    if miga.nil? or miga.done_preprocessing?
+    if miga.nil? or !miga.is_active? or miga.done_preprocessing?
       update_attribute(:complete, true)
       update_attribute(:complete_new, true)
     end
