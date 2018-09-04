@@ -20,16 +20,26 @@
     <% dataset.metadata.each do |k,v| %>
       <% next if [:type, :ref, :created, :updated, :user, :tax,
             :quality, :is_type].include? k %>
+      <% next if k.to_s[0] == '_' %>
       <% k_str = k.to_s.unmiga_name.capitalize %>
       <%
         ext_links = {
-          ncbi_tax_id: ["NCBI TaxID", "http://www.uniprot.org/taxonomy/"],
-          ncbi_nuccore: ["NCBI Nucleotide",
-                "https://www.ncbi.nlm.nih.gov/nuccore/"],
-          ebi_ena: ["EBI ENA", "https://www.ebi.ac.uk/ena/data/view/"],
-          ebi_embl: ["EBI EMBL", "https://www.ebi.ac.uk/embl/data/view/"],
-          dprotologue: ["Digital Protologue Database",
-                "http://imedea.uib-csic.es/dprotologue/getPdfTX.php?taxonumber="]
+          ncbi_tax_id: ['NCBI TaxID',
+                'http://www.uniprot.org/taxonomy/%s', '%s'],
+          ncbi_nuccore: ['NCBI Nucleotide',
+                'https://www.ncbi.nlm.nih.gov/nuccore/%s', '%s'],
+          ncbi_asm: ['NCBI Assembly',
+                'https://www.ncbi.nlm.nih.gov/assembly/%s', '%s'],
+          ebi_ena: ['EBI ENA',
+                'https://www.ebi.ac.uk/ena/data/view/%s', '%s'],
+          ebi_embl: ['EBI EMBL',
+                'https://www.ebi.ac.uk/embl/data/view/%s', '%s'],
+          web_assembly: ['Download',
+                '%s', 'Assembly'],
+          web_assembly_gz: ['Download',
+                '%s', 'Assembly (gz)'],
+          dprotologue: ['Digital Protologue Database',
+                'http://imedea.uib-csic.es/dprotologue/getPdfTX.php?taxonumber=%s', '%s']
         }
         case k
         when :comments
@@ -40,7 +50,7 @@
         when *ext_links.keys
           k_str = ext_links[k][0]
           v = v.split(/[,;]/).map do |i|
-            "<a href='#{ext_links[k][1]}#{i}' target=_blank>#{i}</a>"
+            "<a href='#{ext_links[k][1] % i}' target=_blank>#{ext_links[k][2] % i}</a>"
           end.join(", ")
         when :see_also
           k_str = "See also"
