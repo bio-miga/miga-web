@@ -22,7 +22,8 @@ class ProjectsController < ApplicationController
   
   # Loads a given project.
   def show
-    @project = Project.find(params[:id])
+    qry = params[:id] =~ /\A\d+\z/ ? :id : :path
+    @project = Project.find_by(qry => params[:id])
   end
 
   # Queries reference datasets in the project
