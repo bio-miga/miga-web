@@ -1,4 +1,5 @@
 <% n = File.foreach(res.file_path(:proposal)).count %>
+<% n_total = File.foreach(res.file_path(:clades_ani95)).count-1 %>
 <% if n > 0 %>
 <% ani_clades_id = info_modal "Species level clades based on ANI" do %>
   <div class="panel-group medoid-tree" role="tablist"
@@ -44,9 +45,9 @@
   <% end %>
   </div>
 <% end %>
-In addition, MiGA found
-<%= link_to("##{ani_clades_id}","data-toggle"=>"modal",
+In addition, MiGA found a total of
+<%= pluralize(n_total, "clade") %> at the species level (ANI &ge; 95%),
+including <%= link_to("##{ani_clades_id}","data-toggle"=>"modal",
                 "data-target"=>"##{ani_clades_id}") { %>
-  <%= pluralize(n, "clade") %> at the species level<% } %>
-based on <b>ANI</b> (above 95%).
+  <%= pluralize(n, "clade") %> with at least 5 members<% } %>.
 <% end %>
