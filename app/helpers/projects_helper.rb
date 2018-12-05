@@ -21,16 +21,21 @@ module ProjectsHelper
 
   def link_to_reference_dataset(project, dataset_name)
     pm = project.miga
-    dataset_miga = pm.dataset(dataset_name) unless pm.nil?
-    if dataset_miga.nil?
+    ds_miga = pm.dataset(dataset_name) unless pm.nil?
+    if ds_miga.nil?
       content_tag(:del, dataset_name, title: 'Reference dataset removed')
     else
       link_to reference_dataset_path(project.id, dataset_name) do
         content_tag(:span, dataset_name.unmiga_name,
-              style: 'display:inline;') +
-              (dataset_miga.metadata[:is_type] ?
-                content_tag(:sup, 'T', title: 'Type strain',
-                      style: 'font-weight:bold;') : nil)
+          style: 'display:inline;') +
+              (ds_miga.metadata[:is_type] ?
+                content_tag(:sup, 'T',
+                  title: ds_miga.metadata[:type_rel] || 'Type strain',
+                  style: 'font-weight:bold;') :
+              ds_miga.metadata[:is_ref_type] ?
+                content_tag(:sup, 'R',
+                  title: ds_miga.metadata[:type_rel] || 'Reference material',
+                  style: 'font-weight:bold;') : nil)
       end
     end
   end
