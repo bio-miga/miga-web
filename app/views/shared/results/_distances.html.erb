@@ -117,8 +117,11 @@
 <h4>Genome relatedness
 <%= info_msg "Genome relatedness to database references" do %>
   <p>
-    Average sequence identities to reference datasets in the database.
+    Average sequence identities to reference datasets in the database. Displays
+    only the top-50 values.
   </p>
+  <p><b>ANI:</b>Average Nucleotide Identity</p>
+  <p><b>AAI:</b>Average Amino Acid Identity</p>
 <% end %></h4>
 <% unless res.file_path(:ref_tree_pdf).nil? %>
   <p>
@@ -139,7 +142,8 @@
     db_qry = db[metric.to_sym].
           execute("SELECT seq2, #{metric}, sd, 100.0*n/omega " +
             "FROM #{metric} WHERE seq2 != ? " +
-            "GROUP BY seq2 ORDER BY #{metric} DESC", [dataset.name])
+            "GROUP BY seq2 ORDER BY #{metric} DESC " +
+            "LIMIT 50", [dataset.name])
     next if db_qry.empty?
   %>
   <div class="panel panel-default">
