@@ -19,3 +19,6 @@ home_contents: default
 # defined in "app/views/sessions/_login_custom.html.erb".
 login_message: default
 
+# Google Analytics Tracking ID.
+# google_tracking_id: UA-XXX
+
