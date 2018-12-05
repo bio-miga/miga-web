@@ -27,6 +27,9 @@
       <% end %>
     </section>
     <section class="query_dataset_settings">
+      <%= link_to "Mark dataset as unseen",
+        query_dataset_mark_unread_url(@query_dataset),
+        method: :post, class: "btn btn-block btn-default" %>
       <%= link_to "Remove dataset", @query_dataset,
         method: :delete, class: "btn btn-block btn-warning",
         data: { confirm: "Are you sure? This action cannot be undone." } %>

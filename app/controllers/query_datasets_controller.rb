@@ -1,8 +1,12 @@
 class QueryDatasetsController < ApplicationController
   before_action :logged_in_user, only: [:index, :destroy]
   
-  before_action :set_query_dataset, only: [:show, :destroy, :result, :run_mytaxa_scan, :run_distances]
-  before_action :correct_user_or_admin, only: [:show, :destroy, :result, :run_mytaxa_scan, :run_distances]
+  before_action :set_query_dataset,
+    only: [:show, :destroy, :result, :run_mytaxa_scan, :run_distances,
+      :mark_unread]
+  before_action :correct_user_or_admin,
+    only: [:show, :destroy, :result, :run_mytaxa_scan, :run_distances,
+      :mark_unread]
 
   def index
     # Find query datasets
@@ -111,6 +115,12 @@ class QueryDatasetsController < ApplicationController
   def run_distances
     @query_dataset.run_distances!
     redirect_to(@query_dataset)
+  end
+
+  # Mark dataset as unseen.
+  def mark_unread
+    @query_dataset.update(notified: false, complete_new: true)
+    redirect_to(query_datasets_path)
   end
 
   private
