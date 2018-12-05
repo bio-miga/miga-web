@@ -19,7 +19,7 @@
   <span class="metadata">
     <% dataset.metadata.each do |k,v| %>
       <% next if [:type, :ref, :created, :updated, :user, :tax,
-            :quality, :is_type].include? k %>
+            :quality, :is_type, :is_ref_type, :type_rel].include? k %>
       <% next if k.to_s[0] == '_' %>
       <% k_str = k.to_s.unmiga_name.capitalize %>
       <%

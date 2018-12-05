@@ -3,23 +3,31 @@
     <div class="col-md-8">
       <nav>
         <ul class="left-col">
-          <li><%= link_to "Help", "https://help.microbial-genomes.org/" %></li>
-          <li><%= link_to "News", "http://miga.microbial-genomes.org/" %></li>
-          <li><%= link_to "Contact", contact_path %></li>
-          <li><%= link_to "About", about_path %></li>
-          <li><%= link_to "Roadmap", "http://roadmap.microbial-genomes.org/" %></li>
+          <li><%= link_to 'Help',
+                'https://help.microbial-genomes.org/',
+                target: '_blank', rel: 'noopener' %></li>
+          <li><%= link_to 'News',
+                'http://miga.microbial-genomes.org/',
+                target: '_blank', rel: 'noopener' %></li>
+          <li><%= link_to 'Support',
+                'http://support.microbial-genomes.org/',
+                target: '_blank', rel: 'noopener' %></li>
+          <li><%= link_to 'About', about_path %></li>
+          <li><%= link_to 'Roadmap',
+                'http://roadmap.microbial-genomes.org/',
+                target: '_blank', rel: 'noopener' %></li>
         </ul>
       </nav>
     </div>
     <div class="col-md-4 text-right right-col">
       <small>
         <p>
-          <%= link_to "MiGA Web by Luis M. Rodriguez-R",
-                "http://code.microbial-genomes.org/miga-web",
-                target: "_blank", rel: "noopener" %><br/>
+          <%= link_to 'MiGA Web by Luis M. Rodriguez-R',
+                'http://code.microbial-genomes.org/miga-web',
+                target: '_blank', rel: 'noopener' %><br/>
           Powered by <%= link_to MiGA::MiGA.LONG_VERSION.gsub(/ - \S+$/,""),
-                "http://code.microbial-genomes.org/miga",
-                target: "_blank", rel: "noopener" %>
+                'http://code.microbial-genomes.org/miga',
+                target: '_blank', rel: 'noopener' %>
         </p>
       </small>
     </div>
