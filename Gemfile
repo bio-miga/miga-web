@@ -1,6 +1,8 @@
 source 'https://rubygems.org'
 
-
+#Fang Yuan Add two gem dependencies
+gem 'execjs' 
+gem 'therubyracer'
 # Use MiGA base code to communicate with the projects
 gem 'miga-base', '~> 0.3.3.1'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'

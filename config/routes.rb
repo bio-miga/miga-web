@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   get 'login'	=> 'sessions#new'
   post 'login'	=> 'sessions#create'
   delete 'logout' => 'sessions#destroy'
+  #Users Created by Fang May need to modify 
+  get '/unactivatedusers' => 'users#unactivatedusers', :as => 'unactivatedusers'
+  get '/activate_user' => 'users#activate_user'
   # Projects
   get 'projects/:project_id/reference_datasets'    => 'projects#reference_datasets', as: :project_reference_datasets
   get 'projects/:id/reference_datasets/:dataset'   => 'projects#show_dataset', as: :reference_dataset

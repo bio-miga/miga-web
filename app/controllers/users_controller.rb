@@ -46,6 +46,22 @@ class UsersController < ApplicationController
      redirect_to users_url
   end
   
+  # created a unactivatedusers method
+  def unactivatedusers
+     @users = User.where(activated: false)
+  end
+
+  # admin manually activate user account
+  def activate_user
+     @user = User.find(params[:id])
+      if@user.activate
+	     flash[:success] = "activated"
+	     redirect_to unactivatedusers_url
+      else
+	     flash[:success] = "Failed"
+      end
+  end
+
   private
 
      def user_params
