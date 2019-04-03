@@ -26,12 +26,11 @@
           <p>Only admins can see all the users in the system.</p>
         <% end %>
 	
-	<%# Created by Fang, add a button to show all unactivated Users %>
-	<%= link_to unactivatedusers_path, 
-		class: "list-group-item list-group-item-info" do %>
+	<%= link_to unactivated_users_path,
+              class: 'list-group-item list-group-item-info' do %>
 	  <h4><i class="glyphicon glyphicon-list"> </i> Unactivated users</h4>
-          <p>Only admins can activated users in the system.</p>
-	<%end%>	
+          <p>Only admins can activate users in the system.</p>
+	<% end %>
 
         <%= link_to query_datasets_path(all:true),
                 class: "list-group-item list-group-item-info" do %>
