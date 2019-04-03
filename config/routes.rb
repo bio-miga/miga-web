@@ -12,9 +12,6 @@ Rails.application.routes.draw do
   get 'login'	=> 'sessions#new'
   post 'login'	=> 'sessions#create'
   delete 'logout' => 'sessions#destroy'
-  #Users Created by Fang May need to modify 
-  get '/unactivatedusers' => 'users#unactivatedusers', :as => 'unactivatedusers'
-  get '/activate_user' => 'users#activate_user'
   # Projects
   get 'projects/:project_id/reference_datasets'    => 'projects#reference_datasets', as: :project_reference_datasets
   get 'projects/:id/reference_datasets/:dataset'   => 'projects#show_dataset', as: :reference_dataset
@@ -40,6 +37,8 @@ Rails.application.routes.draw do
   get "rdp_classify/:project_id/:ds_name/as"       => "projects#rdp_classify_as", as: :rdp_classify_as
   # Full resources
   resources :users
+  get 'unactivated_users' => 'users#unactivated_users', as: 'unactivated_users'
+  post 'activate_user' => 'users#activate_user'
   resources :account_activations, only: [:edit]
   resources :password_resets, only: [:new, :create, :edit, :update]
   resources :projects, only: [:index, :new, :create, :destroy, :show]
