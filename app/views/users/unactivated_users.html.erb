@@ -1,0 +1,18 @@
+<% provide(:title, 'Unactivated users') %>
+<h1>Unactivated users</h1>
+
+<%= will_paginate class: "center-block center" %>
+<ul class='users'>
+<% @users.each do |user| %>
+  <li>
+    <%= gravatar_for user, size: 50 %>
+    <%= link_to user.name, user %>
+    | <%= link_to 'activate', activate_user_path(id: user.id), method: :post %>
+    <br/>
+    <span class=text-muted><%= user.email %></span><br/>
+    <span class=text-muted><%= time_ago_in_words user.created_at %>.</span>
+  </li>
+<% end %>
+</ul>
+<%= will_paginate class: "center-block center" %>
+

@@ -37,6 +37,8 @@ Rails.application.routes.draw do
   get "rdp_classify/:project_id/:ds_name/as"       => "projects#rdp_classify_as", as: :rdp_classify_as
   # Full resources
   resources :users
+  get 'unactivated_users' => 'users#unactivated_users', as: 'unactivated_users'
+  post 'activate_user' => 'users#activate_user'
   resources :account_activations, only: [:edit]
   resources :password_resets, only: [:new, :create, :edit, :update]
   resources :projects, only: [:index, :new, :create, :destroy, :show]

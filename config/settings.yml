@@ -5,7 +5,7 @@
 miga_projects: <%= ENV["HOME"] %>/miga-data
 
 # Base URL for e-mail links (without http://)
-mail_host: localhost:3000
+mail_host: 127.0.0.1:3000
 
 # Name of the partial with the home page contents. If you change this setting,
 # make sure that the corresponding partial exists. For example, if you change
