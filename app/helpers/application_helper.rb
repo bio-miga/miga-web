@@ -38,6 +38,26 @@ module ApplicationHelper
     @info_msg = []
     o.empty? ? "" : o.inject(:+) 
   end
+
+  def accordion(accordion_id)
+    content_tag(:div, class: 'panel-group', id: accordion_id, role: 'tablist'){ yield( id: accordion_id, n: 0 ) }
+  end
+
+  def accordion_card(accordion, card_id, title)
+    content_tag(:div, class: 'panel panel-default') do
+      content_tag(:div, class: 'panel-heading', role: 'tab') do
+        content_tag(:h4, class: 'panel-title') do
+          link_to(title, "##{accordion[:id]}-#{card_id}", class: 'btn',
+            data: { toggle: 'collapse', parent: "##{accordion[:id]}" })
+        end
+      end +
+      content_tag(:div,
+            class: "panel-collapse collapse #{'in' if (accordion[:n]+=1) == 1}",
+            id: "#{accordion[:id]}-#{card_id}") do
+        content_tag(:div, class: 'panel-body') { yield }
+      end
+    end
+  end
    
   def full_title(page_title="")
     page_title + (" | " unless page_title.empty?) + "MiGA Online"

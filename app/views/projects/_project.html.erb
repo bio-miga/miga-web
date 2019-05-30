@@ -1,7 +1,7 @@
-<li id="project-<%= project.id %>" class="project-box">
-  <span class="label label-primary pull-left code"
+<div class='project-item'>
+  <span class="label label-primary pull-left project-code"
     style="background:<%= project.code_color %>;"><%= project.code %></span>
-  <span class="path">
+  <span class="project-name">
     <% if project.daemon_active? %>
       <i class="glyphicon glyphicon-ok-sign text-light-success" rel="tooltip"
         title="active <%=
@@ -34,4 +34,4 @@
       Last updated <%= time_ago_in_words(project.last_db_update) %> ago
     <% end %>
   </span>
-</li>
+</div>

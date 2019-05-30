@@ -1,9 +1,9 @@
-<li id="query_dataset-<%= query_dataset.id %>">
+<div class='dataset-item query-dataset'>
   <%= link_to query_dataset.project.code, query_dataset.project,
-    class: "label label-primary pull-left code",
+    class: "label label-primary pull-left project-code",
     style: "background:#{query_dataset.project.code_color};",
     title: query_dataset.project.path_name %></a>
-  <span class="name">
+  <span class='dataset-name'>
     <% if not query_dataset.miga.is_active? %>
       <i class="glyphicon glyphicon-remove-circle small text-light-danger"
         rel="tooltip" title="inactive"> </i>
@@ -29,8 +29,10 @@
         rel:"tooltip", title: md[:description] %></b>
   </span>
   <span class="timestamp">
-    Created <%= time_ago_in_words(query_dataset.created_at) %> ago by
-    <%= query_dataset.user.nil? ? "anonymous" :
-      link_to(query_dataset.user.name, query_dataset.user) %>.
+    Created <%= time_ago_in_words(query_dataset.created_at) %> ago
+    <% unless query_dataset.user.nil? or current_user? query_dataset.user %>
+      by <%= link_to(query_dataset.user.name, query_dataset.user) %>
+    <% end %>
   </span>
-</li>
+</div>
+

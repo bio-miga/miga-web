@@ -1,14 +1,14 @@
 <% provide(:title, @query_dataset.name.unmiga_name) %>
 <% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
 <% provide(:breadcrumb_2, link_to(
-  truncate(@query_dataset.project.path_name, length:15),
+  truncate(@query_dataset.project.path_name, length: 15),
   @query_dataset.project)) %>
-<div class="row query_dataset">
+<div class="row">
   <aside class="col-md-4">
-    <section class="query_dataset_info">
-      <ul class="query_datasets">
-        <%= render @query_dataset %>
-      </ul>
+    <section class='dataset-title'>
+      <%= render @query_dataset %>
+    </section>
+    <section class='dataset-item'>
       <% type = @query_dataset.miga.metadata[:type] unless
               @query_dataset.miga.nil? %>
       <% unless type.nil? %>
@@ -26,10 +26,11 @@
         </p>
       <% end %>
     </section>
-    <section class="query_dataset_settings">
-      <%= link_to "Mark dataset as unseen",
-        query_dataset_mark_unread_url(@query_dataset),
-        method: :post, class: "btn btn-block btn-default" %>
+    <section>
+      <h4>Settings</h4>
+      <%= link_to("Mark dataset as unseen",
+        query_dataset_mark_unread_url(@query_dataset), method: :post,
+        class: 'btn btn-block btn-default') if @query_dataset.ready? %>
       <%= link_to "Remove dataset", @query_dataset,
         method: :delete, class: "btn btn-block btn-warning",
         data: { confirm: "Are you sure? This action cannot be undone." } %>

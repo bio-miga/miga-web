@@ -1,9 +1,9 @@
-<% noname ||= false %>
-<% expand_side ||= false %>
-<li id="dataset-<%= dataset.name %>" class="dataset-box">
+<div class='dataset-item reference-dataset'>
+  <% noname ||= false %>
+  <% expand_side ||= false %>
   <% unless noname %>
-    <span class="name">
-      <span class="project"><%= link_to project.code, project %> | </span>
+    <span class="dataset-name">
+      <span class="project-code"><%= link_to project.code, project %></span>
       <% qi = dataset.metadata[:quality] %>
       <% unless qi.nil? %>
         <i class="glyphicon glyphicon-adjust small text-light-<%=
@@ -15,58 +15,12 @@
     </span>
   <% end %>
   <%= render partial: (expand_side ? "dataset_side" : "dataset_intax"),
-    locals: { project: project, dataset: dataset, noname: noname }%>
-  <span class="metadata">
-    <% dataset.metadata.each do |k,v| %>
-      <% next if [:type, :ref, :created, :updated, :user, :tax,
-            :quality, :is_type, :is_ref_type, :type_rel].include? k %>
-      <% next if k.to_s[0] == '_' %>
-      <% k_str = k.to_s.unmiga_name.capitalize %>
-      <%
-        ext_links = {
-          ncbi_tax_id: ['NCBI TaxID',
-                'http://www.uniprot.org/taxonomy/%s', '%s'],
-          ncbi_nuccore: ['NCBI Nucleotide',
-                'https://www.ncbi.nlm.nih.gov/nuccore/%s', '%s'],
-          ncbi_asm: ['NCBI Assembly',
-                'https://www.ncbi.nlm.nih.gov/assembly/%s', '%s'],
-          ebi_ena: ['EBI ENA',
-                'https://www.ebi.ac.uk/ena/data/view/%s', '%s'],
-          ebi_embl: ['EBI EMBL',
-                'https://www.ebi.ac.uk/embl/data/view/%s', '%s'],
-          web_assembly: ['Download',
-                '%s', 'Assembly'],
-          web_assembly_gz: ['Download',
-                '%s', 'Assembly (gz)'],
-          dprotologue: ['Digital Protologue Database',
-                'http://imedea.uib-csic.es/dprotologue/getPdfTX.php?taxonumber=%s', '%s']
-        }
-        case k
-        when :comments
-          if /(.*)Assembly: (\S+)(.*)/.match(v)
-            v = "#{$1}<a href='https://www.ncbi.nlm.nih.gov/assembly/#{$2}/' " +
-                  "target=_blank>Assembly: #{$2}</a>#{$3}"
-          end
-        when *ext_links.keys
-          k_str = ext_links[k][0]
-          v = v.split(/[,;]/).map do |i|
-            "<a href='#{ext_links[k][1] % i}' target=_blank>#{ext_links[k][2] % i}</a>"
-          end.join(", ")
-        when :see_also
-          k_str = "See also"
-          v = v.split(/[,;]/).map do |i|
-            l = i.split(/:/, 2)
-            "<a href='#{l[1]}' target=_blank>#{l[0]}</a>"
-          end.join(", ")
-        end
-      %>
-      <b><%= k_str %>:</b> <%= v.to_s.html_safe %>
-    <% end %>
-  </span>
+    locals: { project: project, dataset: dataset, noname: noname } %>
   <% unless noname %>
     <span class="timestamp">
       Updated <%= time_ago_in_words Date.parse(dataset.metadata[:updated]) %>
       ago.
     </span>
   <% end %>
-</li>
+</div>
+

@@ -1,46 +1,111 @@
-<% unless dataset.metadata[:tax].nil? %>
-  <span class="taxonomy">
-    <b>Taxonomy:</b>
-    <ul>
-    <% tax = dataset.metadata[:tax].sorted_ranks.map{ |r| r.join(": ")} %>
-    <% tax.each do |r| %>
-      <% r = r.split(": ") %>
-      <li>
-        <span class=text-muted><%= r[0] %>:</span>
-        <% if r[1] =~ /^(Candidatus) (.*)/ %>
-          <i><%= $1 %></i> <%= $2 %>
-        <% else %>
-          <i><%= r[1] %></i>
-        <% end %>
-      </li>
-    <% end %>
-    </ul>
-  </span>
-<% end %>
-<% method = project.miga.is_clade? ? :subclades : :clade_finding %>
-<% unless (clade_r = dataset.project.result(method)).nil? %>
-  <% unless (clade_f = clade_r.file_path(:class_table)).nil? %>
-    <% File.open(clade_f,'r') do |fh| %>
-      <% clade = (fh.each_line.
-            grep(/^#{dataset.name}\t/).first || "").chomp.split("\t") %>
-      <% unless clade.nil? or clade.empty? %>
-        <% metric = project.miga.is_clade? ? "ANI" : "AAI" %>
-        <span class=taxonomy>
-          <b><%= metric %> classification:</b>
-          <ul>
-          <% cmp = "" %>
-          <% clade.each_index do |i| %>
-            <% next if i==0 or clade[i]=="0" %>
-            <% cmp += "#{clade[i]}" %>
-            <li>
-              <span class=text-muted><%= i %>:</span>
-              <%= link_to cmp, medoid_clade_url(project.id, metric, cmp) %>
-            </li>
-            <% cmp += "-" %>
+<%= accordion('dataset-metadata') do |accordion| %>
+  <% unless dataset.metadata[:tax].nil? %>
+    <%= accordion_card(accordion, 'taxonomy', 'Taxonomy') do %>
+      <ul class='panel-body taxonomy'>
+      <% tax = dataset.metadata[:tax].sorted_ranks.map{ |r| r.join(": ")} %>
+      <% tax.each do |r| %>
+        <% r = r.split(": ") %>
+        <li>
+          <span class=text-muted><%= r[0] %>:</span>
+          <% if r[1] =~ /^(Candidatus) (.*)/ %>
+            <i><%= $1 %></i> <%= $2 %>
+          <% else %>
+            <i><%= r[1] %></i>
           <% end %>
+        </li>
+      <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+
+  <% dataset.metadata.each do |k,v| %>
+    <% next if [:type, :ref, :created, :updated, :user, :tax,
+          :quality, :is_type, :is_ref_type, :type_rel].include? k %>
+    <% next if k.to_s[0] == '_' %>
+    <% k_str = k.to_s.unmiga_name.capitalize %>
+    <%
+      ext_links = {
+        ncbi_tax_id: ['NCBI TaxID',
+              'http://www.uniprot.org/taxonomy/%s', '%s'],
+        ncbi_nuccore: ['NCBI Nucleotide',
+              'https://www.ncbi.nlm.nih.gov/nuccore/%s', '%s'],
+        ncbi_asm: ['NCBI Assembly',
+              'https://www.ncbi.nlm.nih.gov/assembly/%s', '%s'],
+        ebi_ena: ['EBI ENA',
+              'https://www.ebi.ac.uk/ena/data/view/%s', '%s'],
+        ebi_embl: ['EBI EMBL',
+              'https://www.ebi.ac.uk/embl/data/view/%s', '%s'],
+        web_assembly: ['Download',
+              '%s', 'Assembly'],
+        web_assembly_gz: ['Download',
+              '%s', 'Assembly (gz)'],
+        dprotologue: ['Digital Protologue Database',
+              'http://imedea.uib-csic.es/dprotologue/getPdfTX.php?taxonumber=%s', '%s']
+      }
+      case k
+      when :comments
+        if /(.*)Assembly: (\S+)(.*)/.match(v)
+          v = "#{$1}<a href='https://www.ncbi.nlm.nih.gov/assembly/#{$2}/' " +
+                "target=_blank>Assembly: #{$2}</a>#{$3}"
+        end
+      when *ext_links.keys
+        k_str = ext_links[k][0]
+        v = v.split(/[,;]/).map do |i|
+          "<a href='#{ext_links[k][1] % i}' target=_blank>#{ext_links[k][2] % i}</a>"
+        end.join(", ")
+      when :see_also
+        k_str = "See also"
+        v = v.split(/[,;]/).map do |i|
+          l = i.split(/:/, 2)
+          "<a href='#{l[1]}' target=_blank>#{l[0]}</a>"
+        end.join(", ")
+      end
+    %>
+    <%= accordion_card(accordion, k, k_str) do %>
+      <%= v.to_s.html_safe %>
+    <% end %>
+  <% end %>
+  
+  <% method = project.miga.is_clade? ? :subclades : :clade_finding %>
+  <% unless (clade_r = dataset.project.result(method)).nil? %>
+    <% unless (clade_f = clade_r.file_path(:class_table)).nil? %>
+      <% File.open(clade_f, 'r') do |fh| %>
+        <% clade = (fh.each_line.
+              grep(/^#{dataset.name}\t/).first || '').chomp.split("\t") %>
+        <% unless clade.nil? or clade.empty? %>
+          <% metric = project.miga.is_clade? ? 'ANI' : 'AAI' %>
+          <%= accordion_card(accordion, 'classification',
+                "#{metric} classification" ) do %>
+            <ul class='taxonomy'>
+            <% cmp = "" %>
+            <% clade.each_index do |i| %>
+              <% next if i == 0 or clade[i] == '0' %>
+              <% cmp += "#{clade[i]}" %>
+              <li>
+                <span class=text-muted><%= i %>:</span>
+                <%= link_to cmp, medoid_clade_url(project.id, metric, cmp) %>
+              </li>
+              <% cmp += "-" %>
+            <% end %>
+            </ul>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% unless method == :subclades or
+          (ani_clade_f = clade_r.file_path(:clades_ani95)).nil? %>
+      <% unless (ani_clade = File.foreach(ani_clade_f).
+            map  { |i| i.chomp.split(',') }.
+            find { |i| i.include? dataset.name }).nil? %>
+        <%= accordion_card(accordion, 'ani_clade', 'ANI clade') do %>
+          <ul style='list-style: circle;'>
+            <% ani_clade.each do |i| %>
+              <li><%= link_to_reference_dataset(project, i) %></li>
+            <% end %>
           </ul>
-        </span>
+        <% end %>
       <% end %>
     <% end %>
   <% end %>
-<% end %>
+<% end # Accordion %>
+

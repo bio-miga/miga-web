@@ -4,39 +4,33 @@
       link_to(truncate(@project.path_name, length:15), @project)) %>
 <% provide(:breadcrumb_3,
       link_to("References", project_reference_datasets_path(@project.id))) %>
-<div class="row reference_dataset">
+<div class="row">
   <aside class="col-md-4">
-    <section>
-      <ul class="reference_datasets">
-        <li id="reference_dataset-<%= @dataset_miga.name %>">
-          <%= link_to @project.code, @project,
-            class: "label label-primary pull-left code",
-            title: @project.path_name,
-            style: "background:#{@project.code_color};" %></a>
-          <span class="name">
-            <b><%= @dataset_miga.is_ref? ? "[Ref]" : "[Qry]" %>
-              <% qi = @dataset_miga.metadata[:quality] %>
-              <% unless qi.nil? %>
-                <i class="glyphicon glyphicon-adjust small text-light-<%=
-                    {excellent:"success", high:"info",
-                      intermediate:"warning", low:"danger"}[qi.to_sym]
-                %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
-              <% end %>
-              <%= link_to_reference_dataset(@project, @dataset_miga.name) %></b>
-          </span>
-          <span class="timestamp">
-            Created
-            <%= time_ago_in_words(@dataset_miga.metadata.data[:created]) %> ago.
-          </span>
-        </li>
-      </ul>
+    <section class='dataset-title'>
+      <%= link_to @project.code, @project,
+        class: "label label-primary pull-left project-code",
+        title: @project.path_name,
+        style: "background: #{@project.code_color};" %></a>
+      <span class="name">
+        <b><%= @dataset_miga.is_ref? ? "[Ref]" : "[Qry]" %>
+          <% qi = @dataset_miga.metadata[:quality] %>
+          <% unless qi.nil? %>
+            <i class="glyphicon glyphicon-adjust small text-light-<%=
+                {excellent:"success", high:"info",
+                  intermediate:"warning", low:"danger"}[qi.to_sym]
+            %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
+          <% end %>
+          <%= link_to_reference_dataset(@project, @dataset_miga.name) %></b>
+      </span>
+      <span class="timestamp">
+        Updated
+        <%= time_ago_in_words(@dataset_miga.metadata[:updated]) %> ago.
+      </span>
     </section>
-    <section class="metadata">
-      <ul>
-        <%= render partial: "dataset",
-          object: @dataset_miga,
-          locals: {project: @project, noname:true, expand_side:true} %>
-      </ul>
+    <section class='dataset-item'>
+      <%= render partial: 'dataset',
+        object: @dataset_miga,
+        locals: {project: @project, noname:true, expand_side:true} %>
     </section>
   </aside>
   <div class="col-md-8">
