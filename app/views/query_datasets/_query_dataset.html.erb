@@ -4,6 +4,7 @@
     style: "background:#{query_dataset.project.code_color};",
     title: query_dataset.project.path_name %></a>
   <span class='dataset-name'>
+    <% md = query_dataset.miga.nil? ? {} : query_dataset.miga.metadata %>
     <% if query_dataset.miga.nil? %>
       <i class='glyphicon glyphicon-warning-sign small text-light-danger'
         rel='tooltip' title='Data not available'> </i>
@@ -21,7 +22,6 @@
         <i class="glyphicon glyphicon-time small text-light-info" rel="tooltip"
           title="running <%= query_dataset.miga.next_preprocessing %>"> </i>
       <% end %>
-      <% md = query_dataset.miga.nil? ? {} : query_dataset.miga.metadata %>
       <% qi = md[:quality] %>
       <% unless qi.nil? %>
         <i class="glyphicon glyphicon-adjust small text-light-<%=
