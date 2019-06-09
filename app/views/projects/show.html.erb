@@ -8,18 +8,6 @@
       ref_datasets: false, qry_datasets: false } %>
   </aside>
   <div class="col-md-8">
-    <% unless [nil, "blast+"].include? @project.miga.metadata[:aai_p] %>
-      <div class='alert alert-info text-center'>
-        This project uses the <%= @project.miga.metadata[:aai_p] %> engine
-        to estimate AAI.
-      </div>
-    <% end %>
-    <% unless [nil, "blast+"].include? @project.miga.metadata[:ani_p] %>
-      <div class='alert alert-info text-center'>
-        This project uses the <%= @project.miga.metadata[:ani_p] %> engine
-        to estimate ANI.
-      </div>
-    <% end %>
     <h3><%= @project.path_name %> project</h3>
     <p>
       Initialized as
@@ -27,6 +15,11 @@
         MiGA::Project.KNOWN_TYPES[@project.miga.metadata[:type] ][:description]
       %>"><%= @project.miga.metadata[:type] %></u>
       <%= time_ago_in_words @project.miga.metadata[:created] %> ago.
+    </p>
+    <p>
+      <b>hAAI Engine:</b> <%= @project.miga.metadata[:haai_p] || 'blast+' %><br/>
+      <b>AAI Engine:</b> <%= @project.miga.metadata[:aai_p] || 'blast+' %><br/>
+      <b>ANI Engine:</b> <%= @project.miga.metadata[:ani_p] || 'blast+' %><br/>
     </p>
     <% results_to_load = [] %>
     <% MiGA::Project.RESULT_DIRS.keys.each do |k| %>
