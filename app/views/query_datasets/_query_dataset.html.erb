@@ -4,29 +4,34 @@
     style: "background:#{query_dataset.project.code_color};",
     title: query_dataset.project.path_name %></a>
   <span class='dataset-name'>
-    <% if not query_dataset.miga.is_active? %>
-      <i class="glyphicon glyphicon-remove-circle small text-light-danger"
-        rel="tooltip" title="inactive"> </i>
-    <% elsif query_dataset.complete_new %>
-      <i class="glyphicon glyphicon-record small text-light-info"
-        rel="tooltip" title="ready"> </i>
-    <% elsif query_dataset.ready? %>
-      <i class="glyphicon glyphicon-ok-circle small text-light-success"
-        rel="tooltip" title="ready"> </i>
+    <% if query_dataset.miga.nil? %>
+      <i class='glyphicon glyphicon-warning-sign small text-light-danger'
+        rel='tooltip' title='Data not available'> </i>
     <% else %>
-      <i class="glyphicon glyphicon-time small text-light-info" rel="tooltip"
-        title="running <%= query_dataset.miga.next_preprocessing %>"> </i>
-    <% end %>
-    <% md = query_dataset.miga.nil? ? {} : query_dataset.miga.metadata %>
-    <% qi = md[:quality] %>
-    <% unless qi.nil? %>
-      <i class="glyphicon glyphicon-adjust small text-light-<%=
-          {excellent:"success", high:"info",
-            intermediate:"warning", low:"danger"}[qi.to_sym]
-      %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
+      <% if not query_dataset.miga.is_active? %>
+        <i class="glyphicon glyphicon-remove-circle small text-light-danger"
+          rel="tooltip" title="inactive"> </i>
+      <% elsif query_dataset.complete_new %>
+        <i class="glyphicon glyphicon-record small text-light-info"
+          rel="tooltip" title="ready"> </i>
+      <% elsif query_dataset.ready? %>
+        <i class="glyphicon glyphicon-ok-circle small text-light-success"
+          rel="tooltip" title="ready"> </i>
+      <% else %>
+        <i class="glyphicon glyphicon-time small text-light-info" rel="tooltip"
+          title="running <%= query_dataset.miga.next_preprocessing %>"> </i>
+      <% end %>
+      <% md = query_dataset.miga.nil? ? {} : query_dataset.miga.metadata %>
+      <% qi = md[:quality] %>
+      <% unless qi.nil? %>
+        <i class="glyphicon glyphicon-adjust small text-light-<%=
+            {excellent: 'success', high: 'info',
+              intermediate: 'warning', low: 'danger'}[qi.to_sym]
+        %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
+      <% end %>
     <% end %>
     <b><%= link_to query_dataset.name.unmiga_name, query_dataset,
-        rel:"tooltip", title: md[:description] %></b>
+        rel: 'tooltip', title: md[:description] %></b>
   </span>
   <span class="timestamp">
     Created <%= time_ago_in_words(query_dataset.created_at) %> ago
