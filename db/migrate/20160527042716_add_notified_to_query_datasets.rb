@@ -1,4 +1,4 @@
-class AddNotifiedToQueryDatasets < ActiveRecord::Migration
+class AddNotifiedToQueryDatasets < ActiveRecord::Migration[4.2]
   def up
     change_table :query_datasets do |t|
       t.boolean :notified, :default => false

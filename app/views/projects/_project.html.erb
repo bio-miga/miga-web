@@ -2,36 +2,41 @@
   <span class="label label-primary pull-left project-code"
     style="background:<%= project.code_color %>;"><%= project.code %></span>
   <span class="project-name">
-    <% if project.daemon_active? %>
-      <i class="glyphicon glyphicon-ok-sign text-light-success" rel="tooltip"
-        title="active <%=
-          time_ago_in_words(project.daemon_last_alive)%> ago"> </i>
+    <% if project.miga.nil? %>
+      <%= project.path.unmiga_name %>
+      <span class='text-danger'>Project Not Available</span>
     <% else %>
-      <i class="glyphicon glyphicon-remove-sign text-light-warning" rel="tooltip"
-        title="inactive"> </i>
-    <% end %>
-    <%= link_to project.path_name, project,
-      rel:"tooltip", title:project.miga.metadata[:description] %>
-    <% if File.exist? project.readme_file %>
-      <%= info_msg project.path_name, dialog_class: "modal-lg" do %>
-        <% markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML,
-                autolink: true, tables: true) %>
-        <%= markdown.render(File.read(project.readme_file)).html_safe %>
+      <% if project.daemon_active? %>
+        <i class="glyphicon glyphicon-ok-sign text-light-success" rel="tooltip"
+          title="active <%=
+            time_ago_in_words(project.daemon_last_alive)%> ago"> </i>
+      <% else %>
+        <i class="glyphicon glyphicon-remove-sign text-light-warning" rel="tooltip"
+          title="inactive"> </i>
       <% end %>
-    <% end %>
-  </span>
-  <span class="datasets">
-    <b>Datasets:</b>
-    <%= pluralize(project.ref_datasets.size, "reference") %>
-    <% if logged_in? && current_user.admin? %>
-      | <%= pluralize(project.dataset_counts(current_user)[:qry], "query") %>
-    <% end %>
-  </span>
-  <span class="timestamp">
-    <% if project.last_db_update.nil? %>
-      Index unavailable
-    <% else %>
-      Last updated <%= time_ago_in_words(project.last_db_update) %> ago
+      <%= link_to project.path_name, project,
+        rel: 'tooltip', title: project.miga.metadata[:description] %>
+      <% if File.exist? project.readme_file %>
+        <%= info_msg project.path_name, dialog_class: "modal-lg" do %>
+          <% markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML,
+                  autolink: true, tables: true) %>
+          <%= markdown.render(File.read(project.readme_file)).html_safe %>
+        <% end %>
+      <% end %>
+    </span>
+    <span class="datasets">
+      <b>Datasets:</b>
+      <%= pluralize(project.ref_datasets.size, 'reference') %>
+      <% if logged_in? && current_user.admin? %>
+        | <%= pluralize(project.dataset_counts(current_user)[:qry], 'query') %>
+      <% end %>
+    </span>
+    <span class="timestamp">
+      <% if project.last_db_update.nil? %>
+        Index unavailable
+      <% else %>
+        Last updated <%= time_ago_in_words(project.last_db_update) %> ago
+      <% end %>
     <% end %>
   </span>
 </div>
