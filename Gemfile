@@ -32,7 +32,7 @@ gem 'xxhash', '>= 0.3'
 # To spawn NCBI downloads
 gem 'spawnling', '~> 2.1'
 # To plot stuff
-gem 'chartkick', '~> 1.4'
+gem 'chartkick', '>= 3.2.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 # To contact RDP via SOAP (the REST client is heavier on RDP's servers)
