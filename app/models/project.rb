@@ -1,7 +1,7 @@
 require "miga/common"
 require "miga/daemon"
 
-class Project < ActiveRecord::Base
+class Project < ApplicationRecord
    belongs_to :user
    has_many :query_datasets, dependent: :destroy
    attr_accessor :miga_obj, :code

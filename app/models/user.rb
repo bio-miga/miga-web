@@ -1,4 +1,4 @@
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   default_scope -> { order(created_at: :desc) }
   has_many :projects, dependent: :destroy
   has_many :query_datasets, dependent: :destroy

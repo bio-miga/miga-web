@@ -1,4 +1,4 @@
-class CreateQueryDatasets < ActiveRecord::Migration
+class CreateQueryDatasets < ActiveRecord::Migration[4.2]
   def change
     create_table :query_datasets do |t|
       t.text :name

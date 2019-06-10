@@ -1,4 +1,4 @@
-class AddNotifyToUsers < ActiveRecord::Migration
+class AddNotifyToUsers < ActiveRecord::Migration[4.2]
   def up
     change_table :users do |t|
       t.boolean :notify, :default => true
