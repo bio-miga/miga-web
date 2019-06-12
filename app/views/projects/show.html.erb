@@ -30,7 +30,7 @@
     </script>
     <div class='result-title'>
       <h3>
-        <i class="glyphicon glyphicon-paperclip"> </i>
+        <i class="glyphicon glyphicon-info-sign"> </i>
         About <%= @project.path_name %>
       </h3>
     </div>
@@ -53,11 +53,11 @@
       </p>
       <% if File.exist? @project.readme_file %>
         <h4>README</h4>
-        <p>
+        <div class='well well-sm'>
           <% markdown ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML,
                   autolink: true, tables: true) %>
           <%= markdown.render(File.read(@project.readme_file)).html_safe %>
-        </p>
+        </div>
       <% end %>
     </div></div>
   </div>
