@@ -6,7 +6,7 @@
   <span class='dataset-name'>
     <% md = query_dataset.miga.nil? ? {} : query_dataset.miga.metadata %>
     <% if query_dataset.miga.nil? %>
-      <i class='glyphicon glyphicon-warning-sign small text-light-danger'
+      <i class='glyphicon glyphicon-exclamation-sign small text-light-danger'
         rel='tooltip' title='Data not available'> </i>
     <% else %>
       <% if not query_dataset.miga.is_active? %>

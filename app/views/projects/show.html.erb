@@ -8,25 +8,6 @@
       ref_datasets: false, qry_datasets: false } %>
   </aside>
   <div class="col-md-8">
-    <h3><%= @project.path_name %> project</h3>
-    <div class='result'><div class='result-body'>
-      <p>
-        Initialized as
-        <u rel="tooltip" title="<%=
-          MiGA::Project.KNOWN_TYPES[@project.miga.metadata[:type] ][:description]
-        %>"><%= @project.miga.metadata[:type] %></u>
-        <%= time_ago_in_words @project.miga.metadata[:created] %> ago.
-      </p>
-      <h4>Identity Engines</h4>
-      <p>
-        <abbr title='Heuristic AAI'>hAAI</abbr>:
-          <%= @project.miga.metadata[:haai_p] || 'blast+' %>,
-        <abbr title='Average Amino Acid Identity'>AAI</abbr>:
-          <%= @project.miga.metadata[:aai_p] || 'blast+' %>,
-        <abbr title='Average Nucleotide Identity'>ANI</abbr>:
-          <%= @project.miga.metadata[:ani_p] || 'blast+' %>.
-      </p>
-    </div></div>
     <% results_to_load = [] %>
     <% MiGA::Project.RESULT_DIRS.keys.each do |k| %>
       <% if res = @project.miga.result(k) %>
@@ -47,5 +28,37 @@
         ).done(function(data){ $("#project_result_<%= k %>").html(data) });
       <% end %>
     </script>
+    <div class='result-title'>
+      <h3>
+        <i class="glyphicon glyphicon-paperclip"> </i>
+        About <%= @project.path_name %>
+      </h3>
+    </div>
+    <div class='result'><div class='result-body'>
+      <p>
+        Initialized as
+        <u rel="tooltip" title="<%=
+          MiGA::Project.KNOWN_TYPES[@project.miga.metadata[:type] ][:description]
+        %>"><%= @project.miga.metadata[:type] %></u>
+        <%= time_ago_in_words @project.miga.metadata[:created] %> ago.
+      </p>
+      <h4>Identity Engines</h4>
+      <p>
+        <abbr title='Heuristic AAI'>hAAI</abbr>:
+          <%= @project.miga.metadata[:haai_p] || 'blast+' %>,
+        <abbr title='Average Amino Acid Identity'>AAI</abbr>:
+          <%= @project.miga.metadata[:aai_p] || 'blast+' %>,
+        <abbr title='Average Nucleotide Identity'>ANI</abbr>:
+          <%= @project.miga.metadata[:ani_p] || 'blast+' %>.
+      </p>
+      <% if File.exist? @project.readme_file %>
+        <h4>README</h4>
+        <p>
+          <% markdown ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML,
+                  autolink: true, tables: true) %>
+          <%= markdown.render(File.read(@project.readme_file)).html_safe %>
+        </p>
+      <% end %>
+    </div></div>
   </div>
 </div>
