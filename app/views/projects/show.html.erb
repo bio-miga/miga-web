@@ -28,12 +28,10 @@
         ).done(function(data){ $("#project_result_<%= k %>").html(data) });
       <% end %>
     </script>
-    <div class='result-title'>
-      <h3>
-        <i class="glyphicon glyphicon-info-sign"> </i>
-        About <%= @project.path_name %>
-      </h3>
-    </div>
+    <h3 class='result-title'>
+      <i class="glyphicon glyphicon-info-sign"> </i>
+      About <%= @project.path_name %>
+    </h3>
     <div class='result'><div class='result-body'>
       <p>
         Initialized as
@@ -53,7 +51,7 @@
       </p>
       <% if File.exist? @project.readme_file %>
         <h4>README</h4>
-        <div class='well well-sm'>
+        <div class='well well-sm small'>
           <% markdown ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML,
                   autolink: true, tables: true) %>
           <%= markdown.render(File.read(@project.readme_file)).html_safe %>
