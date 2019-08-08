@@ -116,12 +116,12 @@ class ProjectsController < ApplicationController
     @user = User.find_by(id: params[:user_id])
     @project = @user.projects.create(project_params)
     if @project.save and not @project.miga.nil?
-      [:name,:description,:comments,:type].each do |k|
+      [:name, :description, :comments, :type].each do |k|
         @project.miga.metadata[k] = params[k] unless
           params[k].nil? or params[k].empty?
       end
       @project.miga.save
-      flash[:success] = "Project created."
+      flash[:success] = 'Project created.'
       redirect_to @project
     else
       render 'new'

@@ -10,15 +10,12 @@
 	 <%= f.label :path %>
 	 <%= f.text_field :path, class: "form-control" %>
 
-	 <!--
-	 This could be extended in the future for other MiGA types.
-	 For now, this is MiGA Clades :-)
 	 <%= f.label :type %>
-	 <%= select_tag(:type,
-	    options_for_select(
-	    MiGA::Project.KNOWN_TYPES.map{ |k,t| [ k.to_s.capitalize + ": " + t[:description], k]})) %>
-	 -->
-	 <%= hidden_field_tag :type, :clade %>
+	 <%= select_tag(:type, options_for_select(
+            MiGA::Project.KNOWN_TYPES.
+              map{ |k,t| [ k.to_s.capitalize + ': ' + t[:description], k,
+                    {selected: k == :genomes}]} ),
+            class: 'form-control') %>
 
 	 <hr/>
 	 <h1>Optional information</h1>
