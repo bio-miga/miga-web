@@ -1,6 +1,5 @@
 class QueryDatasetsController < ApplicationController
   before_action :logged_in_user, only: [:index, :destroy]
-  
   before_action :set_query_dataset,
     only: [:show, :destroy, :result, :run_mytaxa_scan, :run_distances,
       :mark_unread]

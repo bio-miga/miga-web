@@ -1,8 +1,12 @@
 class ProjectsController < ApplicationController
-  before_action :logged_in_user, only: [:new, :create, :destroy, :result]
-  
-  before_action :admin_user, only: [:new, :create, :destroy, :new_ncbi_download,
-    :create_ncbi_download, :start_daemon, :stop_daemon]
+  before_action :set_project,
+    only: [:show, :search, :reference_datasets, :medoid_clade, :rdp_classify,
+      :show_dataset, :result, :result_partial, :reference_dataset_result]
+  before_action :logged_in_user,
+    only: [:new, :create, :destroy, :result]
+  before_action :admin_user,
+    only: [:new, :create, :destroy, :new_ncbi_download, :create_ncbi_download,
+      :start_daemon, :stop_daemon]
 
   # Initiate (paginated) list of projects.
   def index
@@ -22,14 +26,11 @@ class ProjectsController < ApplicationController
   
   # Loads a given project.
   def show
-    qry = params[:id] =~ /\A\d+\z/ ? :id : :path
-    @project = Project.find_by(qry => params[:id])
   end
 
   # Queries reference datasets in the project
   def search
     # Query
-    @project = Project.find(params[:id])
     @q       = params[:q]
     @query   = @q.split(/\s(?=(?:[^"]|"[^"]*")*$)/).map do |i|
       (i =~ /^(?:([A-Za-z_]+):)?"?(.*?)"?$/) ? [$2, $1] : [i, nil]
@@ -54,7 +55,6 @@ class ProjectsController < ApplicationController
   # Loads (paginated) list of reference datasets in a project.
   def reference_datasets
     if @results.nil?
-      @project = Project.find(params[:project_id])
       @ref_datasets = @project.ref_datasets
     else
       @ref_datasets = @results
@@ -70,7 +70,6 @@ class ProjectsController < ApplicationController
   
   # Loads a medoid clade for in-page display.
   def medoid_clade
-    @project = Project.find(params[:project_id])
     redirect_to root_url if @project.miga.nil?
     @metric = params[:metric].to_sym
     @result = @project.miga.add_result(
@@ -93,7 +92,6 @@ class ProjectsController < ApplicationController
 
   # Loads an RDP classification for in-page display.
   def rdp_classify
-    @project = Project.find(params[:project_id])
     redirect_to root_url if @project.miga.nil?
     @ds_name = params[:ds_name]
     @result = @project.rdp_classify(@ds_name)
@@ -109,7 +107,6 @@ class ProjectsController < ApplicationController
   
   # Loads a given dataset in a project.
   def show_dataset
-    @project = Project.find(params[:id])
     @dataset_miga = @project.miga.dataset(params[:dataset])
     redirect_to root_url if @dataset_miga.nil?
   end
@@ -127,7 +124,7 @@ class ProjectsController < ApplicationController
       flash[:success] = "Project created."
       redirect_to @project
     else
-	 render "new"
+      render 'new'
     end
   end
   
@@ -142,7 +139,7 @@ class ProjectsController < ApplicationController
   
   # Loads a result of a project.
   def result
-    if p = Project.find(params[:id]) and m = p.miga
+    if p = @project and m = p.miga
       if res = m.result(params[:result])
         if file = res.data[:files][params[:file].to_sym]
           send_result(file, res)
@@ -157,7 +154,7 @@ class ProjectsController < ApplicationController
   def result_partial
     begin
       if params[:q_ds].nil?
-        obj = Project.find(params[:id])
+        obj = @project
         proj = obj
         unless params[:r_ds].nil?
           obj = obj.miga.dataset(params[:r_ds])
@@ -178,7 +175,7 @@ class ProjectsController < ApplicationController
 
   # Loads a result from a reference dataset in a project.
   def reference_dataset_result
-    if p = Project.find(params[:id]) and m = p.miga
+    if p = @project and m = p.miga
       if ds = m.dataset(params[:dataset]) and res = ds.result(params[:result])
         if file = res.data[:files][params[:file].to_sym]
           send_result(file, res)
@@ -243,6 +240,13 @@ class ProjectsController < ApplicationController
   end
 
   private
+
+    def set_project
+      id = params[:id]
+      id ||= params[:project_id]
+      qry = id =~ /\A\d+\z/ ? :id : :path
+      @project = Project.find_by(qry => id)
+    end
 
     def project_params
       params.require(:project).permit(:path)
