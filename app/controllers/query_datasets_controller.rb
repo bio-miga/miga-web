@@ -1,4 +1,5 @@
 class QueryDatasetsController < ApplicationController
+  include ActionView::Helpers::TextHelper
   before_action :logged_in_user, only: [:index, :destroy]
   before_action :set_query_dataset,
     only: [:show, :destroy, :result, :run_mytaxa_scan, :run_distances,
@@ -27,7 +28,6 @@ class QueryDatasetsController < ApplicationController
     else
       @query_dataset = QueryDataset.new
     end
-    render "new"
   end
 
   def show
@@ -36,33 +36,59 @@ class QueryDatasetsController < ApplicationController
 
   def create
     @project = Project.find_by(id: query_dataset_params[:project_id])
-    params[:query_dataset][:name]+= "_"+SecureRandom.hex(4) if current_user.nil?
     if @project.nil?
-      redirect_to root_url
-    elsif params[:query_dataset][:name] =~ /[^A-Za-z0-9_]/
-      flash[:danger] = "Invalid name, please use only alphanumerics and " +
-        "underscores."
-      new
-    elsif QueryDataset.by_user_and_project(current_user, @project).
-          find_by(name: params[:query_dataset][:name]).nil?
-      @query_dataset = @project.query_datasets.create(query_dataset_params)
-      flash[:success] = "It's saved" if @query_dataset.save!
-      if @query_dataset.save and not @query_dataset.miga.nil?
-        [:description,:comments,:type].each do |k|
-          @query_dataset.miga.metadata[k] = params[k] unless
-            params[k].nil? or params[k].empty?
-        end
-        @query_dataset.miga.save
-        flash[:success] = "Query dataset created."
-        redirect_to @query_dataset
-      else
-        params[:project_id] = query_dataset_params[:project_id]
-        flash[:danger] = "Query dataset couldn't be saved."
-        new
-      end
+      redirect_to projects_url
     else
-      flash[:danger] = "Name already exists, please use a different name."
-      new
+      par = query_dataset_params
+      if par[:input_type] == 'assembly'
+        saved_cnt = 0
+        @bad_objects = []
+        max_upload_files = current_user.nil? ? 1: Settings.max_user_upload
+        if params[:asm_file].size > max_upload_files
+          flash[:danger] = 'Too many files uploaded'
+          redirect_to new_query_dataset_path(project_id: @project.id)
+        else
+          params[:asm_file].each_with_index do |file, idx|
+            par[:name] = params[:asm_name][idx]
+            par[:name] += '_' + SecureRandom.hex(4) if current_user.nil?
+            par[:input_file] = file
+            @query_dataset = @project.query_datasets.create(par)
+            if @query_dataset.save
+              @query_dataset.save_in_miga( type: par[:type],
+                description: params[:asm_description][idx],
+                comments: params[:asm_comments][idx])
+              saved_cnt += 1
+            else
+              @bad_objects << @query_dataset
+            end
+          end
+
+          if saved_cnt > 0
+            flash[:success] =
+              pluralize(saved_cnt, 'dataset') + ' created successfully'
+          end
+
+          if @bad_objects.empty?
+            if saved_cnt == 1
+              redirect_to @query_dataset
+            else
+              redirect_to project_query_datasets_url(@project)
+            end
+          else
+            render :new
+          end
+        end
+      else
+        par[:name] += '_' + SecureRandom.hex(4) if current_user.nil?
+        @query_dataset = @project.query_datasets.create(par)
+        if @query_dataset.save
+          flash[:success] = 'Dataset created successfully'
+          @query_dataset.save_in_miga( params )
+          redirect_to @query_dataset
+        else
+          render :new
+        end
+      end
     end
   end
 
@@ -164,7 +190,8 @@ class QueryDatasetsController < ApplicationController
         @query_dataset = QueryDataset.find_by(acc: params[:id])
       else
         @query_dataset = QueryDataset.find(params[:id])
-        flash.now[:warning]= "Entry IDs are being phased out, please update your links"
+        flash.now[:warning] =
+          'Entry IDs are being phased out, please update your links'
         # redirect_to root_url and return
       end
     end

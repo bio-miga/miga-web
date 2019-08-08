@@ -7,7 +7,7 @@ class QueryDataset < ApplicationRecord
   attr_accessor :miga_obj
   validates :user_id, presence: true
   validates :project_id, presence: true
-  validates :name, presence: true, miga_name: true
+  validates :name, presence: true, miga_name: true, uniqueness: true
   validates :input_file, presence: true
   validates :input_type, presence: true,
     inclusion: { in: %w(raw_reads trimmed_fasta assembly) }
@@ -102,6 +102,17 @@ class QueryDataset < ApplicationRecord
       invalid: :replace, undef: :replace, replace: "?")
   end
 
+  # Registers parameters in the MiGA object
+  def save_in_miga(par)
+    return false if miga.nil?
+    [:description, :comments, :type].each do |k|
+      next if par[k].nil? or par[k].empty?
+      miga.metadata[k] = par[k]
+    end
+    miga.save
+    true
+  end
+
   private
 
     def create_miga_dataset
@@ -109,10 +120,10 @@ class QueryDataset < ApplicationRecord
       f = { 1=>input_file, 2=>input_file_2 }
       t = input_type.to_sym
       MiGA::Dataset.new(project.miga, miga_name, false,
-        {user: user_id, type: :genome})
+        { user: user_id, type: :genome })
       project.miga.add_dataset(miga_name)
       return unless MiGA::Dataset.RESULT_DIRS.keys.include? t
-      r_base = File.join(project.miga.path, "data",
+      r_base = File.join(project.miga.path, 'data',
         MiGA::Dataset.RESULT_DIRS[input_type.to_sym], miga_name)
       
       case t

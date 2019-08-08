@@ -13,8 +13,8 @@
 	 <%= f.label :type %>
 	 <%= select_tag(:type, options_for_select(
             MiGA::Project.KNOWN_TYPES.
-              map{ |k,t| [ k.to_s.capitalize + ': ' + t[:description], k,
-                    {selected: k == :genomes}]} ),
+              map{ |k,t| [ k.to_s.capitalize + ': ' + t[:description], k ] },
+              selected: :genomes),
             class: 'form-control') %>
 
 	 <hr/>
