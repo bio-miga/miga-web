@@ -7,7 +7,8 @@ class QueryDataset < ApplicationRecord
   attr_accessor :miga_obj
   validates :user_id, presence: true
   validates :project_id, presence: true
-  validates :name, presence: true, miga_name: true, uniqueness: true
+  validates :name, presence: true, miga_name: true,
+    uniqueness: { scope: [:user, :project] }
   validates :input_file, presence: true
   validates :input_type, presence: true,
     inclusion: { in: %w(raw_reads trimmed_fasta assembly) }
