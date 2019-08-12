@@ -1,6 +1,7 @@
 class ProjectsController < ApplicationController
   before_action :set_project,
-    only: [:show, :search, :reference_datasets, :medoid_clade, :rdp_classify,
+    only: [:show, :search, :reference_datasets, :medoid_clade,
+      :rdp_classify, :rdp_classify_as,
       :show_dataset, :result, :result_partial, :reference_dataset_result]
   before_action :logged_in_user,
     only: [:new, :create, :destroy, :result]
