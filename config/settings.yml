@@ -22,3 +22,6 @@ login_message: default
 # Google Analytics Tracking ID.
 # google_tracking_id: UA-XXX
 
+# Maximum number of files a registered user can upload in a single request.
+max_user_upload: 100
+
