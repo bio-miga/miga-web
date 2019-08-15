@@ -1,34 +1,54 @@
-<% provide(:title, "New project") %>
+<% provide(:title, 'New project') %>
 <h1>New project</h1>
 <div class="row">
-   <div class="col-md-6 col-md-offset-3">
-      <%= form_for(@project) do |f| %>
-	 <%= render "shared/error_messages", object: f.object %>
-	 
-	 <%= hidden_field_tag :user_id, current_user.id %>
-	 
-	 <%= f.label :path %>
-	 <%= f.text_field :path, class: "form-control" %>
+  <div class="col-md-6 col-md-offset-3">
+    <%= form_for(@project) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
 
-	 <%= f.label :type %>
-	 <%= select_tag(:type, options_for_select(
+      <%= hidden_field_tag :user_id, current_user.id %>
+
+      <%= f.label :path %>
+      <%= f.text_field :path, class: 'form-control' %>
+
+      <%= label_tag :type %>
+      <%= select_tag(:type, options_for_select(
             MiGA::Project.KNOWN_TYPES.
               map{ |k,t| [ k.to_s.capitalize + ': ' + t[:description], k ] },
               selected: :genomes),
             class: 'form-control') %>
 
-	 <hr/>
-	 <h1>Optional information</h1>
-	 <%= label_tag :name, "Name" %>
-	 <%= text_field_tag :name, "", class: "form-control" %>
+      <hr/>
+      <h1>Identity Engines</h1>
+      <%= label_tag :ani_p, 'ANI Engine' %>
+      <%= select_tag(:ani_p, options_for_select(
+            [['BLAST+','blast+'], ['FastANI','fastani'],
+              ['BLAT','blat'], ['Legacy BLAST','blast']],
+            selected: 'blast+'), class: 'form-control') %>
 
-	 <%= label_tag :description, "Description" %>
-	 <%= text_field_tag :description, "", class: "form-control" %>
+      <%= label_tag :aai_p, 'AAI Engine' %>
+      <%= select_tag(:aai_p, options_for_select(
+            [['BLAST+', 'blast+'], ['Diamond','diamond'],
+              ['Legacy BLAST','blast']],
+            selected: 'blast+'), class: 'form-control') %>
 
-	 <%= label_tag :comments, "Comments" %>
-	 <%= text_area_tag :comments, "", class: "form-control" %>
+      <%= label_tag :haai_p, 'hAAI Engine' %>
+      <%= select_tag(:haai_p, options_for_select(
+            [['BLAST+','blast+'], ['Diamond','diamond'],
+              ['Legacy BLAST','blast'], ['Bypass hAAI','no']],
+            selected: 'blast+'), class: 'form-control') %>
 
-	 <%= f.submit "Create new MiGA project", class: "btn btn-primary" %>
-      <% end %>
-   </div>
+      <hr/>
+      <h1>Optional information</h1>
+      <%= label_tag :name, 'Name' %>
+      <%= text_field_tag :name, '', class: 'form-control' %>
+
+      <%= label_tag :description, 'Description' %>
+      <%= text_field_tag :description, '', class: 'form-control' %>
+
+      <%= label_tag :comments, 'Comments' %>
+      <%= text_area_tag :comments, '', class: 'form-control' %>
+
+      <%= f.submit 'Create new MiGA project', class: 'btn btn-primary' %>
+    <% end %>
+  </div>
 </div>

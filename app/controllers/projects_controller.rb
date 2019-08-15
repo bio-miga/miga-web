@@ -101,7 +101,7 @@ class ProjectsController < ApplicationController
   # Loads an RDP classification for asynchronous display.
   def rdp_classify_as
     rdp_classify
-    render partial: "rdp_classify",
+    render partial: 'rdp_classify',
       locals: { project: @project, ds_name: @ds_name, result: @result },
       layout: false
   end
@@ -117,7 +117,8 @@ class ProjectsController < ApplicationController
     @user = User.find_by(id: params[:user_id])
     @project = @user.projects.create(project_params)
     if @project.save and not @project.miga.nil?
-      [:name, :description, :comments, :type].each do |k|
+      [:name, :description, :comments, :type,
+            :ani_p, :aai_p, :haai_p].each do |k|
         @project.miga.metadata[k] = params[k] unless
           params[k].nil? or params[k].empty?
       end
@@ -134,7 +135,7 @@ class ProjectsController < ApplicationController
     project = Project.find(params[:id])
     FileUtils.rm_rf project.miga.path
     project.destroy
-    flash[:success] = "Project deleted"
+    flash[:success] = 'Project deleted'
     redirect_to root_url
   end
   
@@ -148,7 +149,7 @@ class ProjectsController < ApplicationController
         end
       end
     end
-    render :nothing => true, :status => 200, :content_type => "text/html"
+    render nothing: true, status: 200, content_type: 'text/html'
   end
 
   # Displays the result as a partial for asynchronous loading
@@ -166,11 +167,11 @@ class ProjectsController < ApplicationController
       end
       obj_miga ||= obj.miga
       res = obj_miga.result(params[:result])
-      render partial: "shared/result",
+      render partial: 'shared/result',
         locals: { res: res, key: params[:result].to_sym, obj: obj, proj: proj },
         layout: false
     rescue
-      render :nothing => true, :status => 200, :content_type => "text/html"
+      render nothing: true, status: 200, content_type: 'text/html'
     end
   end
 
@@ -184,7 +185,7 @@ class ProjectsController < ApplicationController
         end
       end
     end
-    render :nothing => true, :status => 200, :content_type => "text/html"
+    render nothing: true, status: 200, content_type: 'text/html'
   end
 
   # Initiates project for NCBI download.
@@ -195,34 +196,34 @@ class ProjectsController < ApplicationController
   # Launches an NCBI download in the background.
   def create_ncbi_download
     @project = Project.find(params[:project_id])
-    species = params[:species] || ""
-    codes = ""
-    codes += "50|" if params[:complete]
-    codes += "40|" if params[:chromosome]
+    species = params[:species] || ''
+    codes = ''
+    codes += '50|' if params[:complete]
+    codes += '40|' if params[:chromosome]
       
     if codes.empty? or species.empty?
-      flash[:danger] = "Nothing to do, " +
-        "please set at least one status to download." if codes.empty?
-      flash[:danger] = "Nothing to do, " +
-        "please specify a species name." if species.empty?
-      render "new_ncbi_download"
+      flash[:danger] = 'Nothing to do, ' +
+        'please set at least one status to download.' if codes.empty?
+      flash[:danger] = 'Nothing to do, ' +
+        'please specify a species name.' if species.empty?
+      render 'new_ncbi_download'
     else
       if @project.ncbi_download!(species, codes)
-        flash[:success] = "Downloading reference genomes in the background..."
+        flash[:success] = 'Downloading reference genomes in the background...'
         redirect_to @project
       else
-        render "new_ncbi_download"
+        render 'new_ncbi_download'
       end
     end
   end
   
   # Launch daemon in the background.
   def start_daemon
-    require "miga/daemon"
+    require 'miga/daemon'
     @project = Project.find(params[:id])
     return if @project.daemon_active?
     daemon = MiGA::Daemon.new( @project.miga )
-    f = File.open(File.expand_path("daemon/alive", @project.miga.path), "w")
+    f = File.open(File.expand_path('daemon/alive', @project.miga.path), 'w')
     f.print Time.now.to_s
     f.close
     Spawnling.new { daemon.start }
@@ -231,11 +232,11 @@ class ProjectsController < ApplicationController
   
   # Stops a daemon running in the background.
   def stop_daemon
-    require "miga/daemon"
+    require 'miga/daemon'
     @project = Project.find(params[:id])
     return unless @project.daemon_active?
     daemon = MiGA::Daemon.new( @project.miga )
-    File.unlink(File.expand_path("daemon/alive", @project.miga.path))
+    File.unlink(File.expand_path('daemon/alive', @project.miga.path))
     Spawnling.new { daemon.stop }
     redirect_to @project
   end
@@ -263,18 +264,18 @@ class ProjectsController < ApplicationController
         @path = f
         @file = file
         @res = res
-        render template: "shared/result_dir"
+        render template: 'shared/result_dir'
       else
         case File.extname(file)
-        when ".pdf"
-          send_file(f, filename:file, disposition:"inline",
-            type:"application/pdf", x_sendfile:true)
-        when ".html"
-          send_file(f, filename:file, disposition:"inline",
-            type:"text/html", x_sendfile:true)
+        when '.pdf'
+          send_file(f, filename: file, disposition: 'inline',
+            type: 'application/pdf', x_sendfile: true)
+        when '.html'
+          send_file(f, filename: file, disposition: 'inline',
+            type: 'text/html', x_sendfile: true)
         else
-          send_file(f, filename:file, disposition:"inline",
-            type:"raw/text", x_sendfile:true)
+          send_file(f, filename: file, disposition: 'inline',
+            type: 'raw/text', x_sendfile: true)
         end
       end
     end
