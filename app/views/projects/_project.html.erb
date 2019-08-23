@@ -16,13 +16,6 @@
       <% end %>
       <%= link_to project.path_name, project,
         rel: 'tooltip', title: project.miga.metadata[:description] %>
-      <% if File.exist? project.readme_file %>
-        <%= info_msg project.path_name, dialog_class: "modal-lg" do %>
-          <% markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML,
-                  autolink: true, tables: true) %>
-          <%= markdown.render(File.read(project.readme_file)).html_safe %>
-        <% end %>
-      <% end %>
     </span>
     <span class="datasets">
       <b>Datasets:</b>
