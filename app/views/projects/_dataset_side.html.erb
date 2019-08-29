@@ -62,7 +62,7 @@
       end
     %>
     <%= accordion_card(accordion, k, k_str) do %>
-      <%= v.to_s.html_safe %>
+      <%= display_data(v, true) %>
     <% end %>
   <% end %>
   

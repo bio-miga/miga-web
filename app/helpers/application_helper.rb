@@ -1,13 +1,35 @@
 module ApplicationHelper
-  def info_msg(title="", opts={}, &blk)
-    info_msg_id = info_modal(title, opts, &blk)
-    content_tag(:sup, "class"=>"info-msg-button") do
-      content_tag(:i, " ","class"=>"glyphicon glyphicon-info-sign text-info",
-            "data-toggle"=>"modal","data-target"=>"##{info_msg_id}")
+  def display_data(obj, html_safe = false)
+    case obj
+    when Float
+      obj.round(2).to_s
+    when Array
+      s = obj.map{ |i| display_data(i, html_safe) }.to_sentence
+      html_safe ? s.html_safe : s
+    when Hash
+      content_tag(:table, class: 'table') do
+        obj.map do |k,v|
+          content_tag(:tr) do
+            content_tag(:td) { content_tag(:strong, k.to_s) } +
+              content_tag(:td) { display_data(v, html_safe) }
+          end
+        end.reduce(:+)
+      end
+    else
+      s = obj.to_s
+      html_safe ? s.html_safe : s
     end
   end
 
-  def info_modal(title="", opts={})
+  def info_msg(title = '', opts={}, &blk)
+    info_msg_id = info_modal(title, opts, &blk)
+    content_tag(:sup, 'class' => 'info-msg-button') do
+      content_tag(:i, ' ', 'class' => 'glyphicon glyphicon-info-sign text-info',
+            'data-toggle' => 'modal', 'data-target' => "##{info_msg_id}")
+    end
+  end
+
+  def info_modal(title = '', opts = {})
     @info_msg ||= []
     info_msg_id = SecureRandom.uuid
     @info_msg << content_tag(:div, "class"=>"modal fade",
