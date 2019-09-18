@@ -40,10 +40,9 @@
               (clade_r = @project.result(:clade_finding)).nil? ||
               (ani_clade_f = clade_r.file_path(:clades_ani95)).nil? ||
               (ani_clade = File.foreach(ani_clade_f).
-                map  { |i| i.chomp.split(',') }.
+                map { |i| i.chomp.split(',') }.
                 find { |i| i.include? @dataset_miga.name }).nil? %>
           <% arcgis_obj_id = ani_clade.join(',') %>
-        <% end %>
       <% end %>
       <style>
         .embed-container {
