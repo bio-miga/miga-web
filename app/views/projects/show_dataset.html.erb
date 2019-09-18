@@ -36,11 +36,12 @@
   <div class="col-md-8">
     <% if @dataset_miga.is_ref? && !@project.miga.metadata[:arcgis].nil? %>
       <% arcgis_obj_id = @dataset_miga.name %>
-      <% unless method == :subclades or
-            (ani_clade_f = clade_r.file_path(:clades_ani95)).nil? %>
-        <% unless (ani_clade = File.foreach(ani_clade_f).
-              map  { |i| i.chomp.split(',') }.
-              find { |i| i.include? dataset.name }).nil? %>
+      <% unless @project.miga.is_clade? ||
+              (clade_r = @project.result(:clade_finding)).nil? ||
+              (ani_clade_f = clade_r.file_path(:clades_ani95)).nil? ||
+              (ani_clade = File.foreach(ani_clade_f).
+                map  { |i| i.chomp.split(',') }.
+                find { |i| i.include? @dataset_miga.name }).nil? %>
           <% arcgis_obj_id = ani_clade.join(',') %>
         <% end %>
       <% end %>
