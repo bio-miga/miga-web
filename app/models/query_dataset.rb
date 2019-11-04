@@ -96,11 +96,11 @@ class QueryDataset < ApplicationRecord
   end
 
   # Returns the running log of the task (if any)
-  def job_log(task)
-    f = File.expand_path("daemon/#{task}/#{miga.name}.log", project.miga.path)
-    return "" unless File.exist? f
-    File.read(f).encode("UTF-8", "binary",
-      invalid: :replace, undef: :replace, replace: "?")
+  def job_log(_task)
+    f = File.expand_path("daemon/d/#{miga.name}.log", project.miga.path)
+    return '' unless File.exist? f
+    File.read(f).encode('UTF-8', 'binary',
+      invalid: :replace, undef: :replace, replace: '?')
   end
 
   # Registers parameters in the MiGA object
