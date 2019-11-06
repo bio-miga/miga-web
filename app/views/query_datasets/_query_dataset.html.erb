@@ -8,6 +8,10 @@
     <% if query_dataset.miga.nil? %>
       <i class='glyphicon glyphicon-exclamation-sign small text-light-danger'
         rel='tooltip' title='Data not available'> </i>
+      <%= link_to query_dataset, title: 'Delete dataset', method: :delete,
+            data: { confirm: "Are you sure? This action cannot be undone." } do %>
+        <i class='glyphicon glyphicon-remove small text-light-danger'> </i>
+      <% end %>
     <% else %>
       <% if not query_dataset.miga.is_active? %>
         <i class="glyphicon glyphicon-remove-circle small text-light-danger"

@@ -95,7 +95,7 @@ class QueryDatasetsController < ApplicationController
   def destroy
     qd = @query_dataset
     p = qd.project
-    p.miga.unlink_dataset qd.miga.name
+    p.miga.unlink_dataset qd.miga_name
     qd.miga.remove!
     qd.destroy
     redirect_to p
