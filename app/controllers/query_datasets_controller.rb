@@ -95,8 +95,9 @@ class QueryDatasetsController < ApplicationController
   def destroy
     qd = @query_dataset
     p = qd.project
+    raise 'Unavailable project' if p.miga.nil?
     p.miga.unlink_dataset qd.miga_name
-    qd.miga.remove!
+    qd.miga.remove! unless qd.miga.nil?
     qd.destroy
     redirect_to p
   end
