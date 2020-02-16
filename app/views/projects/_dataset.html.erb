@@ -4,19 +4,23 @@
   <% unless noname %>
     <span class="dataset-name">
       <span class="project-code"><%= link_to project.code, project %></span>
-      <% qi = dataset.metadata[:quality] %>
-      <% unless qi.nil? %>
-        <i class="glyphicon glyphicon-adjust small text-light-<%=
-            {excellent:"success", high:"info",
-              intermediate:"warning", low:"danger"}[qi.to_sym]
-        %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
+      <% if dataset.nil? %>
+        <span class='test-danger'>Missing dataset</span>
+      <% else %>
+        <% qi = dataset.metadata[:quality] %>
+        <% unless qi.nil? %>
+          <i class="glyphicon glyphicon-adjust small text-light-<%=
+              { excellent: 'success', high: 'info',
+                intermediate: 'warning', low: 'danger' }[qi.to_sym]
+          %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
+        <% end %>
+        <%= link_to_reference_dataset(project, dataset.name) %>
       <% end %>
-      <%= link_to_reference_dataset(project, dataset.name) %>
     </span>
   <% end %>
-  <%= render partial: (expand_side ? "dataset_side" : "dataset_intax"),
+  <%= render partial: (expand_side ? 'dataset_side' : 'dataset_intax'),
     locals: { project: project, dataset: dataset, noname: noname } %>
-  <% unless noname %>
+  <% unless noname || dataset.nil? %>
     <span class="timestamp">
       Updated <%= time_ago_in_words Date.parse(dataset.metadata[:updated]) %>
       ago.
