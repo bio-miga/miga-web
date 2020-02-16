@@ -5,7 +5,7 @@
     <span class="dataset-name">
       <span class="project-code"><%= link_to project.code, project %></span>
       <% if dataset.nil? %>
-        <span class='test-danger'>Missing dataset</span>
+        <span class='text-danger'>Missing dataset</span>
       <% else %>
         <% qi = dataset.metadata[:quality] %>
         <% unless qi.nil? %>
