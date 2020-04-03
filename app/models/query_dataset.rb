@@ -54,15 +54,9 @@ class QueryDataset < ApplicationRecord
   def ready?
     return true if complete
     return false if miga.nil?
-    begin
-      if !miga.is_active? or miga.done_preprocessing?
-        update_attribute(:complete, true)
-        update_attribute(:complete_new, true)
-      end
-    rescue JSON::ParserError => e
-      flash[:alert] = 'There was an issue processing metadata for ' +
-        name + ': ' + e.to_s
-      complete = false
+    if !miga.is_active? or miga.done_preprocessing?
+      update_attribute(:complete, true)
+      update_attribute(:complete_new, true)
     end
     complete
   end

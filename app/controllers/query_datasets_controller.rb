@@ -170,12 +170,26 @@ class QueryDatasetsController < ApplicationController
       end
       @all_qd = qd.count
       params[:ready] ||= false
-      if params[:ready]=="yes"
-        qd = qd.select{ |i| i.ready? }
+      if params[:ready] == 'yes'
+        qd = qd.select do |i|
+          begin
+            i.ready?
+          rescue JSON::ParserError => e
+            flash[:alert] = "Malformed metadata: #{i.name}: #{e}"
+            false
+          end
+        end
         @ready_qd = qd.count
         @running_qd = @all_qd - @ready_qd
-      elsif params[:ready]=="no"
-        qd = qd.select{ |i| not i.ready? }
+      elsif params[:ready] == 'no'
+        qd = qd.select do |i|
+          begin
+            not i.ready?
+          rescue JSON::ParserError => e
+            flash[:alert] = "Malformed metadata: #{i.name}: #{e}"
+            true
+          end
+        end
         @running_qd = qd.count
         @ready_qd = @all_qd - @running_qd
       else
