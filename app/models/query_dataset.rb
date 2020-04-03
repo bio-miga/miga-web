@@ -60,8 +60,8 @@ class QueryDataset < ApplicationRecord
         update_attribute(:complete_new, true)
       end
     rescue JSON::ParserError => e
-      flash[:alert] = 'There was an issue processing metadata for ' .
-        name . ': ' . e.to_s
+      flash[:alert] = 'There was an issue processing metadata for ' +
+        name + ': ' + e.to_s
       complete = false
     end
     complete
