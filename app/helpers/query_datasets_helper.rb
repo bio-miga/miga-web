@@ -12,15 +12,16 @@ module QueryDatasetsHelper
     phrases = []
     res.each do |k,v|
       o = k.to_s.unmiga_name + ' belongs to the '
-      if tax=={} or tax[v.first].nil?
+      if tax == {} || tax[v.first].nil?
         o += "same <b>#{MiGA::Taxonomy.LONG_RANKS[v.first]}</b> of " +
           link_to(ds_miga.name.unmiga_name,
             reference_dataset_path(project.id, ds_miga.name))
       else
-        o += "<b>#{MiGA::Taxonomy.LONG_RANKS[v.first]}</b> " +
-          "<em>#{tax[v.first].unmiga_name}</em>"
+        tag = %i[root ns p ssp str ds].include?(v.first) ? :span : :i
+        o += content_tag(:b, MiGA::Taxonomy.LONG_RANKS[v.first]) + ' '
+        o += content_tag(tag, tax[v.first].unmiga_name, class: 'tax-name')
       end
-      o += " (p-value: #{"%.2g" % v.second})"
+      o += ' (p-value: %.2g)' % v.second
       phrases << o
     end
     all = '<div class="small comment">'
@@ -30,10 +31,15 @@ module QueryDatasetsHelper
       [0.5,0.1,0.05,0.01].each{ |i| sig << '*' if v<i }
       all << '<div class="taxonomy-tree">' +
               "<b" + (v>0.5 ? ' class="text-muted"' : '') +
-              "><span class=badge>#{MiGA::Taxonomy.LONG_RANKS[k]}</span> <i>"
-      all << link_to(tax[k],
-              project_search_path(project.id, q:"tax:\"#{tax[k]}\"")) if tax[k]
-      all << "</i> (p-value #{"%.3g" % v}#{sig})</b>"
+              "><span class=badge>#{MiGA::Taxonomy.LONG_RANKS[k]}</span> "
+      if tax[k]
+        tag = %i[root ns p ssp str ds].include?(k) ? :span : :i
+        all << content_tag(tag, class: 'tax-name') do
+          link_to(tax[k],
+            project_search_path(project.id, q: "tax:\"#{tax[k]}\""))
+        end
+      end
+      all << " (p-value #{"%.3g" % v}#{sig})</b>"
       all_c << '</div>'
     end
     all << "#{all_c}<br/><span class=text-muted>Significance at p-value " +
