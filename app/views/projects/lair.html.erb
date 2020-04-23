@@ -9,8 +9,8 @@
         Daemons controller
       </h3></div>
       <div class='panel-body'>
-        <input type='checkbox' data-toggle='toggle' id='lair-daemon-toggle'
-              <%= 'checked' if @lair.active? %>>
+        <input type='checkbox' data-toggle='toggle' class='toggle'
+              id='lair-daemon-toggle' <%= 'checked' if @lair.active? %>>
         <span class=text-muted style='margin:1em;'>
           Toggle to turn the controller on or off
         </span>
@@ -72,8 +72,8 @@
                 <%= "#{time_ago_in_words(la)} ago" unless la.nil? %>
               </td>
               <td>
-                <input type='checkbox' data-toggle='toggle' data-size='mini'
-                      id='daemon-toggle-<%= project.id %>'
+                <input type='checkbox' data-toggle='toggle' class='toggle'
+                      data-size='mini' id='daemon-toggle-<%= project.id %>'
                       <%= 'checked' if daemon.active? %>>
                 <script>
                   $('#daemon-toggle-<%= project.id %>').change(function(){
@@ -88,3 +88,6 @@
     </div>
   </div>
 </div>
+<script>
+  $('input[type="checkbox"].toggle').bootstrapToggle();
+</script>
