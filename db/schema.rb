@@ -10,14 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2017_12_31_232106) do
+ActiveRecord::Schema.define(version: 2020_04_22_193100) do
 
   create_table "projects", force: :cascade do |t|
     t.text "path"
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "private", default: false
+    t.boolean "official", default: true
+    t.index ["official"], name: "index_projects_on_official"
     t.index ["path"], name: "index_projects_on_path", unique: true
+    t.index ["private"], name: "index_projects_on_private"
     t.index ["user_id", "created_at"], name: "index_projects_on_user_id_and_created_at"
     t.index ["user_id"], name: "index_projects_on_user_id"
   end

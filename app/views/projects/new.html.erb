@@ -17,6 +17,24 @@
               selected: :genomes),
             class: 'form-control') %>
 
+      <br/>
+      <div class='checkbox form-control form-group'>
+        <%= f.label :private do %>
+          <%= f.check_box :private, checked: !current_user.admin? %>
+          Keep project private
+        <% end %>
+      </div>
+
+      <% if current_user.admin? %>
+        <br/>
+        <div class='checkbox form-control form-group'>
+          <%= f.label :official do %>
+            <%= f.check_box :official, checked: true %>
+            Make this project an official site database
+          <% end %>
+        </div>
+      <% end %>
+
       <hr/>
       <h1>Identity Engines</h1>
       <%= label_tag :ani_p, 'ANI Engine' %>

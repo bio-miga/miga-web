@@ -3,10 +3,10 @@ class QueryDatasetsController < ApplicationController
   before_action :logged_in_user, only: [:index, :destroy]
   before_action :set_query_dataset,
     only: [:show, :destroy, :result, :run_mytaxa_scan, :run_distances,
-      :mark_unread]
+      :mark_unread, :reactivate]
   before_action :correct_user_or_admin,
     only: [:show, :destroy, :result, :run_mytaxa_scan, :run_distances,
-      :mark_unread]
+      :mark_unread, :reactivate]
 
   def index
     # Find query datasets
@@ -37,7 +37,7 @@ class QueryDatasetsController < ApplicationController
   def create
     @project = Project.find_by(id: query_dataset_params[:project_id])
     if @project.nil?
-      redirect_to projects_url
+      redirect_to projects_path
     else
       par = query_dataset_params
       if par[:input_type] == 'assembly'
@@ -117,12 +117,12 @@ class QueryDatasetsController < ApplicationController
         @path = abs_path
         @file = File.basename abs_path
         @res  = res
-        render template: "shared/result_dir"
+        render template: 'shared/result_dir'
       else
         type = case File.extname(abs_path)
-          when ".pdf" ; "application/pdf"
-          when ".html" ; "text/html"
-          else ; "raw/text"
+          when '.pdf' ; 'application/pdf'
+          when '.html' ; 'text/html'
+          else ; 'raw/text'
         end
         send_file(abs_path, filename: File.basename(abs_path),
           disposition: type=='text/html'?'inline':'attachment',
@@ -149,73 +149,84 @@ class QueryDatasetsController < ApplicationController
     redirect_to(query_datasets_path)
   end
 
+  # Reactivate query dataset and remove run counters
+  def reactivate
+    if @query_dataset.miga.nil?
+      flash[:danger] = 'Resource temporarily unavailable, try again later'
+      redirect_to query_datasets_path
+    else
+      @query_dataset.miga.activate!
+      flash[:success] = 'Dataset successfully reactivated'
+    end
+  end
+
   private
 
-    def query_dataset_params
-      params.require(:query_dataset).permit(
-        :name, :user_id, :project_id, :input_file, :input_file_2, :input_type)
-    end
+  def query_dataset_params
+    params.require(:query_dataset).permit(
+      :name, :user_id, :project_id, :input_file, :input_file_2, :input_type)
+  end
 
-    def list_query_datasets
-      if params[:project_id]
-        @project = Project.find(params[:project_id])
-        qd = params[:all] ? @project.query_datasets.all :
-              QueryDataset.by_user_and_project(current_user, @project)
-      else
-        @project = nil
-        qd = params[:all] ? QueryDataset.all : current_user.query_datasets
-      end
-      if params[:complete_new]
-        qd = qd.select{ |i| i.complete_new }
-      end
-      @all_qd = qd.count
-      params[:ready] ||= false
-      if params[:ready] == 'yes'
-        qd = qd.select do |i|
-          begin
-            i.ready?
-          rescue JSON::ParserError => e
-            flash[:alert] = "Malformed metadata: #{i.name}: #{e}"
-            false
-          end
-        end
-        @ready_qd = qd.count
-        @running_qd = @all_qd - @ready_qd
-      elsif params[:ready] == 'no'
-        qd = qd.select do |i|
-          begin
-            not i.ready?
-          rescue JSON::ParserError => e
-            flash[:alert] = "Malformed metadata: #{i.name}: #{e}"
-            true
-          end
-        end
-        @running_qd = qd.count
-        @ready_qd = @all_qd - @running_qd
-      else
-        @ready_qd = qd.select{ |i| i.ready? }.count
-        @running_qd = @all_qd - @ready_qd
-      end
-      qd
+  def list_query_datasets
+    if params[:project_id]
+      @project = Project.find(params[:project_id])
+      qd = params[:all] ? @project.query_datasets.all :
+            QueryDataset.by_user_and_project(current_user, @project)
+    else
+      @project = nil
+      qd = params[:all] ? QueryDataset.all : current_user.query_datasets
     end
+    if params[:complete_new]
+      qd = qd.select{ |i| i.complete_new }
+    end
+    @all_qd = qd.count
+    params[:ready] ||= false
+    if params[:ready] == 'yes'
+      qd = qd.select do |i|
+        begin
+          i.ready?
+        rescue JSON::ParserError => e
+          flash[:alert] = "Malformed metadata: #{i.name}: #{e}"
+          false
+        end
+      end
+      @ready_qd = qd.count
+      @running_qd = @all_qd - @ready_qd
+    elsif params[:ready] == 'no'
+      qd = qd.select do |i|
+        begin
+          not i.ready?
+        rescue JSON::ParserError => e
+          flash[:alert] = "Malformed metadata: #{i.name}: #{e}"
+          true
+        end
+      end
+      @running_qd = qd.count
+      @ready_qd = @all_qd - @running_qd
+    else
+      @ready_qd = qd.select{ |i| i.ready? }.count
+      @running_qd = @all_qd - @ready_qd
+    end
+    qd
+  end
 
-    # Sets the query dataset by ID or accession
-    def set_query_dataset
-      if params[:id] =~ /\AM:/
-        @query_dataset = QueryDataset.find_by(acc: params[:id])
-      else
-        @query_dataset = QueryDataset.find(params[:id])
-        flash.now[:warning] =
-          'Entry IDs are being phased out, please update your links'
-        # redirect_to root_url and return
-      end
+  # Sets the query dataset by ID or accession
+  def set_query_dataset
+    if params[:id] =~ /\AM:/
+      @query_dataset = QueryDataset.find_by(acc: params[:id])
+    else
+      @query_dataset = QueryDataset.find(params[:id])
+      flash.now[:warning] =
+        'Entry IDs are being phased out, please update your links'
+      # redirect_to root_url and return
     end
-      
-    # Confirms the correct user
-    def correct_user_or_admin
-      @user = @query_dataset.user
-      return true if @user.nil?
-      redirect_to(root_url) if current_user.nil? or
-        not( current_user?(@user) or current_user.admin? )
-    end
+  end
+    
+  # Confirms the correct user
+  def correct_user_or_admin
+    @user = @query_dataset.user
+    return true if @user.nil?
+    redirect_to(root_url) if current_user.nil? ||
+      !(current_user?(@user) || current_user.admin?)
+  end
 end

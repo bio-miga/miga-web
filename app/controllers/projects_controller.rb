@@ -1,22 +1,47 @@
+require 'miga'
+require 'miga/daemon'
+
 class ProjectsController < ApplicationController
   before_action :set_project,
-    only: [:show, :search, :reference_datasets, :medoid_clade, :medoid_clade_as,
-      :rdp_classify, :rdp_classify_as,
-      :show_dataset, :result, :result_partial, :reference_dataset_result]
-  before_action :logged_in_user,
-    only: [:new, :create, :destroy, :result]
+    only: [:destroy, :show, :search, :reference_datasets,
+      :medoid_clade, :medoid_clade_as,
+      :rdp_classify, :rdp_classify_as, :new_ncbi_download,
+      :show_dataset, :result, :result_partial, :reference_dataset_result,
+      :daemon_toggle, :new_reference, :create_reference]
+  before_action :logged_in_user, only: [:result]
   before_action :admin_user,
-    only: [:new, :create, :destroy, :new_ncbi_download, :create_ncbi_download,
-      :start_daemon, :stop_daemon]
+    only: [:lair, :lair_toggle, :daemon_toggle,
+      :daemon_start_all, :daemon_stop_all, :daemon_action_all]
+  if Settings.user_projects
+    before_action :logged_in_user, only: [:new, :create]
+    before_action :correct_user_or_admin,
+      only: [:destroy, :new_ncbi_download, :create_ncbi_download,
+        :new_reference, :create_reference]
+  else
+    before_action :admin_user,
+      only: [:new, :create, :destroy, :new_ncbi_download, :create_ncbi_download,
+        :new_reference, :create_reference]
+  end
 
   # Initiate (paginated) list of projects.
   def index
-    if params[:type]
-      @projects = Project.select{ |i|
-            !i.miga.nil? and i.miga.type.to_s==params[:type] }.
-            paginate(page: params[:page])
+    @selection = :all
+    if params[:private]
+      @selection = :private
+      @projects = Project.where(private: true, user: current_user)
+            .paginate(page: params[:page])
+    elsif params[:user_contributed]
+      @selection = :'user-contributed'
+      @projects = Project.where(official: false, private: false)
+            .paginate(page: params[:page])
+    elsif params[:type]
+      @selection = params[:type].to_sym
+      @projects = Project.where(private: false, official: true)
+            .select { |i| !i.miga.nil? and i.miga.type.to_s == params[:type] }
+            .paginate(page: params[:page])
     else
-      @projects = Project.paginate(page: params[:page])
+      @projects = Project.where(private: false, official: true)
+            .paginate(page: params[:page])
     end
   end
   
@@ -115,12 +140,14 @@ class ProjectsController < ApplicationController
   # Create project.
   def create
     @user = User.find_by(id: params[:user_id])
-    @project = @user.projects.create(project_params)
-    if @project.save and not @project.miga.nil?
+    par = project_params
+    par[:official] = false unless @user.admin?
+    @project = @user.projects.create(par)
+    if @project.save && !@project.miga.nil?
       [:name, :description, :comments, :type,
             :ani_p, :aai_p, :haai_p].each do |k|
         @project.miga.metadata[k] = params[k] unless
-          params[k].nil? or params[k].empty?
+          params[k].nil? || params[k].empty?
       end
       @project.miga.save
       flash[:success] = 'Project created.'
@@ -132,16 +159,15 @@ class ProjectsController < ApplicationController
   
   # Destroys project.
   def destroy
-    project = Project.find(params[:id])
-    FileUtils.rm_rf project.miga.path
-    project.destroy
+    FileUtils.rm_rf @project.miga.path
+    @project.destroy
     flash[:success] = 'Project deleted'
     redirect_to root_url
   end
   
   # Loads a result of a project.
   def result
-    if p = @project and m = p.miga
+    if p = @project && m = p.miga
       if res = m.result(params[:result])
         if file = res.data[:files][params[:file].to_sym]
           send_result(file, res)
@@ -196,87 +222,117 @@ class ProjectsController < ApplicationController
   # Launches an NCBI download in the background.
   def create_ncbi_download
     @project = Project.find(params[:project_id])
-    species = params[:species] || ''
-    codes = ''
-    codes += '50|' if params[:complete]
-    codes += '40|' if params[:chromosome]
-      
-    if codes.empty? or species.empty?
-      flash[:danger] = 'Nothing to do, ' +
-        'please set at least one status to download.' if codes.empty?
-      flash[:danger] = 'Nothing to do, ' +
-        'please specify a species name.' if species.empty?
-      render 'new_ncbi_download'
+    if params[:species].nil? || params[:species].empty?
+      flash[:danger] = 'Species name cannot be empty'
+      redirect_to project_new_ncbi_download_url(@project)
+      return
+    end
+
+    s = %i[complete chromosome scaffold contig].select { |i| params[i] }
+    if @project.ncbi_download!(params[:species], s.compact)
+      flash[:success] = 'Downloading reference genomes in the background...'
+      redirect_to @project
     else
-      if @project.ncbi_download!(species, codes)
-        flash[:success] = 'Downloading reference genomes in the background...'
-        redirect_to @project
-      else
-        render 'new_ncbi_download'
-      end
+      render 'new_ncbi_download'
     end
   end
-  
-  # Launch daemon in the background.
-  def start_daemon
-    require 'miga/daemon'
-    @project = Project.find(params[:id])
-    return if @project.daemon_active?
-    daemon = MiGA::Daemon.new( @project.miga )
-    f = File.open(File.expand_path('daemon/alive', @project.miga.path), 'w')
-    f.print Time.now.to_s
-    f.close
-    Spawnling.new { daemon.start }
-    redirect_to @project
+
+  # Admin daemons
+  def lair
+    require 'miga/lair'
+    @projects = Project.all
+    @lair = MiGA::Lair.new(Settings.miga_projects)
   end
-  
-  # Stops a daemon running in the background.
-  def stop_daemon
-    require 'miga/daemon'
-    @project = Project.find(params[:id])
-    return unless @project.daemon_active?
-    daemon = MiGA::Daemon.new( @project.miga )
-    File.unlink(File.expand_path('daemon/alive', @project.miga.path))
-    Spawnling.new { daemon.stop }
-    redirect_to @project
+
+  def lair_toggle
+    require 'miga/lair'
+    lair = MiGA::Lair.new(Settings.miga_projects)
+    action = lair.active? ? :stop : :start
+    lair.daemon(action)
+    flash[:success] = "Daemon controller successful action: #{action}"
+    sleep(1)
+    redirect_to lair_url
+  end
+
+  def daemon_toggle
+    daemon = MiGA::Daemon.new(@project.miga)
+    action = daemon.active? ? :stop : :start
+    daemon.daemon(action)
+    flash[:success] = "Daemon successful action: #{action}"
+    sleep(1)
+    redirect_to lair_url
+  end
+
+  def daemon_action_all(action)
+    require 'miga/lair'
+    lair = MiGA::Lair.new(Settings.miga_projects)
+    lair.each_daemon { |d| d.daemon(action) }
+    flash[:success] = "Signal sent to all daemons: #{action}"
+    sleep(1)
+    redirect_to lair_url
+  end
+
+  def daemon_start_all
+    daemon_action_all(:start)
+  end
+
+  def daemon_stop_all
+    daemon_action_all(:stop)
+  end
+
+  def new_reference
+    @query_dataset = QueryDataset.new
+    @reference = true
+    render 'query_datasets/new'
+  end
+
+  def create_reference
   end
 
   private
 
-    def set_project
-      id = params[:id]
-      id ||= params[:project_id]
-      qry = id =~ /\A\d+\z/ ? :id : :path
-      @project = Project.find_by(qry => id)
-    end
+  def set_project
+    id = params[:id]
+    id ||= params[:project_id]
+    qry = id =~ /\A\d+\z/ ? :id : :path
+    @project = Project.find_by(qry => id)
+  end
 
-    def project_params
-      params.require(:project).permit(:path)
-    end
+  def project_params
+    params.require(:project).permit(:path, :private, :official)
+  end
 
-    def send_result(file, res)
-      f = File.expand_path(file, res.dir)
-      if Dir.exist? f and params[:f] and not params[:f]=~/\//
-        f = File.expand_path(params[:f], f)
-        file = params[:f]
-      end
-      if Dir.exist? f
-        @path = f
-        @file = file
-        @res = res
-        render template: 'shared/result_dir'
+  def send_result(file, res)
+    f = File.expand_path(file, res.dir)
+    if Dir.exist? f and params[:f] and not params[:f]=~/\//
+      f = File.expand_path(params[:f], f)
+      file = params[:f]
+    end
+    if Dir.exist? f
+      @path = f
+      @file = file
+      @res = res
+      render template: 'shared/result_dir'
+    else
+      case File.extname(file)
+      when '.pdf'
+        send_file(f, filename: file, disposition: 'inline',
+          type: 'application/pdf', x_sendfile: true)
+      when '.html'
+        send_file(f, filename: file, disposition: 'inline',
+          type: 'text/html', x_sendfile: true)
       else
-        case File.extname(file)
-        when '.pdf'
-          send_file(f, filename: file, disposition: 'inline',
-            type: 'application/pdf', x_sendfile: true)
-        when '.html'
-          send_file(f, filename: file, disposition: 'inline',
-            type: 'text/html', x_sendfile: true)
-        else
-          send_file(f, filename: file, disposition: 'inline',
-            type: 'raw/text', x_sendfile: true)
-        end
+        send_file(f, filename: file, disposition: 'inline',
+          type: 'raw/text', x_sendfile: true)
       end
     end
+  end
+
+  # Confirms the correct user
+  def correct_user_or_admin
+    @user = @project.user
+    return true if @user.nil?
+    redirect_to(root_url) if current_user.nil? ||
+      !(current_user?(@user) || current_user.admin?)
+  end
 end

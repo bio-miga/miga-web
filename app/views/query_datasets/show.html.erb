@@ -42,8 +42,12 @@
       <div class='alert alert-warning'>
         <h3>Dataset inactive</h3>
         <p>This dataset was inactivated by the system due to an excessive
-        number of errors. If you believe this is a mistake, please contact
-        the administrators to reactivate the dataset.</p>
+        number of errors.</p><br/>
+        <p class='text-center'>
+          <%= link_to 'Reactivate dataset',
+                query_dataset_reactivate_url(@query_dataset),
+                class: 'btn btn-warning' %>
+        </p>
       </div>
       <br/>
     <% end %>

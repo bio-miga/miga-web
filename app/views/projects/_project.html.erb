@@ -2,6 +2,9 @@
   <span class="label label-primary pull-left project-code"
     style="background:<%= project.code_color %>;"><%= project.code %></span>
   <span class="project-name">
+    <% if project.private? %>
+      <i class="glyphicon glyphicon-lock text-default" rel='tooltip' title='private'> </i>
+    <% end %>
     <% if project.miga.nil? %>
       <%= project.path.unmiga_name %>
       <span class='text-danger'>Project Not Available</span>

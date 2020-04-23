@@ -1,0 +1,90 @@
+<% provide(:title, 'Control daemons') %>
+
+<div class="row">
+  <h1>Control daemons</h1>
+  <div class="col-md-6 user-dashboard">
+    <div class='panel panel-default text-center'>
+      <div class='panel-heading'><h3>
+        <i class='glyphicon glyphicon-flash'> </i>
+        Daemons controller
+      </h3></div>
+      <div class='panel-body'>
+        <input type='checkbox' data-toggle='toggle' id='lair-daemon-toggle'
+              <%= 'checked' if @lair.active? %>>
+        <span class=text-muted style='margin:1em;'>
+          Toggle to turn the controller on or off
+        </span>
+        <script>
+          $('#lair-daemon-toggle').change(function(){
+            window.location.replace('<%= lair_toggle_url %>');
+          });
+        </script>
+      </div>
+      <% unless @lair.last_alive.nil? %>
+        <div class='panel-footer'>
+          <b>Last seen alive:</b> <%= time_ago_in_words @lair.last_alive %> ago
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="col-md-6 user-dashboard">
+    <div class='panel panel-default text-center'>
+      <div class='panel-heading'><h3>
+        <i class='glyphicon glyphicon-bullhorn'> </i>
+        Broadcast signal
+      </h3></div>
+      <div class='panel-body'>
+        <%= link_to 'Launch all daemons', daemon_start_all_url,
+              class: 'btn btn-primary' %>
+        <%= link_to 'Terminate all daemons', daemon_stop_all_url,
+              class: 'btn btn-danger' %>
+      </div>
+      <div class='panel-footer'>
+        Turn on or off the daemons of all projects
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-12 user-dashboard">
+    <div class='panel panel-default'>
+      <div class='panel-heading text-center'><h3>
+        <i class='glyphicon glyphicon-tasks'> </i>
+        Individual project daemons
+      </h3></div>
+      <table class='table'>
+        <tr>
+          <th>Name</th>
+          <th>Datasets</th>
+          <th>Last seen alive</th>
+          <th>Daemon</th>
+        </tr>
+        <% @projects.each do |project| %>
+          <tr>
+            <td><%= link_to project.path, project %></td>
+            <% if project.miga.nil? %>
+              <td>Unreachable</td> <td>Unreachable</td> <td> </td>
+            <% else %>
+              <td><%= project.miga.dataset_names.size %></td>
+              <td>
+                <% daemon = MiGA::Daemon.new(project.miga) %>
+                <% la = daemon.last_alive %>
+                <%= "#{time_ago_in_words(la)} ago" unless la.nil? %>
+              </td>
+              <td>
+                <input type='checkbox' data-toggle='toggle' data-size='mini'
+                      id='daemon-toggle-<%= project.id %>'
+                      <%= 'checked' if daemon.active? %>>
+                <script>
+                  $('#daemon-toggle-<%= project.id %>').change(function(){
+                    window.location.replace('<%= daemon_toggle_url(project.id) %>');
+                  });
+                </script>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+  </div>
+</div>

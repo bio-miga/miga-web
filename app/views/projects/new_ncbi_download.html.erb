@@ -1,50 +1,59 @@
-<% provide(:title, "Download NCBI genomes") %>
-<% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
-<% provide(:breadcrumb_2, link_to(truncate(@project.path_name, length:15), @project)) %>
+<% provide(:title, 'Download NCBI genomes') %>
+<% provide(:breadcrumb_1, link_to('Projects', projects_path)) %>
+<% provide(:breadcrumb_2, link_to(truncate(@project.path_name, length: 15), @project)) %>
 <% content_for :head do %>
-   <script type="text/javascript">
-      $(function() {
-	 $('#on-click-loading').click(function() {
-	    $('#loading-message').modal('show');
-	 })
-      });
-   </script>
+  <script type="text/javascript">
+    $(function() {
+      $('#on-click-loading').click(function() {
+        $('#loading-message').modal('show');
+      })
+    });
+  </script>
 <% end %>
 <h1>Download available NCBI genomes</h1>
 <div class="row">
-   <div class="col-md-6 col-md-offset-3">
-      <div class="projects"><%= render @project %></div>
-      <hr/>
-      <%= form_for(@project, url: project_create_ncbi_download_path(@project), method: :post) do |f| %>
-	 <%= render "shared/error_messages", object: f.object %>
-	 
-	 <%= hidden_field_tag :project_id, @project.id %>
-	 
-	 <%= label_tag :species %>
-	 <%= text_field_tag :species, @project.path_name.unmiga_name, class: "form-control" %>
-	 <br/>
-	 
-	 <%= label_tag :complete, class: "checkbox" do %>
-	    <span><%= check_box_tag :complete, 1, true %> Include complete genomes.</span>
-	 <% end %>
+  <div class="col-md-6 col-md-offset-3">
+    <div class="projects"><%= render @project %></div>
+    <hr/>
+    <%= form_for(@project, url: project_create_ncbi_download_path(@project), method: :post) do |f| %>
+      <%= render "shared/error_messages", object: f.object %>
 
-	 <%= label_tag :chromosome, class: "checkbox" do %>
-	    <span><%= check_box_tag :chromosome, 1, true %> Include genomes with complete chromosomes.</span>
-	 <% end %>
-	 <br/>
+      <%= hidden_field_tag :project_id, @project.id %>
 
-	 <%= f.submit "Start download", class: "btn btn-primary", id: "on-click-loading" %>
+      <%= label_tag :species %>
+      <%= text_field_tag :species, @project.path_name.unmiga_name, class: "form-control" %>
+      <br/>
+       
+      <%= label_tag :complete, class: 'checkbox' do %>
+        <span><%= check_box_tag :complete, 1, true %> Include complete genomes</span>
       <% end %>
-   </div>
-   <div class="modal fade" id="loading-message" tabindex="-1" role="dialog" data-keyboard=false>
-      <div class="modal-dialog modal-lg" role="document">
-	 <div class="modal-content">
-	    <div class="modal-body">
-	       <div class="jumbotron text-center">
-		  <h1>Please do not close or reload this page until the action is complete...</h1>
-	       </div>
-	    </div>
-	 </div>
+
+      <%= label_tag :chromosome, class: 'checkbox' do %>
+        <span><%= check_box_tag :chromosome, 1, true %> Include genomes with complete chromosomes</span>
+      <% end %>
+      
+      <%= label_tag :scaffold, class: 'checkbox' do %>
+        <span><%= check_box_tag :scaffold, 1, false %> Include draft genomes at scaffold level</span>
+      <% end %>
+
+      <%= label_tag :contig, class: 'checkbox' do %>
+        <span><%= check_box_tag :contig, 1, false %> Include draft genomes at contig level</span>
+      <% end %>
+
+      <br/>
+
+      <%= f.submit "Start download", class: "btn btn-primary", id: "on-click-loading" %>
+    <% end %>
+  </div>
+  <div class="modal fade" id="loading-message" tabindex="-1" role="dialog" data-keyboard=false>
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="jumbotron text-center">
+            <h1>Please do not close or reload this page until the action is complete...</h1>
+          </div>
+        </div>
       </div>
-   </div>
+    </div>
+  </div>
 </div>

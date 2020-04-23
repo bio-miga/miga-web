@@ -1,11 +1,15 @@
 <% provide(:breadcrumb_1, link_to(@project.path, @project)) %>
-<%= provide(:title, 'New query datasets') %>
-<h1>New query datasets</h1>
+<% @reference ||= false %>
+<% @query_or_ref = @reference ? 'reference' : 'query' %>
+<%= provide(:title, "New #{@query_or_ref} datasets") %>
+<h1>New <%= @query_or_ref %> datasets</h1>
 <div class="row">
   <div class="col-md-6 col-md-offset-3">
     <div class="projects"><%= render @project %></div>
     <hr/>
-    <%= form_for(@query_dataset, html: { multipart: true }) do |f| %>
+    <% form_opts = { html: { multipart: true}, method: :post } %>
+    <% form_opts[:url] = project_new_reference_url(@project) if @reference %>
+    <%= form_for(@query_dataset, form_opts) do |f| %>
       <% if (@bad_objects || []).empty? %>
         <%= render "shared/error_messages", object: f.object %>
       <% else %>

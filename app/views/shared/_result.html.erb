@@ -1,16 +1,16 @@
-<% unless key.nil? or key==:stats %>
+<% unless key.nil? or key == :stats %>
 
 <%
   titles = {
-    ssu: "Ribosomal RNA (small subunit)",
-    essential_genes: "Quality (essential genes)",
-    cds: "Gene prediction",
-    mytaxa_scan: "MyTaxa Scan",
-    mytaxa: "MyTaxa",
-    haai_distances: "hAAI distances",
-    aai_distances: "AAI distances",
-    ani_distances: "ANI distances",
-    ogs: "Orthologous groups of proteins"
+    ssu: 'Ribosomal RNA (small subunit)',
+    essential_genes: 'Quality (essential genes)',
+    cds: 'Gene prediction',
+    mytaxa_scan: 'MyTaxa Scan',
+    mytaxa: 'MyTaxa',
+    haai_distances: 'hAAI distances',
+    aai_distances: 'AAI distances',
+    ani_distances: 'ANI distances',
+    ogs: 'Orthologous groups of proteins'
   }
   if obj.is_a? Project
     proj = obj
@@ -20,17 +20,17 @@
   r_open = [:distances, :project_stats, :mytaxa].include? key
 %>
 
-<h3 role="button" data-toggle="collapse" class="result-title"
-      id="result-<%= key %>" href="#result-cnt-<%= key %>"
-      aria-expanded="<%= r_open ? "true" : "false" %>"
-      aria-controls="result-cnt-<%= key %>">
-  <i class="glyphicon glyphicon-tasks"> </i>
-  <%= titles[key].nil? ? key.to_s.gsub("_", " ").capitalize : titles[key] %>
+<h3 role='button' data-toggle='collapse' class='result-title'
+      id='result-<%= key %>' href='#result-cnt-<%= key %>'
+      aria-expanded='<%= r_open ? 'true' : 'false' %>'
+      aria-controls='result-cnt-<%= key %>'>
+  <i class='glyphicon glyphicon-tasks'> </i>
+  <%= titles[key].nil? ? key.to_s.gsub('_', ' ').capitalize : titles[key] %>
 </h3>
 
-<div class="result collapse<%= " in" if r_open %>" id="result-cnt-<%= key %>"
-      aria-expanded="<%= r_open ? "true" : "false" %>">
-<div class="result-body">
+<div class='result collapse<%= ' in' if r_open %>' id='result-cnt-<%= key %>'
+      aria-expanded='<%= r_open ? 'true' : 'false' %>'>
+<div class='result-body'>
   <% case key %>
   <% # Dataset results %>
   <% when :read_quality %>
@@ -50,10 +50,10 @@
     <%= plot_assembly(res[:stats][:n50][0], res[:stats][:total_length][0]
           ) unless res.data[:stats][:n50].nil? %>
   <% when :essential_genes %>
-    <%= render partial: "shared/results/essential_genes",
+    <%= render partial: 'shared/results/essential_genes',
          locals: { res: res, job: key, project: proj } %>
   <% when :ssu %>
-    <%= render partial: "shared/results/ssu",
+    <%= render partial: 'shared/results/ssu',
          locals: { res: res, job: key, project: proj, obj: obj } %>
   <% when :mytaxa_scan %>
     <%
@@ -65,8 +65,8 @@
     %>
     <p>
       MyTaxa Scan detected regions with unusual taxonomic distribution
-      (<%= f_path.nil? ? "No report available" :
-            link_to("download PDF", f_path, target: "_blank") %>).
+      (<%= f_path.nil? ? 'No report available' :
+            link_to('download PDF', f_path, target: '_blank') %>).
     </p>
   <% when :mytaxa %>
     <%
@@ -75,57 +75,57 @@
         query_dataset_result_path(obj.id, :mytaxa, :krona)
     %>
     <p>MiGA classified the assembled contigs at species, genus, and phylum
-    levels using MyTaxa (<%= link_to "see distribution", f_path,
+    levels using MyTaxa (<%= link_to 'see distribution', f_path,
           target: '_blank' %>).</p>
   <% when :distances %>
-    <%= render partial: "shared/results/distances",
+    <%= render partial: 'shared/results/distances',
          locals: { res: res, job: key, project: proj, dataset: obj } %>
   <% # Project-wide results %>
   <% when :project_stats %>
-    <%= render partial: "shared/results/project_stats",
+    <%= render partial: 'shared/results/project_stats',
          locals: { res: res, job: key, project: proj } %>
   <% when :haai_distances %>
     <p>Average Identity between sets of conserved proteins in Bacteria and
       Archaea, as a heuristic approximation to AAI.</p>
     <%= plot_distances(res.file_path(:hist), {},
-        {height:300, title:"Distribution of hAAI values"}) unless
+        {height:300, title:'Distribution of hAAI values'}) unless
         res.data[:files][:hist].nil? %>
   <% when :aai_distances %>
     <p>Average Amino acid Identity between genomes.</p>
     <%= plot_distances(res.file_path(:hist), {},
-        {height:300, title:"Distribution of AAI values"}) unless
+        {height:300, title:'Distribution of AAI values'}) unless
         res.data[:files][:hist].nil? %>
   <% when :ani_distances %>
     <p>Average Nucleotide Identity between genomes with AAI &ge; 90%.</p>
     <%= plot_distances(res.file_path(:hist), {},
-        {height:300, title:"Distribution of ANI values"}) unless
+        {height:300, title:'Distribution of ANI values'}) unless
         res.data[:files][:hist].nil? %>
   <% when :clade_finding %>
     <p>
-      <%= render partial: "shared/results/clade_tree",
+      <%= render partial: 'shared/results/clade_tree',
            locals: { res: res, job: key, project: proj } %>
-      <%= render partial: "shared/results/proposed_clades",
+      <%= render partial: 'shared/results/proposed_clades',
            locals: { res: res, job: key, project: proj } %>
     </p>
   <% when :subclades %>
     <p>
-      <%= render partial: "shared/results/clade_tree",
+      <%= render partial: 'shared/results/clade_tree',
            locals: { res: res, job: key, project: proj } %>
     </p>
   <% when :ogs %>
     <p>
-      <%= render partial: "shared/results/ogs",
+      <%= render partial: 'shared/results/ogs',
            locals: { res: res, job: key, project: proj } %>
     </p>
   <% end %>
   <% unless res[:stats].nil? or res[:stats].empty? %>
     <p>
     <% res[:stats].each do |k,v| %>
-      <% v = v.is_a?(Array) ? [v[0], " #{v[1]}"] : [v, ""] %>
+      <% v = v.is_a?(Array) ? [v[0], " #{v[1]}"] : [v, ''] %>
       <b><%= k.to_s.unmiga_name.capitalize.
-              gsub(/g c content/i, "G+C content") %>:</b>
+              gsub(/g c content/i, 'G+C content') %>:</b>
       <%= number_with_precision(v[0],
-            precision:4, strip_insignificant_zeros:true, delimiter:",")
+            precision: 4, strip_insignificant_zeros: true, delimiter: ',')
             %><%= v[1] %>
       <br/>
     <% end %>
@@ -133,8 +133,8 @@
   <% end %>
 </div>
 
-<div class="result-footer">
-  <i class="glyphicon glyphicon-download" title="downloads"> </i>
+<div class='result-footer'>
+  <i class='glyphicon glyphicon-download' title='downloads'> </i>
   <%=
     res.data[:files].keys.map do |k|
       f = res.file_path(k)
@@ -144,18 +144,18 @@
         obj.is_a?(MiGA::Dataset) ?
         reference_dataset_result_path(proj.id, obj.name, key, k) :
         query_dataset_result_path(obj.id, key, k),
-        {rel: "tooltip", target: "_blank",
-        title: Dir.exist?(f) ? "Folder" : number_to_human_size(File.size f)})
+        { rel: 'tooltip', target: '_blank',
+          title: Dir.exist?(f) ? 'Folder' : number_to_human_size(File.size f)})
     end.compact.
-      to_sentence(two_words_connector:" or ", last_word_connector:", or ").
+      to_sentence(two_words_connector: ' or ', last_word_connector: ', or ').
       html_safe
   %>
   <br/>
-  <i class="glyphicon glyphicon-info-sign" title="downloads"> </i>
-  <%= link_to "Learn more",
-    "http://manual.microbial-genomes.org/part5/workflow.html#" +
-      key.to_s.tr("_","-") %>
-  <div class="timestamp"><%= time_ago_in_words res.data[:created] %> ago</div>
+  <i class='glyphicon glyphicon-info-sign' title='downloads'> </i>
+  <%= link_to 'Learn more',
+    'http://manual.microbial-genomes.org/part5/workflow.html#' +
+      key.to_s.tr('_','-') %>
+  <div class='timestamp'><%= time_ago_in_words res.data[:created] %> ago</div>
 </div>
 </div>
 <%= info_msg_content %>

@@ -1,11 +1,21 @@
 class UsersController < ApplicationController
-  before_action :logged_in_user, only: [:index, :edit, :update, :destroy]
-  before_action :correct_user,   only: [:edit, :update]
+  before_action :logged_in_user,
+    only: [:index, :edit, :update, :destroy, :show, :dashboard]
+  before_action :correct_user,   only: [:edit, :update, :show]
   before_action :admin_user,
-    only: [:index, :destroy, :unactivated_users, :activate_user]
+    only: [:index, :destroy, :unactivated_users, :activate_user, :admin]
 
+  # Show all users
   def index
-     @users = User.paginate(page: params[:page])
+    @users = User.paginate(page: params[:page])
+  end
+
+  # Show user dashboard
+  def dashboard
+  end
+
+  # Show site admin console
+  def admin
   end
   
   def show
@@ -75,16 +85,19 @@ class UsersController < ApplicationController
 
   private
 
-     def user_params
-	params.require(:user).permit(:name, :email, :password,
-	   :password_confirmation)
-     end
+  def user_params
+    params.require(:user).permit(:name, :email, :password,
+      :password_confirmation)
+  end
 
-     # Before filters
+  # Before filters
 
-     # Confirms the correct user
-     def correct_user
-	@user = User.find(params[:id])
-	redirect_to(root_url) unless current_user?(@user)
-     end
+  # Confirms the correct user
+  def correct_user
+    @user = User.find(params[:id])
+    unless current_user?(@user) || current_user.admin?
+      flash[:danger] = 'You don\'t have privileges to access this page'
+      redirect_to(root_url)
+    end
+  end
 end

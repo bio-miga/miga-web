@@ -1,7 +1,7 @@
 <header class="navbar navbar-fixed-top navbar-inverse">
   <div class=container>
     <nav>
-      <%= link_to "MiGA", "/", id: "logo" %>
+      <%= link_to 'MiGA', root_url, id: 'logo' %>
       <div class=crumb>
         <% (0 .. 9).each do |i| %>
           <%= breadcrumb(yield "breadcrumb_#{i}".to_sym) %>
@@ -9,8 +9,34 @@
         <%= breadcrumb(truncate(yield(:title), length:15)) %>
       </div>
       <ul class="nav navbar-nav navbar-right">
-        <li><%= link_to "Home", root_path %></li>
-        <li><%= link_to "Projects", projects_path %></li>
+        <li><%= link_to 'Home', root_path %></li>
+        <% if logged_in? && Settings.user_projects %>
+          <li>
+            <a class=dropdown-toggle data-toggle=dropdown type=button>
+              Projects
+              <span class=caret></span>
+            </a>
+            <ul class=dropdown-menu role=menu aria-labelledby=dropdownMenu>
+              <li>
+                <%= link_to projects_path do %>
+                  <i class='glyphicon glyphicon-globe'> </i> Public
+                <% end %>
+              </li>
+              <li>
+                <%= link_to projects_path(private: true) do %>
+                  <i class='glyphicon glyphicon-lock'> </i> Private
+                <% end %>
+              </li>
+              <li>
+                <%= link_to projects_path(user_contributed: true) do %>
+                  <i class='glyphicon glyphicon-user'> </i> User-contributed
+                <% end %>
+              </li>
+            </ul>
+          </li>
+        <% else %>
+          <li><%= link_to 'Projects', projects_path %></li>
+        <% end %>
         <% if logged_in? %>
           <% new_ds = QueryDataset.complete_new_by_user(current_user).count %>
           <% if new_ds > 0 %>
@@ -26,9 +52,14 @@
               <span class=caret></span>
             </a>
             <ul class=dropdown-menu role=menu aria-labelledby=dropdownMenu>
-              <li><%= link_to current_user do %>
+              <li><%= link_to dashboard_url do %>
                 <i class="glyphicon glyphicon-dashboard"> </i> Dashboard
               <% end %></li>
+              <% if current_user.admin? %>
+                <li><%= link_to admin_url do %>
+                  <i class="glyphicon glyphicon-wrench"> </i> Admin console
+                <% end %></li>
+              <% end %>
               <li><%= link_to edit_user_path(current_user) do %>
                 <i class="glyphicon glyphicon-cog"> </i> Settings
               <% end %></li>
@@ -42,7 +73,7 @@
             </ul>
           </li>
         <% else %>
-          <li><%= link_to "Log in", login_path %></li>
+          <li><%= link_to 'Log in', login_path %></li>
         <% end %>
       </ul>
     </nav>

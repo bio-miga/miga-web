@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'execjs' 
 gem 'therubyracer'
 # Use MiGA base code to communicate with the projects
-gem 'miga-base', '~> 0.6'
+gem 'miga-base', '~> 0.7.3'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2'
 # Make it safe
@@ -49,6 +49,9 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 # bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', '~> 1.0.0', group: :doc
+
+# Toggle for daemons
+gem 'bootstrap-toggle-rails', '~> 2.2'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

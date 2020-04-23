@@ -54,7 +54,11 @@ class QueryDataset < ApplicationRecord
   def ready?
     return true if complete
     return false if miga.nil?
-    if !miga.is_active? or miga.done_preprocessing?
+
+    # Note that we use here +status != :incomplete+ instead of using
+    # +status == :complete+ because when +status+ is +:inactive+ it
+    # triggers the same ("complete") response
+    if miga.status != :incomplete
       update_attribute(:complete, true)
       update_attribute(:complete_new, true)
     end

@@ -1,13 +1,24 @@
 <% provide(:title, @project.path_name) %>
-<% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
+<% provide(:breadcrumb_1, link_to('Projects', projects_path)) %>
 <div class="row">
   <aside class="col-md-4">
-    <%= render partial: "shared/menu_datasets",
+    <%= render partial: 'shared/menu_datasets',
       locals: { project: @project,
       ds_counts: @project.dataset_counts(current_user),
       ref_datasets: false, qry_datasets: false } %>
   </aside>
   <div class="col-md-8">
+    <% if @project.private? %>
+      <div class='alert alert-info' style='margin:1.3em 0;'>
+        This is a <b>private project</b>:
+        only you have access.
+      </div>
+    <% elsif !@project.official? %>
+      <div class='alert alert-info' style='margin:1.3em 0;'>
+        This is a <b>user-contributed project</b>:
+        it is not officially supported.
+      </div>
+    <% end %>
     <% unless @project.miga.metadata[:arcgis].nil? %>
       <style>
         .embed-container {
@@ -18,7 +29,7 @@
       </style>
       <div class="embed-container"><iframe width="500" height="400"
         frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
-        title="Oil_Microbiome_Map"
+        title="MiGA Project Map"
         src="https://arcgis.com/apps/opsdashboard/index.html#/<%=
           @project.miga.metadata[:arcgis] %>"></iframe></div>
     <% end %>
@@ -28,7 +39,7 @@
         <div id="project_result_<%= k %>">
           <h3 class="result-title">
             <i class="glyphicon glyphicon-tasks"> </i>
-            <%= image_tag("loading.gif") %>
+            <%= image_tag('loading.gif') %>
             <%= k.to_s.unmiga_name.capitalize %>
           </h3>
         </div>
@@ -50,7 +61,7 @@
       <p>
         Initialized as
         <u rel="tooltip" title="<%=
-          MiGA::Project.KNOWN_TYPES[@project.miga.metadata[:type] ][:description]
+          MiGA::Project.KNOWN_TYPES[@project.miga.metadata[:type]][:description]
         %>"><%= @project.miga.metadata[:type] %></u>
         <%= time_ago_in_words @project.miga.metadata[:created] %> ago.
       </p>

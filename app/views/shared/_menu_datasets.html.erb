@@ -7,30 +7,30 @@
   <ul class="nav nav-pills nav-stacked">
     <% lp = params.permit(:all) %>
     <% if not project.nil? %>
-      <li class="<%= "active" if ref_datasets %>">
+      <li class="<%= 'active' if ref_datasets %>">
         <%= link_to project_reference_datasets_path(project.id) do %>
           Reference datasets <span class="badge"><%= ds_counts[:ref] %></span>
         <% end %>
       </li>
     <% end %>
-    <li class="<%= "active" if qry_datasets and not params[:ready] %>">
+    <li class="<%= 'active' if qry_datasets and not params[:ready] %>">
       <%= link_to (project.nil? ? query_datasets_path(lp) :
         project_query_datasets_path(project.id, lp)) do %>
         Query datasets <span class="badge"><%= ds_counts[:qry] %></span>
       <% end %>
     </li>
-    <li class="<%= "active" if qry_datasets and params[:ready]=="no" %>">
+    <li class="<%= 'active' if qry_datasets and params[:ready] == 'no' %>">
       <%= link_to (project.nil? ?
-            query_datasets_path(lp.merge(ready: "no")) :
+            query_datasets_path(lp.merge(ready: 'no')) :
             project_query_datasets_path(project.id,
-              lp.merge(ready: "no"))) do %>
+              lp.merge(ready: 'no'))) do %>
         <i class="glyphicon glyphicon-menu-right"> </i>
         Running <span class="badge"><%= ds_counts[:qry_no] %></span>
       <% end %>
     </li>
-    <li class="<%= "active" if qry_datasets and params[:ready]=="yes" %>">
-      <%= link_to (project.nil? ? query_datasets_path(lp.merge(ready: "yes")) :
-          project_query_datasets_path(project.id, lp.merge(ready: "yes"))) do %>
+    <li class="<%= 'active' if qry_datasets and params[:ready] == 'yes' %>">
+      <%= link_to (project.nil? ? query_datasets_path(lp.merge(ready: 'yes')) :
+          project_query_datasets_path(project.id, lp.merge(ready: 'yes'))) do %>
         <i class="glyphicon glyphicon-menu-right"> </i>
         Complete <span class="badge"><%= ds_counts[:qry_yes] %></span>
       <% end %>
@@ -38,22 +38,23 @@
   </ul>
   <br/>
   <% unless project.nil? %>
-    <%= link_to 'Upload new datasets',
-      new_query_dataset_path(project_id: project.id), class: "btn btn-primary btn-block" %>
+    <%= link_to 'Upload new query datasets',
+          new_query_dataset_path(project_id: project.id),
+          class: 'btn btn-primary btn-block' %>
   <% end %>
 </section>
-<% if not current_user.nil? and current_user.admin? and not project.nil? %>
-  <section class="admin-zone">
+
+<% if !current_user.nil? && !project.nil? &&
+      (current_user.admin? || current_user?(project.user)) %>
+  <section class='admin-zone'>
     <h1>Admin zone</h1>
-    <div class="btn-group btn-group-justified btn-block" role="group" aria-label="daemon-actions">
-      <%= link_to "Spawn daemon", project_start_daemon_path(@project), method: :post,
-        class: "btn btn-primary #{"disabled" if project.daemon_active?}" %>
-      <%= link_to "Stop daemon", project_stop_daemon_path(@project), method: :post,
-        class: "btn btn-primary #{"disabled" unless project.daemon_active?}" %>
-    </div>
-    <%= link_to "Download available NCBI genomes",
-      project_new_ncbi_download_path(@project), class: "btn btn-primary btn-block" %>
-    <%= link_to "Remove project", project, method: :delete, class: " btn btn-warning btn-block",
-      data: { confirm: "Are you sure? This action cannot be undone." } %>
+    <%# link_to 'Upload reference datasets', project_new_reference_url(project),
+          class: 'btn btn-primary btn-block' %>
+    <%= link_to 'Download available NCBI genomes',
+          project_new_ncbi_download_path(@project),
+          class: 'btn btn-primary btn-block' %>
+    <%= link_to 'Remove project', project, method: :delete,
+          class: 'btn btn-warning btn-block',
+          data: { confirm: 'Are you sure? This action cannot be undone.' } %>
   </section>
 <% end %>

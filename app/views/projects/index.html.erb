@@ -1,10 +1,48 @@
-<% provide(:title, "All projects") %>
-<h1>Projects</h1>
+<% provide(:title, 'Projects') %>
+<h1><%= @selection.to_s.capitalize %> Projects</h1>
 
-<%= will_paginate class: "center-block center" %>
+<div class='btn-toolbar'>
+  <div class='btn-group'>
+    <% if @selection == :private %>
+      </div>
+      <%= link_to new_project_url, class: 'btn btn-primary' do %>
+        <i class='glyphicon glyphicon-star'> </i>
+        Create private project
+      <% end %>
+      <div class='btn-group'>
+    <% elsif Settings.user_projects %>
+      <%= link_to projects_url(private: true), class: 'btn btn-default' do %>
+        <i class='glyphicon glyphicon-lock'> </i>
+        See private projects
+      <% end %>
+    <% end %>
 
-<div class="project-list">
-   <%= render @projects %>
+    <% if @selection != :all %>
+      <%= link_to projects_url, class: 'btn btn-default' do %>
+        <i class='glyphicon glyphicon-th-list'> </i>
+        See all public projects
+      <% end %>
+    <% end %>
+
+    <% if @selection != :clade %>
+      <%= link_to projects_url(type: :clade), class: 'btn btn-default' do %>
+        <i class='glyphicon glyphicon-filter'> </i>
+        See only clade projects
+      <% end %>
+    <% end %>
+  </div>
+</div><hr/>
+
+<%= will_paginate class: 'center-block center' %>
+
+<div class='project-list'>
+  <% if @projects.empty? %>
+    <div class='jumbotron'>
+      <h2>Nothing here <i class='glyphicon glyphicon-leaf'> </i></h2>
+    </div>
+  <% else %>
+    <%= render @projects %>
+  <% end %>
 </div>
 
-<%= will_paginate class: "center-block center" %>
+<%= will_paginate class: 'center-block center' %>
