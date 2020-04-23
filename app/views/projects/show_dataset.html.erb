@@ -1,9 +1,9 @@
 <% provide(:title, @dataset_miga.name.unmiga_name) %>
-<% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
+<% provide(:breadcrumb_1, link_to('Projects', projects_path)) %>
 <% provide(:breadcrumb_2,
-      link_to(truncate(@project.path_name, length:15), @project)) %>
+      link_to(truncate(@project.path_name, length: 15), @project)) %>
 <% provide(:breadcrumb_3,
-      link_to("References", project_reference_datasets_path(@project.id))) %>
+      link_to('References', project_reference_datasets_path(@project.id))) %>
 <div class="row">
   <aside class="col-md-4">
     <section class='dataset-title'>
@@ -12,12 +12,12 @@
         title: @project.path_name,
         style: "background: #{@project.code_color};" %></a>
       <span class="name">
-        <b><%= @dataset_miga.is_ref? ? "[Ref]" : "[Qry]" %>
+        <b><%= @dataset_miga.is_ref? ? '[Ref]' : '[Qry]' %>
           <% qi = @dataset_miga.metadata[:quality] %>
           <% unless qi.nil? %>
             <i class="glyphicon glyphicon-adjust small text-light-<%=
-                {excellent:"success", high:"info",
-                  intermediate:"warning", low:"danger"}[qi.to_sym]
+                { excellent: 'success', high: 'info',
+                  intermediate: 'warning', low: 'danger' }[qi.to_sym]
             %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
           <% end %>
           <%= link_to_reference_dataset(@project, @dataset_miga.name) %></b>

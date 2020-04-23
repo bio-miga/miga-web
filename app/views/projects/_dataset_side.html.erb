@@ -20,7 +20,7 @@
 
   <% dataset.metadata.each do |k,v| %>
     <% next if [:type, :ref, :created, :updated, :user, :tax,
-          :quality, :is_type, :is_ref_type, :type_rel].include? k %>
+          :quality, :is_type, :is_ref_type, :type_rel, :status].include? k %>
     <% next if k.to_s[0] == '_' %>
     <% k_str = k.to_s.unmiga_name.capitalize %>
     <%
@@ -54,11 +54,11 @@
           "<a href='#{ext_links[k][1] % i}' target=_blank>#{ext_links[k][2] % i}</a>"
         end.join(", ")
       when :see_also
-        k_str = "See also"
+        k_str = 'See also'
         v = v.split(/[,;]/).map do |i|
           l = i.split(/:/, 2)
           "<a href='#{l[1]}' target=_blank>#{l[0]}</a>"
-        end.join(", ")
+        end.join(', ')
       end
     %>
     <%= accordion_card(accordion, k, k_str) do %>
