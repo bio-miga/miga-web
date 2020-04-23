@@ -1,4 +1,4 @@
-require "miga/tax_dist"
+require 'miga/tax_dist'
 
 module QueryDatasetsHelper
   def aai_intax(aai, project, ds_miga)
@@ -43,7 +43,7 @@ module QueryDatasetsHelper
       all_c << '</div>'
     end
     all << "#{all_c}<br/><span class=text-muted>Significance at p-value " +
-            "below: *0.5, **0.1, ***0.05, ****0.01</span></div>"
+            "below: *0.5, **0.1, ***0.05, ****0.01 #{opts}</span></div>"
     return (phrases.empty? ?
             "The dataset doesn't have any close relative in the database " +
               "that can be used to determine its taxonomy. #{all}" :
