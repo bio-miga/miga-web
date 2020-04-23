@@ -90,6 +90,7 @@ class QueryDataset < ApplicationRecord
   def run_distances!
     return unless run_distances?
     miga.result(:distances).remove!
+    miga.recalculate_status
     update_attribute(:complete, false) if complete
     update_attribute(:complete_new, false) if complete_new
   end
