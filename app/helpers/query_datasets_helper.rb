@@ -26,7 +26,7 @@ module QueryDatasetsHelper
     end
     all = '<div class="small comment">'
     all_c = ''
-    MiGA::TaxDist.aai_pvalues(aai, :intax).each do |k,v|
+    MiGA::TaxDist.aai_pvalues(aai, :intax, opts).each do |k,v|
       sig = ''
       [0.5,0.1,0.05,0.01].each{ |i| sig << '*' if v<i }
       all << '<div class="taxonomy-tree">' +
@@ -68,7 +68,7 @@ module QueryDatasetsHelper
         "highest taxonomic rank with p-value &le; #{thr[k]}"
     end
     all = '<div class="text-muted small comment"><b>P-values:</b> ' +
-            MiGA::TaxDist.aai_pvalues(aai, :novel).map do |k,v|
+            MiGA::TaxDist.aai_pvalues(aai, :novel, opts).map do |k,v|
               "<b>#{MiGA::Taxonomy.LONG_RANKS[k]}</b> #{"%.3g" % v}"
             end.join(", ") + '.</div>'
     conn = ". It "
