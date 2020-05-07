@@ -4,7 +4,6 @@ class QueryDataset < ApplicationRecord
   default_scope -> { order(created_at: :desc) }
   mount_uploader :input_file, InputFileUploader
   mount_uploader :input_file_2, InputFileUploader
-  attr_accessor :miga_obj
   validates :user_id, presence: true
   validates :project_id, presence: true
   validates :name, presence: true, miga_name: true,
@@ -12,7 +11,7 @@ class QueryDataset < ApplicationRecord
   validates :input_file, presence: true
   validates :input_type, presence: true,
     inclusion: { in: %w(raw_reads trimmed_fasta assembly) }
-  before_save :create_miga_dataset
+  before_create :create_miga_dataset
 
   def self.by_user_and_project(user, project)
     QueryDataset.where(["user_id=? and project_id=?", user.nil? ? 0 : user.id, project.id])
@@ -43,8 +42,7 @@ class QueryDataset < ApplicationRecord
 
   # Returns the MiGA dataset object
   def miga
-    load_miga_dataset
-    miga_obj
+    @miga ||= project.miga.dataset(miga_name)
   end
   
   # Always returns +false+.
@@ -110,7 +108,7 @@ class QueryDataset < ApplicationRecord
 
   # Registers parameters in the MiGA object
   def save_in_miga(par)
-    return false if miga.nil?
+    raise 'Cannot load MiGA::Dataset object' if miga.nil?
     [:description, :comments, :type].each do |k|
       next if par[k].nil? or par[k].empty?
       miga.metadata[k] = par[k]
@@ -121,51 +119,27 @@ class QueryDataset < ApplicationRecord
 
   private
 
-    def create_miga_dataset
-      return if MiGA::Dataset.exist?(project.miga, miga_name)
-      f = { 1=>input_file, 2=>input_file_2 }
-      t = input_type.to_sym
-      MiGA::Dataset.new(project.miga, miga_name, false,
-        { user: user_id, type: :genome })
-      project.miga.add_dataset(miga_name)
-      return unless MiGA::Dataset.RESULT_DIRS.keys.include? t
-      r_base = File.join(project.miga.path, 'data',
-        MiGA::Dataset.RESULT_DIRS[input_type.to_sym], miga_name)
-      
-      case t
-      when :raw_reads
-        copy_to_miga(f[1], "#{r_base}.1.fastq")
-        copy_to_miga(f[2], "#{r_base}.2.fastq") unless f[2].path.nil?
-      when :trimmed_fasta
-        if f[2].path.nil?
-          copy_to_miga(f[1], "#{r_base}.SingleReads.fa")
-        else
-          copy_to_miga(f[1], "#{r_base}.1.fasta")
-          copy_to_miga(f[2], "#{r_base}.2.fasta")
-        end
-      when :assembly
-        copy_to_miga(f[1], "#{r_base}.LargeContigs.fna")
-      else
-        return
-      end
-      File.open("#{r_base}.done", "w") { |fh| fh.puts Time.now.to_s }
-      miga.add_result t
-    ensure
-      # Empty input files
-      f ||= {}
-      f.values.each do |i|
-        File.open(i.path, "r"){ |fh| fh.print "" } unless i.path.nil?
-      end
-    end
- 
-    def load_miga_dataset
-      self.miga_obj = project.miga.dataset(miga_name) if
-        miga_obj.nil? and MiGA::Dataset.exist?(project.miga, miga_name)
-    end
+  def create_miga_dataset
+    # Don't do anything if it already exists
+    return true if project.miga.dataset(miga_name)
 
-    def copy_to_miga(input, output)
-      output += ".gz" if input.filename =~ /\.gz\z/
-      FileUtils.copy(input.path, output)
+    err = project.create_miga_dataset(
+      {
+        name: miga_name,
+        type: 'genome', # <- This will be changed by #save_in_miga
+        input_type: input_type.to_s,
+        query: true,
+        user: user_id
+      },
+      input_file.path,
+      (input_file_2 && input_file_2.path ? input_file_2.path : nil)
+    )
+    raise err if err
+    project.miga.load
+  ensure
+    # Empty input files
+    [input_file, input_file_2].each do |i|
+      File.open(i.path, 'r'){ |fh| fh.print '' } unless i.path.nil?
     end
-
+  end
 end

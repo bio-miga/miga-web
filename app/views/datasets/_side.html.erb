@@ -18,31 +18,41 @@
     <% end %>
   <% end %>
 
+  <% if dataset.metadata[:warn] %>
+    <p class='alert alert-danger'>
+      <%= dataset.metadata[:warn] %>
+    </p>
+  <% end %>
+
   <% dataset.metadata.each do |k,v| %>
-    <% next if [:type, :ref, :created, :updated, :user, :tax,
-          :quality, :is_type, :is_ref_type, :type_rel, :status].include? k %>
+    <% next if %i[ref created updated user tax
+          quality is_type is_ref_type type_rel status warn].include? k %>
     <% next if k.to_s[0] == '_' %>
     <% k_str = k.to_s.unmiga_name.capitalize %>
     <%
       ext_links = {
         ncbi_tax_id: ['NCBI TaxID',
-              'http://www.uniprot.org/taxonomy/%s', '%s'],
+          'http://www.uniprot.org/taxonomy/%s', '%s'],
         ncbi_nuccore: ['NCBI Nucleotide',
-              'https://www.ncbi.nlm.nih.gov/nuccore/%s', '%s'],
+          'https://www.ncbi.nlm.nih.gov/nuccore/%s', '%s'],
         ncbi_asm: ['NCBI Assembly',
-              'https://www.ncbi.nlm.nih.gov/assembly/%s', '%s'],
+          'https://www.ncbi.nlm.nih.gov/assembly/%s', '%s'],
         ebi_ena: ['EBI ENA',
-              'https://www.ebi.ac.uk/ena/data/view/%s', '%s'],
+          'https://www.ebi.ac.uk/ena/data/view/%s', '%s'],
         ebi_embl: ['EBI EMBL',
-              'https://www.ebi.ac.uk/embl/data/view/%s', '%s'],
+          'https://www.ebi.ac.uk/embl/data/view/%s', '%s'],
         web_assembly: ['Download',
-              '%s', 'Assembly'],
+          '%s', 'Assembly'],
         web_assembly_gz: ['Download',
-              '%s', 'Assembly (gz)'],
+          '%s', 'Assembly (gz)'],
         dprotologue: ['Digital Protologue Database',
-              'http://imedea.uib-csic.es/dprotologue/getPdfTX.php?taxonumber=%s', '%s']
+          'http://imedea.uib-csic.es/dprotologue/getPdfTX.php?taxonumber=%s',
+          '%s']
       }
       case k
+      when :type
+        v = "<b>#{v.capitalize}</b>: " \
+              "#{MiGA::Dataset.KNOWN_TYPES[v][:description]}"
       when :comments
         if /(.*)Assembly: (\S+)(.*)/.match(v)
           v = "#{$1}<a href='https://www.ncbi.nlm.nih.gov/assembly/#{$2}/' " +

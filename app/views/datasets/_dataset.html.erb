@@ -18,8 +18,10 @@
       <% end %>
     </span>
   <% end %>
-  <%= render partial: (expand_side ? 'dataset_side' : 'dataset_intax'),
-    locals: { project: project, dataset: dataset, noname: noname } %>
+  <%= render(
+        partial: (expand_side ? 'datasets/side' : 'datasets/intax'),
+        locals: { project: project, dataset: dataset, noname: noname }
+      ) %>
   <% unless noname || dataset.nil? %>
     <span class="timestamp">
       Updated <%= time_ago_in_words Date.parse(dataset.metadata[:updated]) %>

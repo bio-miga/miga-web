@@ -206,4 +206,9 @@ module ApplicationHelper
     end
   end
 
+  def glyph(name, opts = {})
+    opts[:class] ||= ''
+    opts[:class] += "glyphicon glyphicon-#{name}"
+    content_tag(:i, ' ', opts)
+  end
 end

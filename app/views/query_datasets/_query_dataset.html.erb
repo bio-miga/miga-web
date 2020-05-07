@@ -34,8 +34,7 @@
         %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
       <% end %>
     <% end %>
-    <b><%= link_to query_dataset.name.unmiga_name, query_dataset,
-        rel: 'tooltip', title: md[:description] %></b>
+    <b><%= link_to query_dataset.name.unmiga_name, query_dataset %></b>
   </span>
   <span class="timestamp">
     Created <%= time_ago_in_words(query_dataset.created_at) %> ago

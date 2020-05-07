@@ -1,7 +1,7 @@
 <% unless dataset.nil? || dataset.metadata[:tax].nil? %>
   <span class="taxonomy">
     <b>Taxonomy:</b>
-    <% tax = dataset.metadata[:tax].sorted_ranks.map{ |r| r.join(": ")} %>
+    <% tax = dataset.metadata[:tax].sorted_ranks.map{ |r| r.join(': ')} %>
     <%= tax.first %>
     <% if tax.size > 1 %>
       &raquo;

@@ -43,7 +43,7 @@ class QueryDatasetsController < ApplicationController
       if par[:input_type] == 'assembly'
         saved_cnt = 0
         @bad_objects = []
-        max_upload_files = current_user.nil? ? 1: Settings.max_user_upload
+        max_upload_files = current_user.nil? ? 1 : Settings.max_user_upload
         if params[:asm_file].size > max_upload_files
           flash[:danger] = 'Too many files uploaded'
           redirect_to new_query_dataset_path(project_id: @project.id)
@@ -53,7 +53,7 @@ class QueryDatasetsController < ApplicationController
             par[:name] += '_' + SecureRandom.hex(4) if current_user.nil?
             par[:input_file] = file
             @query_dataset = @project.query_datasets.create(par)
-            if @query_dataset.save
+            if @query_dataset && @query_dataset.save
               @query_dataset.save_in_miga( type: par[:type],
                 description: params[:asm_description][idx],
                 comments: params[:asm_comments][idx])
@@ -96,8 +96,8 @@ class QueryDatasetsController < ApplicationController
     qd = @query_dataset
     p = qd.project
     raise 'Unavailable project' if p.miga.nil?
-    p.miga.unlink_dataset qd.miga_name
-    qd.miga.remove! unless qd.miga.nil?
+    d = p.miga.unlink_dataset(qd.miga_name)
+    d.remove! unless d.nil?
     qd.destroy
     redirect_to p
   end
@@ -213,12 +213,11 @@ class QueryDatasetsController < ApplicationController
   # Sets the query dataset by ID or accession
   def set_query_dataset
     if params[:id] =~ /\AM:/
-      @query_dataset = QueryDataset.find_by(acc: params[:id])
+      @query_dataset = QueryDataset.find_by!(acc: params[:id])
     else
       @query_dataset = QueryDataset.find(params[:id])
       flash.now[:warning] =
         'Entry IDs are being phased out, please update your links'
-      # redirect_to root_url and return
     end
   end
     

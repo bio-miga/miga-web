@@ -46,7 +46,7 @@ Rails.application.routes.draw do
     as: :project_create_ncbi_download
   get 'projects/:id/new_reference' => 'projects#new_reference',
     as: :project_new_reference
-  post 'projects/:id/new_reference' => 'projects#new_reference',
+  post 'projects/:id/new_reference' => 'projects#create_reference',
     as: :project_create_reference
 
   # Query datasets

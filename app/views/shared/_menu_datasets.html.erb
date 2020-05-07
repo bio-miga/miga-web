@@ -48,7 +48,7 @@
       (current_user.admin? || current_user?(project.user)) %>
   <section class='admin-zone'>
     <h1>Admin zone</h1>
-    <%# link_to 'Upload reference datasets', project_new_reference_url(project),
+    <%= link_to 'Upload reference datasets', project_new_reference_url(project),
           class: 'btn btn-primary btn-block' %>
     <%= link_to 'Download available NCBI genomes',
           project_new_ncbi_download_path(@project),

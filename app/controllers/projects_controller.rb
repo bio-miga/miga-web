@@ -25,7 +25,7 @@ class ProjectsController < ApplicationController
 
   # Initiate (paginated) list of projects.
   def index
-    @selection = :all
+    @selection = :public
     if params[:private]
       @selection = :private
       @projects = Project.where(private: true, user: current_user)
@@ -180,25 +180,23 @@ class ProjectsController < ApplicationController
 
   # Displays the result as a partial for asynchronous loading
   def result_partial
-    begin
-      if params[:q_ds].nil?
-        obj = @project
-        proj = obj
-        unless params[:r_ds].nil?
-          obj = obj.miga.dataset(params[:r_ds])
-          obj_miga = obj
-        end
-      else
-        obj = QueryDataset.find(params[:q_ds])
+    if params[:q_ds].nil?
+      obj = @project
+      proj = obj
+      unless params[:r_ds].nil?
+        obj = obj.miga.dataset(params[:r_ds])
+        obj_miga = obj
       end
-      obj_miga ||= obj.miga
-      res = obj_miga.result(params[:result])
-      render partial: 'shared/result',
-        locals: { res: res, key: params[:result].to_sym, obj: obj, proj: proj },
-        layout: false
-    rescue
-      render nothing: true, status: 200, content_type: 'text/html'
+    else
+      obj = QueryDataset.find(params[:q_ds])
     end
+    obj_miga ||= obj.miga
+    res = obj_miga.result(params[:result])
+    render partial: 'shared/result',
+      locals: { res: res, key: params[:result].to_sym, obj: obj, proj: proj },
+      layout: false
+  rescue
+    render nothing: true, status: 200, content_type: 'text/html', layout: false
   end
 
   # Loads a result from a reference dataset in a project.
@@ -283,10 +281,56 @@ class ProjectsController < ApplicationController
   def new_reference
     @query_dataset = QueryDataset.new
     @reference = true
-    render 'query_datasets/new'
   end
 
   def create_reference
+    cmd = params.require(:query_dataset).permit(
+      :name, :input_type, :input_file, :input_file_2
+    )
+    cmd.merge! params.permit(:type, :comments, :description)
+    back_to = project_reference_datasets_path(@project)
+    errors = nil
+    success = []
+
+    case cmd[:input_type]
+    when 'assembly'
+      max_upload_files = current_user.nil? ? 1 : Settings.max_user_upload
+      if params[:asm_file].size > max_upload_files
+        errors = 'Too many files uploaded'
+      else
+        params[:asm_file].each_with_index do |file, idx|
+          errors = @project.create_miga_dataset(
+            cmd.merge({
+              name: params[:asm_name][idx],
+              description: params[:asm_description][idx],
+              comments: params[:asm_comments][idx]
+            }),
+            file.path
+          ) and break
+          success << params[:asm_name][idx]
+        end
+      end
+    else
+      errors = @project.create_miga_dataset(
+        cmd, cmd[:input_file].path,
+        (cmd[:input_file_2].path if cmd[:input_file_2])
+      )
+      success << cmd[:name] unless errors
+    end
+
+    if success.size == 1
+      flash[:success] = "The dataset has been registered: #{success.first}"
+      back_to = reference_dataset_path(@project, success.first)
+    elsif success.size > 1
+      flash[:success] = "#{success.size} datasets registered successfully"
+    end
+
+    if errors
+      flash[:danger] = errors
+      redirect_to project_new_reference_path
+    else
+      redirect_to back_to
+    end
   end
 
   private

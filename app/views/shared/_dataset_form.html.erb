@@ -1,0 +1,177 @@
+<% @reference ||= false %>
+<% form_opts = { html: { multipart: true}, method: :post } %>
+<% form_opts[:url] = project_create_reference_url(@project) if @reference %>
+<%= form_for(@query_dataset, form_opts) do |f| %>
+  <% if (@bad_objects || []).empty? %>
+    <%= render 'shared/error_messages', object: f.object %>
+  <% else %>
+    <div class="alert alert-danger">
+      <%= pluralize(@bad_objects.size, 'datasets') %> couldn't be saved:
+      <ul>
+        <% @bad_objects.each do |i| %>
+          <li>
+            <b><%= i.name %></b>:
+            <%= i.errors.full_messages.to_sentence %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if current_user.nil? %>
+    <div class="alert alert-info">
+      You're currently not logged in, your analyses will be anonymous.
+      Remember to store or bookmark the URL of the results page for your
+      new dataset.
+    </div>
+    <%= f.hidden_field :user_id, value: 0 %>
+  <% else %>
+    <%= f.hidden_field :user_id, value: current_user.id %>
+  <% end %>
+  <%= f.hidden_field :project_id, value: @project.id %>
+
+  <%= label_tag :type, 'Type of dataset' %>
+  <%= select_tag(:type,
+    options_for_select(
+      MiGA::Dataset.KNOWN_TYPES.
+        map{ |k,t|
+          [
+            k.to_s.capitalize + ': ' + t[:description].sub(/\.$/,''), k
+          ] if @project.miga.is_multi? or !t[:multi]
+        }.compact ), class: 'form-control') %>
+
+  <%= f.label :input_type, 'Type of input' %>
+  <%= f.collection_select(:input_type,
+    { assembly: 'Assembly in FastA format',
+      raw_reads: 'Raw reads in FastQ format',
+      trimmed_fasta: 'Trimmed reads in FastA format' },
+    :first, :last, {}, class: 'form-control') %>
+
+  <div id='asm_files_fields'>
+    <%= label_tag :asm_file, 'Assemblies (contigs or scaffolds)' %>
+    <%= file_field_tag :asm_file, class: 'form-control',
+      multiple: !current_user.nil?, name: 'asm_file[]' %>
+    <p class=help-block>
+      <%= current_user.nil? ?
+        'Anonymous uploads only support 1 file at a time' :
+        'Multiple selection allowed' %><br/>
+      GZ compression supported (with .gz extension)
+    </p>
+
+    <ul class='list-group' id='asm_files_well'>
+    </ul>
+  </div>
+
+  <div id='reads_files_fields'>
+    <%= f.label :input_file, 'Forward or unpaired reads' %>
+    <%= f.file_field :input_file, class: 'form-control' %>
+    <p class=help-block>GZ compression supported (with .gz extension)</p>
+
+    <%= f.label :input_file, 'Reverse reads (optional)' %>
+    <%= f.file_field :input_file_2, class: 'form-control' %>
+    <p class=help-block>GZ compression supported (with .gz extension)</p>
+
+    <%= f.label :name %>
+    <%= f.text_field :name, class: "form-control" %>
+    <p class=help-block>Dataset names can only contain alphanumerics and
+      underscores</p>
+
+    <hr/>
+    <h1>Optional information</h1>
+    <%= label_tag :description, "Description" %>
+    <%= text_field_tag :description, "", class: "form-control" %>
+
+    <%= label_tag :comments, "Comments" %>
+    <%= text_area_tag :comments, "", class: "form-control" %>
+  </div>
+
+  <hr/>
+  <div class='alert alert-info'>
+    <h3>Data privacy</h3>
+    We intend to keep your data private, but your data may be subject to
+    public disclosure due to security issues, programming error, human
+    error, or other reasons. Please keep an up-to-date offline backup of
+    your data at all times.
+  </div>
+
+  <%= f.submit 'Upload new dataset', class: "btn btn-primary" %>
+<% end %>
+
+<script>
+  var max_upload_files = <%= current_user.nil? ? 1 : Settings.max_user_upload %>;
+  function set_form_fields(speed){
+    var input_type = $('#query_dataset_input_type').find(':selected').val();
+    $('#query_dataset_input_file').val(null)
+    $('#query_dataset_input_file_2').val(null)
+    $('#asm_file').val(null)
+    if(input_type == 'assembly'){
+      $('#query_dataset_name').val(null);
+      $('input[name=commit]').attr('disabled', true);
+      $('#reads_files_fields').hide(speed);
+      $('#asm_files_fields').show(speed);
+    } else {
+      $('input[name=commit]').removeAttr('disabled');
+      $('#reads_files_fields').show(speed);
+      $('#asm_files_fields').hide(speed);
+    }
+  }
+  $('#query_dataset_input_type').change(function(){set_form_fields('medium');});
+  set_form_fields(0);
+
+  function asm_file_processing(){
+    var files = $('#asm_file')[0].files;
+    var well = $('#asm_files_well');
+    var valid_ext = /\.(fa|fas|fasta|fna|txt)(\.gz)?$/
+    var has_errors = false;
+    well.html('');
+    if(files.length > max_upload_files){
+      alert('The maximum number of files allowed is ' + max_upload_files);
+      return;
+    }
+    for(var i = 0; i < files.length; ++i){
+      var file = files[i].name;
+      if(file.match(valid_ext)){
+        var size = files[i].size;
+        if(size > 1024 * 1024){
+          size = '' + Math.round(size/1024/1024) + ' Mb';
+        }else if(size > 1024){
+          size = '' + Math.round(size/1024) + ' Kb';
+        }else{
+          size = '' + size + ' b'
+        }
+        var miga_name = file.replace(valid_ext,'').replace(/[^A-Z0-9]/gi, '_').
+          replace(/_(All|Large)?Contigs$/, '');
+        well.append(
+          '<li class="list-group-item">' +
+            '<h2>' + file + ' (' + size + ')</h2> ' +
+            '<label for="asm_name_' + i + '">Name</label> ' +
+            '<input class="form-control" type="text" ' +
+              'value="' + miga_name + '" name="asm_name[]" ' +
+              'id="asm_name_' + i + '" />' +
+            '<p class=help-block>Dataset names can only contain ' +
+              'alphanumerics and underscores</p>' +
+            '<label for="asm_description_' + i +
+              '">Description (optional)</label> ' +
+            '<input class="form-control" type="text" value="" ' +
+              'name="asm_description[]" id="asm_description_' + i + '" />' +
+            '<label for="asm_comments_' + i + '">Comments (optional)</label> ' +
+            '<textarea class="form-control" ' +
+              'name="asm_comments[]" id="asm_comments_' + i + '"></textarea>' +
+          '</li>');
+      }else{
+        has_errors = true;
+        break;
+      }
+    }
+    if(files.length == 0){
+      // Do nothing
+    }if(has_errors){
+      well.html('<div class="alert alert-danger">Unrecognized file: ' + file +
+        '<br/>Supported extensions: .fa, .fas, .fasta, .fna, .txt</div>');
+    }else{
+      $('input[name=commit]').removeAttr('disabled');
+    }
+  }
+  $('#asm_file').change(asm_file_processing);
+</script>
+

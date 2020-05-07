@@ -9,22 +9,12 @@
       <%= render @query_dataset %>
     </section>
     <section class='dataset-item'>
-      <% type = @query_dataset.miga.metadata[:type] unless
-              @query_dataset.miga.nil? %>
-      <% unless type.nil? %>
-        <p><%=  @query_dataset.name.unmiga_name %> is a <b><%= type %></b>:
-          <%= MiGA::Dataset.KNOWN_TYPES[type][:description] %></p>
-      <% end %>
-      <% unless @query_dataset.miga.metadata[:comments].nil? %>
-        <p class='alert alert-info'>
-          <%= @query_dataset.miga.metadata[:comments] %>
-        </p>
-      <% end %>
-      <% unless @query_dataset.miga.metadata[:warn].nil? %>
-        <p class='alert alert-danger'>
-          <%= @query_dataset.miga.metadata[:warn] %>
-        </p>
-      <% end %>
+      <%= render partial: 'datasets/dataset',
+            object: @query_dataset.miga,
+            locals: {
+              project: @query_dataset.project,
+              noname: true, expand_side: true
+            } %>
     </section>
     <section>
       <h4>Settings</h4>
