@@ -17,7 +17,7 @@
       <%= will_paginate @datasets, class: "center-block center" %>
       <div class='dataset-list'>
         <% @datasets.each do |dataset| %>
-          <%= render partial: 'dataset',
+          <%= render partial: 'datasets/dataset',
             object: @project.miga.dataset(dataset),
             locals: { project: @project } %>
         <% end %>
