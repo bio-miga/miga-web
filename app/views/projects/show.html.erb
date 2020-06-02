@@ -22,6 +22,9 @@
 
     <h3 role="button" data-toggle="collapse" class="result-title collapsed" id="project-progress" href="#project-progress-container" aria-expanded="false" aria-controls="result-cnt-project_stats">
     
+  
+    <% unless @project.miga.metadata[:arcgis].nil? %>
+
     <i class ="glyphicon glyphicon-tasks"> </i>
     Project Progress
     </h3>
@@ -39,7 +42,7 @@
             <div class="progress-bar progress-bar-success" id="progress-bar" role="progressbar"
               aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
               style="width: 100%;">
-             <b id="percentage-text"> 100% </b>
+             <b id="percentage-text"></b>
             </div>
           </div>
         </div>
@@ -74,7 +77,7 @@
            </div>
          </div>
      
-  
+      <% end %>
       <input type="hidden" id="project-id" value=<%= @project.id %>>
       <script>
           $('document').ready(function(){
@@ -100,26 +103,32 @@
                   $('#complete_num').text(res.complete);
                   $('#incomplete_num').text(res.incomplete);
                   $('#inactive_num').text(res.inactive);
-                  console.log("p: " + res.percentage);
                   $('#percentage-text').text(res.percentage+"%");
                   $('#progress-bar').attr("style", "width:" + res.percentage + "%" );
 
-                  var regex = /\[(.+?)\]/g;
-                  system_time = res.last_line.match(regex);
-                  console.log("old ..." + system_time);
-                  system_time = String(system_time);
-                  system_time = system_time.substring(1,system_time.length-1);
-                  console.log("new ..." + system_time);
-                  var local_time = convertDateToLocalDate(system_time);
+                //  var regex = /\[(.+?)\]/g;
+                //  system_time = res.last_line.match(regex);
+                //  system_time = String(system_time);
+                //  system_time = system_time.substring(1,system_time.length-1);
+                //  var local_time = convertDateToLocalDate(system_time);
                   
-                  $('#update_time').text(local_time);
-                  console.log("###" + res.last_five_lines);
-                  var str = String( res.last_five_lines);
-                  str = str.replace(/\n/g,"<br/>");
-                  $('#panel-body').html(str);
+                //  $('#update_time').text(local_time);
+                //  var str = String( res.last_five_lines);
+                //  str = str.replace(/\n/g,"<br/>");
+                //  $('#panel-body').html(str);
                   
                   if(res.active){
                     console.log("active");
+                    var regex = /\[(.+?)\]/g;
+                    system_time = res.last_line.match(regex);
+                    system_time = String(system_time);
+                    system_time = system_time.substring(1,system_time.length-1);
+                    var local_time = convertDateToLocalDate(system_time);
+
+                    $('#update_time').text(local_time);
+                    var str = String( res.last_five_lines);
+                    str = str.replace(/\n/g,"<br/>");
+                    $('#panel-body').html(str);
                   }else{
                     console.log("daemon is inactived");
                     $('#log-panel').attr("class", "panel panel-warning");

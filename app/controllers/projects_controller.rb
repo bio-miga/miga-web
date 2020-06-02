@@ -333,15 +333,11 @@ class ProjectsController < ApplicationController
     end
   end
 
-  #Fang retuen how many data has completed
+  #Fang retuen the data for the progress of a project.
   def progress
     id = params[:id]
     project = Project.find(id)
     status = project.miga.datasets.map(&:status)
-    logger.info ">>>>>> Look at me <<<<<<<<<<<<<<<<<"
-    logger.info ">>>>>> Look at me <<<<<<<<<<<<<<<<<"
-    logger.info ">>>>>> Look at me <<<<<<<<<<<<<<<<<"
-    logger.info ">>>>>> Look at me <<<<<<<<<<<<<<<<<"
     incomplete = status.count(:incomplete)
     total = status.size
     inactive = status.count(:inactive)
@@ -350,8 +346,6 @@ class ProjectsController < ApplicationController
     p_complete = 100.0 - p_incomplete
 
     p_complete = p_complete.round(2)
-   # status = project.datasets.map(&:status)
-    logger.info ".. hahaha ... got incomplete: #{incomplete} , ina: #{inactive}, comp: #{complete} "
    
     #reading outputfile
     f = File.expand_path("daemon/MiGA\:#{project.miga.name}.output", project.miga.path)
