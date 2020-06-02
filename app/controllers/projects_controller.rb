@@ -333,6 +333,52 @@ class ProjectsController < ApplicationController
     end
   end
 
+  #Fang retuen how many data has completed
+  def progress
+    id = params[:id]
+    project = Project.find(id)
+    status = project.miga.datasets.map(&:status)
+    logger.info ">>>>>> Look at me <<<<<<<<<<<<<<<<<"
+    logger.info ">>>>>> Look at me <<<<<<<<<<<<<<<<<"
+    logger.info ">>>>>> Look at me <<<<<<<<<<<<<<<<<"
+    logger.info ">>>>>> Look at me <<<<<<<<<<<<<<<<<"
+    incomplete = status.count(:incomplete)
+    total = status.size
+    inactive = status.count(:inactive)
+    complete = (total - incomplete) - inactive
+    p_incomplete = (incomplete.to_f * 100.0)/total
+    p_complete = 100.0 - p_incomplete
+
+    p_complete = p_complete.round(2)
+   # status = project.datasets.map(&:status)
+    logger.info ".. hahaha ... got incomplete: #{incomplete} , ina: #{inactive}, comp: #{complete} "
+   
+    #reading outputfile
+    f = File.expand_path("daemon/MiGA\:#{project.miga.name}.output", project.miga.path)
+    last_line = `tail -n 1 #{f}`
+    logger.info("last 1 : " + last_line)
+    last_five_lines = `tail -n 5 #{f}`
+    logger.info ("last 5 : " + last_five_lines)
+    #daemon acitve?
+    active = project.daemon_active?
+    
+    #put on the map 
+    @map_p = Hash.new
+    @map_p[:total] = total
+    @map_p[:inactive] = inactive
+    @map_p[:incomplete] = incomplete
+    @map_p[:complete] = complete
+    @map_p[:percentage] = p_complete
+    @map_p[:last_line] = last_line
+    @map_p[:last_five_lines] = last_five_lines
+    @map_p[:active] = active
+    respond_to do |format|
+      format.html
+      format.json {render json: @map_p}
+    end 
+  end
+
+
   private
 
   def set_project

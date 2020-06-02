@@ -19,6 +19,149 @@
         it is not officially supported.
       </div>
     <% end %>
+
+    <h3 role="button" data-toggle="collapse" class="result-title collapsed" id="project-progress" href="#project-progress-container" aria-expanded="false" aria-controls="result-cnt-project_stats">
+    
+    <i class ="glyphicon glyphicon-tasks"> </i>
+    Project Progress
+    </h3>
+
+    <div class='result collapse' id='project-progress-container' >
+      
+        <div class="row">
+          <div class="col-md-3"><b>total: </b><b id="total_num"></b></div>
+	        <div class="col-md-3"><b>complete: </b><b id="complete_num"></b> </div>
+          <div class="col-md-3"><b>incomplete: </b><b id="incomplete_num"></b> </div> 
+          <div class="col-md-3"><b>inactive: </b><b id="inactive_num"></b></div>
+        </div>
+        <div class="row">
+          <div class="progress progress-striped active">
+            <div class="progress-bar progress-bar-success" id="progress-bar" role="progressbar"
+              aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+              style="width: 100%;">
+             <b id="percentage-text"> 100% </b>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <h5>Progress Log: 
+            <span class="glyphicon glyphicon-info-sign" data-container="body" data-toggle="popover"
+            data-placement="right" data-trigger="hover" data-content="
+            The log shows the last updated time(Your Local time) and 
+            the last 5 updated information (server time) of the project.
+            Please contact the administrator if you have questions for the logs.
+            "></span>
+            </h5>
+        </div>
+        
+        <div class="panel-group" id="accordion">
+          <div class="panel panel-success" id="log-panel">
+              <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion"
+                    href="#collapseOne">
+                    <h5 id="log-title">Project is Processing: last update on <b id = "update_time"></b></h5>
+                    </a>
+                  </h4>
+              </div>
+              <div id="collapseOne" class="panel-collapse collapse">
+                <div class="panel-body" id="panel-body">
+                show log infomation
+                </div>
+              </div>
+            </div>
+           </div>
+         </div>
+     
+  
+      <input type="hidden" id="project-id" value=<%= @project.id %>>
+      <script>
+          $('document').ready(function(){
+            var total = 0;
+            var percentage_comp = 0;
+            var fail = 0;
+            var p_id = $('#project-id').val();
+            console.log("p_id: " + p_id);
+            getprogress();
+            
+            function getprogress(){
+              $.ajax({
+                type:"GET",
+                url: ""+ p_id + "/progress",
+                data: {'id': p_id},
+                dataType:"json",
+                
+                success: function(res){ 
+                  fail = 0;//reset fail to 0
+                  percentage_comp = res.percentage;
+
+                  $('#total_num').text(res.total);
+                  $('#complete_num').text(res.complete);
+                  $('#incomplete_num').text(res.incomplete);
+                  $('#inactive_num').text(res.inactive);
+                  console.log("p: " + res.percentage);
+                  $('#percentage-text').text(res.percentage+"%");
+                  $('#progress-bar').attr("style", "width:" + res.percentage + "%" );
+
+                  var regex = /\[(.+?)\]/g;
+                  system_time = res.last_line.match(regex);
+                  console.log("old ..." + system_time);
+                  system_time = String(system_time);
+                  system_time = system_time.substring(1,system_time.length-1);
+                  console.log("new ..." + system_time);
+                  var local_time = convertDateToLocalDate(system_time);
+                  
+                  $('#update_time').text(local_time);
+                  console.log("###" + res.last_five_lines);
+                  var str = String( res.last_five_lines);
+                  str = str.replace(/\n/g,"<br/>");
+                  $('#panel-body').html(str);
+                  
+                  if(res.active){
+                    console.log("active");
+                  }else{
+                    console.log("daemon is inactived");
+                    $('#log-panel').attr("class", "panel panel-warning");
+                    $('#log-title').text("Deamon is inactive! Please contact administrator to start your daemon");
+                  } 
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                  fail = fail + 1;
+                  $('#log-panel').attr("class", "panel panel-danger");
+                  $('#log-title').text("Cannot connect with server!");
+                },
+
+                complete: function(){
+                  if(percentage_comp != 100 && fail < 4){
+                    setTimeout(getprogress, 30000); 
+                  }else{
+                    console.log("stopped becasue fail is " + fail + "or project complete")
+                  }
+                 }
+              });
+            }
+          });
+          
+          $(function (){$("[data-toggle='popover']").popover();});
+          
+          //convert server time to local time.
+          function convertDateToLocalDate(serverDate){
+            var d = new Date(serverDate);
+            const year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
+            const month = new Intl.DateTimeFormat('en', { month: 'numeric' }).format(d);
+            const day = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
+            const time = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+            var newDate = year + "-" + month + "-" + day + " " + time;
+            return newDate;
+          }
+
+
+      </script>
+
+
+
     <% unless @project.miga.metadata[:arcgis].nil? %>
       <style>
         .embed-container {
