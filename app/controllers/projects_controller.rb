@@ -348,10 +348,10 @@ class ProjectsController < ApplicationController
     p_complete = p_complete.round(2)
    
     #reading outputfile
-    f = File.expand_path("daemon/MiGA\:#{project.miga.name}.output", project.miga.path)
-    last_line = `tail -n 1 #{f}`
+    f = File.join(project.miga.path, 'daemon', "MiGA:#{project.miga.name}.output")
+    last_five_lines = File.readlines(f)[-5, 5]
+    last_line = last_five_lines.last
     logger.info("last 1 : " + last_line)
-    last_five_lines = `tail -n 5 #{f}`
     logger.info ("last 5 : " + last_five_lines)
     #daemon acitve?
     active = project.daemon_active?
