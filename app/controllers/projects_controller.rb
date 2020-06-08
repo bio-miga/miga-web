@@ -357,15 +357,16 @@ class ProjectsController < ApplicationController
     active = project.daemon_active?
     
     #put on the map 
-    @map_p = Hash.new
-    @map_p[:total] = total
-    @map_p[:inactive] = inactive
-    @map_p[:incomplete] = incomplete
-    @map_p[:complete] = complete
-    @map_p[:percentage] = p_complete
-    @map_p[:last_line] = last_line
-    @map_p[:last_five_lines] = last_five_lines
-    @map_p[:active] = active
+    @map_p = {
+      total: total,
+      inactive: inactive,
+      incomplete: incomplete,
+      complete: complete,
+      percentage: p_complete,
+      last_line: last_line,
+      last_five_lines: last_five_lines,
+      active: active
+    }
     respond_to do |format|
       format.html
       format.json {render json: @map_p}
