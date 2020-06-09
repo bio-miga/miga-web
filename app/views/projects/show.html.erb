@@ -21,9 +21,6 @@
     <% end %>
 
     <h3 role="button" data-toggle="collapse" class="result-title collapsed" id="project-progress" href="#project-progress-container" aria-expanded="false" aria-controls="result-cnt-project_stats">
-    
-  
-    <% unless @project.miga.metadata[:arcgis].nil? %>
 
     <i class ="glyphicon glyphicon-tasks"> </i>
     Project Progress
@@ -70,14 +67,13 @@
               </div>
               <div id="collapseOne" class="panel-collapse collapse">
                 <div class="panel-body" id="panel-body">
-                show log infomation
+                <b> There is not any logs yet.</b>
                 </div>
               </div>
             </div>
            </div>
          </div>
      
-      <% end %>
       <input type="hidden" id="project-id" value=<%= @project.id %>>
       <script>
           $('document').ready(function(){
@@ -105,17 +101,6 @@
                   $('#inactive_num').text(res.inactive);
                   $('#percentage-text').text(res.percentage+"%");
                   $('#progress-bar').attr("style", "width:" + res.percentage + "%" );
-
-                //  var regex = /\[(.+?)\]/g;
-                //  system_time = res.last_line.match(regex);
-                //  system_time = String(system_time);
-                //  system_time = system_time.substring(1,system_time.length-1);
-                //  var local_time = convertDateToLocalDate(system_time);
-                  
-                //  $('#update_time').text(local_time);
-                //  var str = String( res.last_five_lines);
-                //  str = str.replace(/\n/g,"<br/>");
-                //  $('#panel-body').html(str);
                   
                   if(res.active){
                     console.log("active");
@@ -139,7 +124,7 @@
                 error: function (jqXHR, textStatus, errorThrown) {
                   fail = fail + 1;
                   $('#log-panel').attr("class", "panel panel-danger");
-                  $('#log-title').text("Cannot connect with server!");
+                  $('#log-title').text("Can not connect with server! something wrong with your network or on the server");
                 },
 
                 complete: function(){
@@ -165,7 +150,6 @@
             var newDate = year + "-" + month + "-" + day + " " + time;
             return newDate;
           }
-
 
       </script>
 

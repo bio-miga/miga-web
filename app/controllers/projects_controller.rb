@@ -349,10 +349,16 @@ class ProjectsController < ApplicationController
    
     #reading outputfile
     f = File.join(project.miga.path, 'daemon', "MiGA:#{project.miga.name}.output")
-    last_five_lines = File.readlines(f)[-5, 5]
-    last_line = last_five_lines.last
-    logger.info("last 1 : " + last_line)
-    logger.info ("last 5 : " + last_five_lines)
+    if File.exists?(f)
+      last_five_lines = File.readlines(f)[-5, 5]
+      last_line = last_five_lines.last
+#      logger.info("last 1 : " + last_line)
+#    logger.info ("last 5 : " + last_five_lines)
+    else
+      last_five_lines = nil
+      last_line = nil
+    end
+
     #daemon acitve?
     active = project.daemon_active?
     
