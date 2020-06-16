@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  #test_Fang
+  get 'projects/:id/progress' => 'projects#progress', as: :project_progress
+
   # Static
   root 		   'static_pages#home'
   get 'about'	=> 'static_pages#about'

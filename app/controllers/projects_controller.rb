@@ -333,6 +333,53 @@ class ProjectsController < ApplicationController
     end
   end
 
+  #Fang retuen the data for the progress of a project.
+  def progress
+    id = params[:id]
+    project = Project.find(id)
+    status = project.miga.datasets.map(&:status)
+    incomplete = status.count(:incomplete)
+    total = status.size
+    inactive = status.count(:inactive)
+    complete = (total - incomplete) - inactive
+    p_incomplete = (incomplete.to_f * 100.0)/total
+    p_complete = 100.0 - p_incomplete
+
+    p_complete = p_complete.round(2)
+   
+    #reading outputfile
+    f = File.join(project.miga.path, 'daemon', "MiGA:#{project.miga.name}.output")
+    if File.exists?(f)
+      last_five_lines = File.readlines(f)[-5, 5]
+      last_line = last_five_lines.last
+#      logger.info("last 1 : " + last_line)
+#    logger.info ("last 5 : " + last_five_lines)
+    else
+      last_five_lines = nil
+      last_line = nil
+    end
+
+    #daemon acitve?
+    active = project.daemon_active?
+    
+    #put on the map 
+    @map_p = {
+      total: total,
+      inactive: inactive,
+      incomplete: incomplete,
+      complete: complete,
+      percentage: p_complete,
+      last_line: last_line,
+      last_five_lines: last_five_lines,
+      active: active
+    }
+    respond_to do |format|
+      format.html
+      format.json {render json: @map_p}
+    end 
+  end
+
+
   private
 
   def set_project
