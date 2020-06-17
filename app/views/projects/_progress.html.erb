@@ -10,10 +10,10 @@
 
 <div class='result collapse' id='project-progress-container'>
   <div class='result-body'>
-    <% if @project.dataset_names.count > 100 %>
+    <% if @project.miga.dataset_names.count > 100 %>
       <div class='alert alert-warnning'>
         Estimation based on a sample of 100 datasets from a total of
-        <%= @project.dataset_names.count %>
+        <%= @project.miga.dataset_names.count %>
       </div>
     <% end %>
     
