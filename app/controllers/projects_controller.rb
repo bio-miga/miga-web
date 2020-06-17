@@ -167,15 +167,13 @@ class ProjectsController < ApplicationController
   
   # Loads a result of a project.
   def result
-    if p = @project && m = p.miga
-      if res = m.result(params[:result])
-        if file = res.data[:files][params[:file].to_sym]
-          send_result(file, res)
-          return
-        end
-      end
+    if @project && @project.miga &&
+          (result = @project.miga.result(params[:result])) &&
+          (file = result.data[:files][params[:file].to_sym])
+      send_result(file, result)
+    else
+      head :ok, content_type: 'text/html'
     end
-    render nothing: true, status: 200, content_type: 'text/html'
   end
 
   # Displays the result as a partial for asynchronous loading
