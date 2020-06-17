@@ -196,7 +196,7 @@ class ProjectsController < ApplicationController
       locals: { res: res, key: params[:result].to_sym, obj: obj, proj: proj },
       layout: false
   rescue
-    render nothing: true, status: 200, content_type: 'text/html', layout: false
+    head :ok, content_type: 'text/html'
   end
 
   # Loads a result from a reference dataset in a project.
