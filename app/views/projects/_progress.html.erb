@@ -1,0 +1,125 @@
+
+<% if logged_in? && (current_user.admin? || current_user?(@project.user)) %>
+
+<h3 role="button" data-toggle="collapse" class="result-title collapsed"
+      id="project-progress" href="#project-progress-container"
+      aria-expanded="false" aria-controls="result-cnt-project_stats">
+  <i class ="glyphicon glyphicon-tasks"> </i>
+  Project Progress
+</h3>
+
+<div class='result collapse' id='project-progress-container'>
+  <div class='result-body'>
+    <div style="margin: 1.2em;">
+      <div class="row">
+        <div class="col-md-3"><b>total:</b> <b id="progress_total_num"></b></div>
+        <div class="col-md-3"><b>complete:</b> <b id="progress_complete_num"></b></div>
+        <div class="col-md-3"><b>incomplete:</b> <b id="progress_incomplete_num"></b></div>
+        <div class="col-md-3"><b>inactive:</b> <b id="progress_inactive_num"></b></div>
+      </div>
+      <div class="row">
+        <div class="progress active">
+          <div class="progress-bar progress-bar-success" id="progress_progress_bar"
+                role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                aria-valuemax="100">
+            <b id="progress_percentage_text"></b>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h5>
+        Progress Log: 
+        <span class="glyphicon glyphicon-info-sign" data-container="body"
+              data-toggle="popover" data-placement="right" data-trigger="hover"
+              data-content="
+                The log shows the last updated time and the last 5 updated logs
+                of the project.
+                Please contact the administrator if you have any questions.
+              "></span>
+      </h5>
+    </div>
+
+    <div class="panel-group" id="progress_accordion">
+      <div class="panel panel-success" id="progress_log_panel">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#progress_accordion"
+                  href="#progress-collapseOne">
+                <b id="progress_log_status">[Loading]</b>
+                Last server update on
+                <b id="progress_update_time">?</b>
+            </a>
+          </h4>
+        </div>
+        <div id="progress-collapseOne" class="panel-collapse collapse">
+          <div class="panel-body" id="progress_panel_body">
+            <b>There are no logs yet</b>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <input type="hidden" id="progress_uniqid" value="" />
+</div>
+
+<script async="async">
+  $('document').ready(function(){
+    var progress_uniqid = (new Date().getTime()).toString(16);
+    var total = 0;
+    var percentage_comp = 0;
+    var fail = 0;
+    $('#progress_uniqid').val(progress_uniqid);
+    getprogress();
+
+    function getprogress(){
+      if($('#progress_uniqid').val() != progress_uniqid) return;
+      $.ajax({
+        type: "GET",
+        url: "<%= project_progress_path(@project) %>",
+        dataType: "json",
+        success: function(res){ 
+          fail = 0; // reset fail to 0
+          percentage_comp = res.percentage;
+
+          $('#progress_total_num').text(res.total);
+          $('#progress_complete_num').text(res.complete);
+          $('#progress_incomplete_num').text(res.incomplete);
+          $('#progress_inactive_num').text(res.inactive);
+          $('#progress_percentage_text').text(res.percentage + "%");
+          $('#progress_progress_bar').attr("style", "width:" + res.percentage + "%");
+
+          if(res.active){
+            $('#progress_log_panel').attr("class", "panel panel-info");
+            $('#progress_log_status').text("[Active]");
+          }else{
+            $('#progress_log_panel').attr("class", "panel panel-warning");
+            $('#progress_log_status').text("[Inactive]");
+          }
+
+          $('#progress_update_time').text(res.mtime);
+          var str = String(res.last_five_lines);
+          $('#progress_panel_body').html("<pre>" + str + "</pre>");
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          fail = fail + 1;
+          $('#progress_log_panel').attr("class", "panel panel-danger");
+          $('#progress_log_status').text("[Network error]");
+        },
+        complete: function(){
+          if(percentage_comp != 100 && fail < 4){
+            setTimeout(getprogress, 30000); 
+          }else{
+            console.log("stopped for fail: " + fail + " or project complete");
+          }
+        }
+      });
+    }
+  });
+
+  $(function (){ $("[data-toggle='popover']").popover(); });
+</script>
+
+<% end %>

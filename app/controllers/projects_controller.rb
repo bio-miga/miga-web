@@ -7,7 +7,7 @@ class ProjectsController < ApplicationController
       :medoid_clade, :medoid_clade_as,
       :rdp_classify, :rdp_classify_as, :new_ncbi_download,
       :show_dataset, :result, :result_partial, :reference_dataset_result,
-      :daemon_toggle, :new_reference, :create_reference]
+      :daemon_toggle, :new_reference, :create_reference, :progress]
   before_action :logged_in_user, only: [:result]
   before_action :admin_user,
     only: [:lair, :lair_toggle, :daemon_toggle,
@@ -16,11 +16,11 @@ class ProjectsController < ApplicationController
     before_action :logged_in_user, only: [:new, :create]
     before_action :correct_user_or_admin,
       only: [:destroy, :new_ncbi_download, :create_ncbi_download,
-        :new_reference, :create_reference]
+        :new_reference, :create_reference, :progress]
   else
     before_action :admin_user,
       only: [:new, :create, :destroy, :new_ncbi_download, :create_ncbi_download,
-        :new_reference, :create_reference]
+        :new_reference, :create_reference, :progress]
   end
 
   # Initiate (paginated) list of projects.
@@ -333,11 +333,9 @@ class ProjectsController < ApplicationController
     end
   end
 
-  #Fang retuen the data for the progress of a project.
+  # GET /projects/1/progress
   def progress
-    id = params[:id]
-    project = Project.find(id)
-    status = project.miga.datasets.map(&:status)
+    status = @project.miga.datasets.map(&:status)
     incomplete = status.count(:incomplete)
     total = status.size
     inactive = status.count(:inactive)
@@ -347,22 +345,25 @@ class ProjectsController < ApplicationController
 
     p_complete = p_complete.round(2)
    
-    #reading outputfile
-    f = File.join(project.miga.path, 'daemon', "MiGA:#{project.miga.name}.output")
+    # reading output file
+    f = File.join(
+      @project.miga.path, 'daemon', "MiGA:#{@project.miga.name}.output"
+    )
     if File.exists?(f)
       last_five_lines = File.readlines(f)[-5, 5]
       last_line = last_five_lines.last
-#      logger.info("last 1 : " + last_line)
-#    logger.info ("last 5 : " + last_five_lines)
+      last_five_lines = last_five_lines.join('')
+      mtime = File.mtime(f).to_s
     else
       last_five_lines = nil
       last_line = nil
+      mtime = nil
     end
 
-    #daemon acitve?
-    active = project.daemon_active?
+    # is the daemon active?
+    active = @project.daemon_active?
     
-    #put on the map 
+    # put on the map 
     @map_p = {
       total: total,
       inactive: inactive,
@@ -371,11 +372,12 @@ class ProjectsController < ApplicationController
       percentage: p_complete,
       last_line: last_line,
       last_five_lines: last_five_lines,
+      mtime: mtime,
       active: active
     }
     respond_to do |format|
       format.html
-      format.json {render json: @map_p}
+      format.json { render json: @map_p }
     end 
   end
 
