@@ -116,10 +116,10 @@
           $('#progress_log_status').text("[Network error]");
         },
         complete: function(){
-          if(percentage_comp != 100 && fail < 4){
-            setTimeout(getprogress, 30000); 
+          if(fail < 4){
+            setTimeout(getprogress, 60000); 
           }else{
-            console.log("stopped for fail: " + fail + " or project complete");
+            console.log("stopped for fail: " + fail);
           }
         }
       });
