@@ -333,7 +333,9 @@ class ProjectsController < ApplicationController
 
   # GET /projects/1/progress
   def progress
-    status = @project.miga.datasets.map(&:status)
+    status = @project.miga.dataset_names.sample(100).map do |i|
+      @project.miga.dataset(i).status
+    end
     incomplete = status.count(:incomplete)
     total = status.size
     inactive = status.count(:inactive)

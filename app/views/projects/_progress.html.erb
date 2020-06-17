@@ -10,6 +10,13 @@
 
 <div class='result collapse' id='project-progress-container'>
   <div class='result-body'>
+    <% if @project.dataset_names.count > 100 %>
+      <div class='alert alert-warnning'>
+        Estimation based on a sample of 100 datasets from a total of
+        <%= @project.dataset_names.count %>
+      </div>
+    <% end %>
+    
     <div style="margin: 1.2em;">
       <div class="row">
         <div class="col-md-3"><b>total:</b> <b id="progress_total_num"></b></div>
