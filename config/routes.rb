@@ -1,7 +1,4 @@
 Rails.application.routes.draw do
-  #test_Fang
-  get 'projects/:id/progress' => 'projects#progress', as: :project_progress
-
   # Static
   root 		   'static_pages#home'
   get 'about'	=> 'static_pages#about'
@@ -27,9 +24,7 @@ Rails.application.routes.draw do
   delete 'logout' => 'sessions#destroy'
 
   # Projects
-  get 'projects/:project_id/reference_datasets' =>
-    'projects#reference_datasets',
-    as: :project_reference_datasets
+  get 'projects/:id/progress' => 'projects#progress', as: :project_progress
   get 'projects/:id/reference_datasets/:dataset' => 'projects#show_dataset',
     as: :reference_dataset
   get 'projects/:id/reference_datasets/:dataset/result/:result/:file' =>
@@ -37,6 +32,9 @@ Rails.application.routes.draw do
     as: :reference_dataset_result
   get 'projects/:id/search' => 'projects#search',
     as: :project_search
+  get 'projects/:project_id/reference_datasets' =>
+    'projects#reference_datasets',
+    as: :project_reference_datasets
   get 'projects/:project_id/query_datasets' => 'query_datasets#index',
     as: :project_query_datasets
   get 'projects/:id/result/:result/:file' => 'projects#result',
@@ -51,6 +49,8 @@ Rails.application.routes.draw do
     as: :project_new_reference
   post 'projects/:id/new_reference' => 'projects#create_reference',
     as: :project_create_reference
+  get 'project_discovery' => 'projects#discovery', as: :project_discovery
+  get 'project_link' => 'projects#link', as: :project_link
 
   # Query datasets
   get 'query_datasets/:id/result/:result/:file' => 'query_datasets#result',

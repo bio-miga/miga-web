@@ -11,9 +11,13 @@ class ProjectsController < ApplicationController
   before_action :logged_in_user, only: [:result]
   before_action :admin_user,
     only: [:lair, :lair_toggle, :daemon_toggle,
-      :daemon_start_all, :daemon_stop_all, :daemon_action_all]
+      :daemon_start_all, :daemon_stop_all, :daemon_action_all,
+      :discovery, :link]
   if Settings.user_projects
-    before_action :logged_in_user, only: [:new, :create]
+    before_action(
+      Settings.user_create_projects ? :logged_in_user : :admin_user,
+      only: [:new, :create]
+    )
     before_action :correct_user_or_admin,
       only: [:destroy, :new_ncbi_download, :create_ncbi_download,
         :new_reference, :create_reference, :progress]
@@ -45,12 +49,14 @@ class ProjectsController < ApplicationController
     end
   end
   
-  # Create an empty abstract project.
+  # GET /project/new
+  # Create an empty abstract project
   def new
     @project = Project.new
   end
-  
-  # Loads a given project.
+
+  # GET /project/1
+  # Loads a given project
   def show
   end
 
@@ -102,14 +108,14 @@ class ProjectsController < ApplicationController
       @metric==:AAI ? :clade_finding : :subclades, false)
     @clade = params[:clade]
     @clade_name = "#{@metric} clade #{@clade}"
-    @clade_miga = @clade.split("-").
-      map{ |i| "miga-project.sc-#{i}" }.join("/")
+    @clade_miga = @clade.split('-').
+      map{ |i| "miga-project.sc-#{i}" }.join('/')
   end
   
   # Loads a medoid clade for asynchronous display.
   def medoid_clade_as
     medoid_clade
-    render partial: "medoid_clade",
+    render partial: 'medoid_clade',
       locals: { project: @project, result: @result, metric: @metric,
         target: @clade, root: File.expand_path(@clade_miga, @result.dir),
 	root_name: @clade },
@@ -137,7 +143,7 @@ class ProjectsController < ApplicationController
     redirect_to root_url if @dataset_miga.nil?
   end
   
-  # Create project.
+  # Create project
   def create
     @user = User.find_by(id: params[:user_id])
     par = project_params
@@ -150,14 +156,14 @@ class ProjectsController < ApplicationController
           params[k].nil? || params[k].empty?
       end
       @project.miga.save
-      flash[:success] = 'Project created.'
+      flash[:success] = 'Project created'
       redirect_to @project
     else
       render 'new'
     end
   end
   
-  # Destroys project.
+  # Destroys project
   def destroy
     FileUtils.rm_rf @project.miga.path
     @project.destroy
@@ -165,7 +171,7 @@ class ProjectsController < ApplicationController
     redirect_to root_url
   end
   
-  # Loads a result of a project.
+  # Loads a result of a project
   def result
     if @project && @project.miga &&
           (result = @project.miga.result(params[:result])) &&
@@ -197,7 +203,7 @@ class ProjectsController < ApplicationController
     head :ok, content_type: 'text/html'
   end
 
-  # Loads a result from a reference dataset in a project.
+  # Loads a result from a reference dataset in a project
   def reference_dataset_result
     if p = @project and m = p.miga
       if ds = m.dataset(params[:dataset]) and res = ds.result(params[:result])
@@ -210,12 +216,12 @@ class ProjectsController < ApplicationController
     render nothing: true, status: 200, content_type: 'text/html'
   end
 
-  # Initiates project for NCBI download.
+  # Initiates project for NCBI download
   def new_ncbi_download
     show
   end
   
-  # Launches an NCBI download in the background.
+  # Launches an NCBI download in the background
   def create_ncbi_download
     @project = Project.find(params[:project_id])
     if params[:species].nil? || params[:species].empty?
@@ -379,6 +385,50 @@ class ProjectsController < ApplicationController
       format.html
       format.json { render json: @map_p }
     end 
+  end
+
+  # GET /project_discovery
+  def discovery
+    require 'miga/lair'
+    require 'pathname'
+
+    lair = MiGA::Lair.new(Settings.miga_projects)
+    @registered = Project.all.pluck(:official, :path, :user_id).map do |i|
+      i[0] ? i[1] : File.join('user-contributed', i[2].to_s, i[1])
+    end
+
+    @existing = []
+    data = Pathname.new(Settings.miga_projects)
+    lair.each_daemon do |daemon|
+      next if daemon.is_a? MiGA::Lair
+      path = Pathname.new(daemon.project.path).relative_path_from(data)
+      @existing << path.to_s
+    end
+
+    @unregistered = (@existing - @registered).map do |i|
+      if i =~ /^[A-Za-z0-9_]+$/
+        { path: i, type: :official }
+      elsif i =~ /^user-contributed\/(\d+)\/([A-Za-z0-9_]+)$/
+        user = User.find_by(id: $1)
+        { path: $2, type: (user ? :user : :bad_user), user: user }
+      else
+        { path: i, type: :incompatible }
+      end
+    end
+  end
+
+  # GET /project_link
+  def link
+    par = params.permit([:path, :private, :official])
+    @user = params[:user] ? User.find(params[:user]) : current_user
+    @project = @user.projects.create(par)
+    if @project.save && !@project.miga.nil?
+      flash[:success] = 'Project successfully linked'
+      redirect_to @project
+    else
+      flash[:danger] = 'An unexpected error occurred while linking project'
+      redirect_to project_discovery_path
+    end
   end
 
 
