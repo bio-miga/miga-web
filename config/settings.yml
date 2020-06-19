@@ -25,6 +25,9 @@ login_message: default
 # Maximum number of files a registered user can upload in a single request.
 max_user_upload: 100
 
-# Allow project creation for non-admin users 
+# Allow user-owned projects
 user_projects: true
+
+# Allow project creation for non-admin users (requires user_projects: true)
+user_create_projects: true
 

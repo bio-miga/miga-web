@@ -350,7 +350,7 @@ input {
   }
 }
 
-#session_remember_me {
+.inline input[type=checkbox] {
   width: auto;
   margin-left: 0;
 }

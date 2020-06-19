@@ -17,41 +17,41 @@
               selected: :genomes),
             class: 'form-control') %>
 
-      <br/>
-      <div class='checkbox form-control form-group'>
-        <%= f.label :private do %>
-          <%= f.check_box :private, checked: !current_user.admin? %>
-          Keep project private
-        <% end %>
-      </div>
+      <%= f.label :private, class: 'checkbox inline', style: 'margin-top:0;' do  %>
+        <%= f.check_box :private, checked: !current_user.admin? %>
+        <span>Keep project private</span>
+      <% end %>
 
       <% if current_user.admin? %>
-        <br/>
-        <div class='checkbox form-control form-group'>
-          <%= f.label :official do %>
-            <%= f.check_box :official, checked: true %>
-            Make this project an official site database
-          <% end %>
-        </div>
+        <%= f.label :official, class: 'checkbox inline', style: 'margin-top:0;' do %>
+          <%= f.check_box :official, checked: true %>
+          <span>Make this project an official site database</span>
+        <% end %>
       <% end %>
 
       <hr/>
       <h1>Identity Engines</h1>
       <%= label_tag :ani_p, 'ANI Engine' %>
       <%= select_tag(:ani_p, options_for_select(
-            [['BLAST+','blast+'], ['FastANI','fastani'],
-              ['BLAT','blat'], ['Legacy BLAST','blast']],
+            [
+              ['BLAST+ (more sensitive)','blast+'],
+              ['FastANI (faster)','fastani'],
+              ['BLAT','blat'], ['Legacy BLAST','blast']
+            ],
             selected: 'blast+'), class: 'form-control') %>
 
       <%= label_tag :aai_p, 'AAI Engine' %>
       <%= select_tag(:aai_p, options_for_select(
-            [['BLAST+', 'blast+'], ['Diamond','diamond'],
-              ['Legacy BLAST','blast']],
+            [
+              ['BLAST+ (more sensitive)', 'blast+'],
+              ['Diamond (faster)','diamond'],
+              ['Legacy BLAST','blast']
+            ],
             selected: 'blast+'), class: 'form-control') %>
 
       <%= label_tag :haai_p, 'hAAI Engine' %>
       <%= select_tag(:haai_p, options_for_select(
-            [['BLAST+','blast+'], ['Diamond','diamond'],
+            [['BLAST+ (recommended)','blast+'], ['Diamond','diamond'],
               ['Legacy BLAST','blast'], ['Bypass hAAI','no']],
             selected: 'blast+'), class: 'form-control') %>
 
