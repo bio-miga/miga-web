@@ -41,8 +41,9 @@
         <span class="glyphicon glyphicon-info-sign" data-container="body"
               data-toggle="popover" data-placement="right" data-trigger="hover"
               data-content="
-                The log shows the last updated time and the last 5 updated logs
-                of the project.
+                The log shows the time of the last update (in your local time)
+                and the last 5 updated logs of the project
+                (in the sever's local time).
                 Please contact the administrator if you have any questions.
               "></span>
       </h5>
@@ -106,7 +107,9 @@
             $('#progress_log_status').text("[Inactive]");
           }
 
-          $('#progress_update_time').text(res.mtime);
+          if(res.mtime){
+            $('#progress_update_time').text(convertDateToLocalDate(res.mtime));
+          }
           var str = String(res.last_five_lines);
           $('#progress_panel_body').html("<pre>" + str + "</pre>");
         },
@@ -127,6 +130,20 @@
   });
 
   $(function (){ $("[data-toggle='popover']").popover(); });
+
+  // convert server time to local time
+  function convertDateToLocalDate(serverDate){
+    var d = new Date(serverDate);
+    const year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
+    const month = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(d);
+    const day = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
+    const time = new Intl.DateTimeFormat(
+      'en',
+      { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }
+    ).format(d);
+    var newDate = year + "-" + month + "-" + day + " " + time;
+    return newDate;
+  }
 </script>
 
 <% end %>
