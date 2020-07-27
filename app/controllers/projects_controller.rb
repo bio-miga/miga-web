@@ -20,11 +20,11 @@ class ProjectsController < ApplicationController
     )
     before_action :correct_user_or_admin,
       only: [:destroy, :new_ncbi_download, :create_ncbi_download,
-        :new_reference, :create_reference, :progress, :delete_ref_dataset]
+        :new_reference, :create_reference, :progress]
   else
     before_action :admin_user,
       only: [:new, :create, :destroy, :new_ncbi_download, :create_ncbi_download,
-        :new_reference, :create_reference, :progress, :delete_ref_dataset]
+        :new_reference, :create_reference, :progress]
   end
 
   # Initiate (paginated) list of projects.
