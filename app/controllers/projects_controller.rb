@@ -337,7 +337,7 @@ class ProjectsController < ApplicationController
     end
   end
 
-  # GET /projects/1/progress
+  # GET /projects/:id/progress
   def progress
     status = @project.miga.dataset_names.sample(100).map do |i|
       @project.miga.dataset(i).status
@@ -430,7 +430,18 @@ class ProjectsController < ApplicationController
       redirect_to project_discovery_path
     end
   end
-
+  
+  #DELETE /project/:id/delete_ref_dataset
+  def delete_ref_dataset    
+    logger.info("project id is: " + params[:id] )
+    project = Project.find(params[:id])
+    dataset_name = params[:name]
+    logger.info ("dataset name is: " + dataset_name)
+    dataset = project.miga.dataset(dataset_name)
+    project.miga.unlink_dataset(dataset_name)
+    dataset.remove!
+    redirect_to project_reference_datasets_path(params[:id]) 
+  end
 
   private
 
