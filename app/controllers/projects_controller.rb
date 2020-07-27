@@ -12,7 +12,7 @@ class ProjectsController < ApplicationController
   before_action :admin_user,
     only: [:lair, :lair_toggle, :daemon_toggle,
       :daemon_start_all, :daemon_stop_all, :daemon_action_all,
-      :discovery, :link]
+      :discovery, :link, :delete_ref_dataset]
   if Settings.user_projects
     before_action(
       Settings.user_create_projects ? :logged_in_user : :admin_user,
@@ -20,11 +20,11 @@ class ProjectsController < ApplicationController
     )
     before_action :correct_user_or_admin,
       only: [:destroy, :new_ncbi_download, :create_ncbi_download,
-        :new_reference, :create_reference, :progress]
+        :new_reference, :create_reference, :progress, :delete_ref_dataset]
   else
     before_action :admin_user,
       only: [:new, :create, :destroy, :new_ncbi_download, :create_ncbi_download,
-        :new_reference, :create_reference, :progress]
+        :new_reference, :create_reference, :progress, :delete_ref_dataset]
   end
 
   # Initiate (paginated) list of projects.
@@ -438,8 +438,13 @@ class ProjectsController < ApplicationController
     dataset_name = params[:name]
     logger.info ("dataset name is: " + dataset_name)
     dataset = project.miga.dataset(dataset_name)
-    project.miga.unlink_dataset(dataset_name)
-    dataset.remove!
+    if dataset.nil?
+      flash[:danger] = "Dataset #{dataset_name} is not exist"
+    else
+      project.miga.unlink_dataset(dataset_name)
+      dataset.remove!
+      flash[:success] = "Dataset #{dataset_name} has been removed successfully"
+    end
     redirect_to project_reference_datasets_path(params[:id]) 
   end
 

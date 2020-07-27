@@ -28,5 +28,8 @@
       ago.
     </span>
   <% end %>
+  <% unless noname || dataset.nil? %>
+    <%= link_to 'delete this dataset', delete_ref_dataset_path(id: project.id, name: dataset.name), method: :delete %>
+  <%end%>
 </div>
 
