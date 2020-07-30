@@ -2,6 +2,14 @@
   <% noname ||= false %>
   <% expand_side ||= false %>
   <% unless noname %>
+    <% unless dataset.nil? %>
+      <%= link_to(delete_ref_dataset_path(id: project.id, name: dataset.name),
+            method: :delete, title: 'Delete dataset',
+            data: { confirm: 'Are you sure? This action cannot be undone.' },
+            class: 'pull-right btn text-danger', type: 'button') do %>
+        <i class='glyphicon glyphicon-trash'> </i>
+      <% end %>
+    <% end %>
     <span class="dataset-name">
       <span class="project-code"><%= link_to project.code, project %></span>
       <% if dataset.nil? %>
@@ -28,8 +36,5 @@
       ago.
     </span>
   <% end %>
-  <% unless noname || dataset.nil? %>
-    <%= link_to 'delete this dataset', delete_ref_dataset_path(id: project.id, name: dataset.name), method: :delete %>
-  <%end%>
 </div>
 
