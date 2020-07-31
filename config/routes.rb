@@ -24,6 +24,8 @@ Rails.application.routes.draw do
   delete 'logout' => 'sessions#destroy'
 
   # Projects
+  delete 'projects/:id/delete_ref_dataset' => 'projects#delete_ref_dataset', as: :delete_ref_dataset
+
   get 'projects/:id/progress' => 'projects#progress', as: :project_progress
   get 'projects/:id/reference_datasets/:dataset' => 'projects#show_dataset',
     as: :reference_dataset

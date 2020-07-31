@@ -7,24 +7,27 @@ class ProjectsController < ApplicationController
       :medoid_clade, :medoid_clade_as,
       :rdp_classify, :rdp_classify_as, :new_ncbi_download,
       :show_dataset, :result, :result_partial, :reference_dataset_result,
-      :daemon_toggle, :new_reference, :create_reference, :progress]
+      :daemon_toggle, :new_reference, :create_reference, :progress,
+      :delete_ref_dataset]
   before_action :logged_in_user, only: [:result]
   before_action :admin_user,
     only: [:lair, :lair_toggle, :daemon_toggle,
       :daemon_start_all, :daemon_stop_all, :daemon_action_all,
       :discovery, :link]
   if Settings.user_projects
+    # Servers with user-owned projects
     before_action(
       Settings.user_create_projects ? :logged_in_user : :admin_user,
       only: [:new, :create]
     )
     before_action :correct_user_or_admin,
       only: [:destroy, :new_ncbi_download, :create_ncbi_download,
-        :new_reference, :create_reference, :progress]
+        :new_reference, :create_reference, :progress, :delete_ref_dataset]
   else
+    # Servers without user-owned projects
     before_action :admin_user,
       only: [:new, :create, :destroy, :new_ncbi_download, :create_ncbi_download,
-        :new_reference, :create_reference, :progress]
+        :new_reference, :create_reference, :progress, :delete_ref_dataset]
   end
 
   # Initiate (paginated) list of projects.
@@ -337,7 +340,7 @@ class ProjectsController < ApplicationController
     end
   end
 
-  # GET /projects/1/progress
+  # GET /projects/:id/progress
   def progress
     status = @project.miga.dataset_names.sample(100).map do |i|
       @project.miga.dataset(i).status
@@ -431,6 +434,20 @@ class ProjectsController < ApplicationController
     end
   end
 
+  # DELETE /project/:id/delete_ref_dataset
+  def delete_ref_dataset
+    dataset_name = params[:name]
+    logger.info('dataset name is: ' + dataset_name)
+    dataset = @project.miga.dataset(dataset_name)
+    if dataset.nil?
+      flash[:danger] = "Dataset #{dataset_name} does not exist"
+    else
+      @project.miga.unlink_dataset(dataset_name)
+      dataset.remove!
+      flash[:success] = "Dataset #{dataset_name} has been removed successfully"
+    end
+    redirect_to project_reference_datasets_path(@project)
+  end
 
   private
 
