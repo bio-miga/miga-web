@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'execjs' 
 gem 'therubyracer'
 # Use MiGA base code to communicate with the projects
-gem 'miga-base', '~> 0.7.4'
+gem 'miga-base', '~> 0.7.13'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2'
 # Make it safe
@@ -38,7 +38,7 @@ gem 'chartkick', '>= 3.2.0'
 # To contact RDP via SOAP (the REST client is heavier on RDP's servers)
 gem 'savon', '~> 2.11'
 # To easily configure local settings
-gem 'config', '~> 1.2'
+gem 'config', '~> 2.2'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'

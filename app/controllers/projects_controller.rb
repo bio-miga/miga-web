@@ -13,7 +13,7 @@ class ProjectsController < ApplicationController
   before_action :admin_user,
     only: [:lair, :lair_toggle, :daemon_toggle,
       :daemon_start_all, :daemon_stop_all, :daemon_action_all,
-      :discovery, :link]
+      :discovery, :link, :get_db, :launch_get_db]
   if Settings.user_projects
     # Servers with user-owned projects
     before_action(
@@ -56,6 +56,7 @@ class ProjectsController < ApplicationController
   # Create an empty abstract project
   def new
     @project = Project.new
+    @refdb = Project.where(reference: true)
   end
 
   # GET /project/1
@@ -158,6 +159,16 @@ class ProjectsController < ApplicationController
         @project.miga.metadata[k] = params[k] unless
           params[k].nil? || params[k].empty?
       end
+      if params[:reference_db]
+        if Settings.miga_exec_projects
+          @project.miga.metadata[:ref_project] =
+            File.join(Settings.miga_exec_projects, params[:reference_db])
+        else
+          ref = Project.find_by(path: params[:reference_db])
+          ref_path = ref.miga.path if ref && ref.miga
+          @project.miga.metadata[:ref_project] = ref_path
+        end
+      end
       @project.miga.save
       flash[:success] = 'Project created'
       redirect_to @project
@@ -202,8 +213,8 @@ class ProjectsController < ApplicationController
     render partial: 'shared/result',
       locals: { res: res, key: params[:result].to_sym, obj: obj, proj: proj },
       layout: false
-  rescue
-    head :ok, content_type: 'text/html'
+  #rescue
+  #  head :ok, content_type: 'text/html'
   end
 
   # Loads a result from a reference dataset in a project
@@ -242,15 +253,66 @@ class ProjectsController < ApplicationController
     end
   end
 
+  # List remote databases to download
+  def get_db
+    manif = Project.miga_online_manif
+    @downloadable = manif[:databases].map do |name, i|
+      local = Project.find_by(path: name)
+      local_v = (local.miga.metadata[:release] || 'unknown') if local && local.miga
+      latest = i[:versions][i[:latest].to_sym]
+      file = File.join(Settings.miga_projects, latest[:path])
+      downloading = File.size(file) * 100 / latest[:size] if File.exist?(file)
+      i.merge(name: name, local: local_v, downloading: downloading)
+    end
+  end
+
+  # Download or update the database in the background
+  def launch_get_db
+    name = params[:name]
+    version = params[:version]
+    Thread.new do
+      require 'miga/cli'
+
+      # Get current registered version
+      project = Project.find_by(path: name)
+      if project && project.miga
+        project.miga.metadata[:release] =
+          "#{project.miga.metadata[:release]} (currently updating)"
+        project.miga.save
+      end
+
+      # Download
+      error =
+        MiGA::Cli.new([
+          'get_db', '-n', name, '--db-version', version,
+          '--local-dir', Settings.miga_projects, '--no-progress'
+        ]).launch
+      raise(error) if error.is_a? Exception
+
+      # Register in the database
+      project ||= current_user.projects.create(path: name)
+      project.update(reference: true)
+      f = File.join(Settings.miga_projects, "#{name}_#{version}.tar.gz")
+      File.unlink(f) if File.exist? f
+      ActiveRecord::Base.connection.close
+    end
+
+    sleep(10) # <- Hopefully this is enough to start the download
+    flash[:success] = 'Downloading database in the background'
+    redirect_to get_db_path
+  end
+
   # Admin daemons
   def lair
     require 'miga/lair'
+
     @projects = Project.all
     @lair = MiGA::Lair.new(Settings.miga_projects)
   end
 
   def lair_toggle
     require 'miga/lair'
+
     lair = MiGA::Lair.new(Settings.miga_projects)
     action = lair.active? ? :stop : :start
     lair.daemon(action)
@@ -270,6 +332,7 @@ class ProjectsController < ApplicationController
 
   def daemon_action_all(action)
     require 'miga/lair'
+
     lair = MiGA::Lair.new(Settings.miga_projects)
     lair.each_daemon { |d| d.daemon(action) }
     flash[:success] = "Signal sent to all daemons: #{action}"
@@ -342,7 +405,8 @@ class ProjectsController < ApplicationController
 
   # GET /projects/:id/progress
   def progress
-    status = @project.miga.dataset_names.sample(100).map do |i|
+    ref_ds = @project.miga.dataset_names.select { |i| i !~ /^qG_/ }
+    status = ref_ds.sample(100).map do |i|
       @project.miga.dataset(i).status
     end
     incomplete = status.count(:incomplete)
