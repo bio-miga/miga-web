@@ -17,7 +17,7 @@
   elsif not obj.is_a? MiGA::Dataset
     proj = obj.project
   end
-  r_open = [:distances, :project_stats, :mytaxa].include? key
+  r_open = [:distances, :taxonomy, :project_stats, :mytaxa].include? key
 %>
 
 <h3 role='button' data-toggle='collapse' class='result-title'
@@ -32,7 +32,7 @@
       aria-expanded='<%= r_open ? 'true' : 'false' %>'>
 <div class='result-body'>
   <% case key %>
-  <% # Dataset results %>
+  <%# Dataset results %>
   <% when :read_quality %>
     <p>FastQC reports:</p>
     <ul>
@@ -77,10 +77,10 @@
     <p>MiGA classified the assembled contigs at species, genus, and phylum
     levels using MyTaxa (<%= link_to 'see distribution', f_path,
           target: '_blank' %>).</p>
-  <% when :distances %>
+  <% when :distances, :taxonomy %>
     <%= render partial: 'shared/results/distances',
          locals: { res: res, job: key, project: proj, dataset: obj } %>
-  <% # Project-wide results %>
+  <%# Project-wide results %>
   <% when :project_stats %>
     <%= render partial: 'shared/results/project_stats',
          locals: { res: res, job: key, project: proj } %>
@@ -122,8 +122,8 @@
     <p>
     <% res[:stats].each do |k,v| %>
       <% v = v.is_a?(Array) ? [v[0], " #{v[1]}"] : [v, ''] %>
-      <b><%= k.to_s.unmiga_name.capitalize.
-              gsub(/g c content/i, 'G+C content') %>:</b>
+      <b><%= k.to_s.unmiga_name
+            .sub(/^a[an]i$/, &:upcase).sub(/^./, &:upcase) %>:</b>
       <%= number_with_precision(v[0],
             precision: 4, strip_insignificant_zeros: true, delimiter: ',')
             %><%= v[1] %>

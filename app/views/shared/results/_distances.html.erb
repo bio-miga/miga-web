@@ -1,4 +1,11 @@
 <%
+  ref_db = project
+  if job == :taxonomy && dataset.ref?
+    ref_db = nil
+    pm = project.miga
+    ref_path = pm.metadata[:ref_project] if pm
+    ref_db = Project.find_by(path: File.basename(ref_path)) if ref_path
+  end
   db = {}
   val = []
   unless res.file_path(:ani_db).nil?
@@ -22,7 +29,7 @@
     db[:aai] = nil
   end
 
-  unless dataset.is_ref?
+  unless dataset.ref?
     miga_p = dataset.is_a?(MiGA::Dataset) ?
               dataset.project : dataset.project.miga
     method = miga_p.is_clade? ? :subclades : :clade_finding
@@ -48,23 +55,23 @@
   %>
   <% if not val.empty? and val.second %>
     The closest relatives found by MiGA in the database were
-    <%= link_to_reference_dataset(project, val.first.first) %>
+    <%= link_to_reference_dataset(ref_db, val.first.first) %>
     (<%= val.first.second.round 2 %>% <%= val_m %>) and
-    <%= link_to_reference_dataset(project, val.second.first) %>
+    <%= link_to_reference_dataset(ref_db, val.second.first) %>
     (<%= val.second.second.round 2 %>% <%= val_m %>).
     <% max_val = val.first.second %>
-    <% max_val_ds = project.miga.dataset(val.first.first) %>
+    <% max_val_ds = ref_db.miga.dataset(val.first.first) %>
   <% elsif not val.empty? and val.first %>
     The closest relative found by MiGA in the database was
-    <%= link_to_reference_dataset(project, val.first.first) %>
+    <%= link_to_reference_dataset(ref_db, val.first.first) %>
     (<%= val.first.second.round 2 %>% <%= val_m %>).
     <% max_val = val.first.second %>
-    <% max_val_ds = project.miga.dataset(val.first.first) %>
+    <% max_val_ds = ref_db.miga.dataset(val.first.first) %>
   <% else %>
     MiGA couldn't find any close relatives registered in the database.
   <% end %>
 </p>
-<% unless dataset.is_ref? or max_val_ds.nil? or project.miga.is_clade? %>
+<% unless (dataset.ref? && job == :distances) || max_val_ds.nil? || project.miga.is_clade? %>
   <h4>Taxonomic classification
   <%= info_msg "Taxonomic classification of query datasets" do %>
     <p>
@@ -85,7 +92,7 @@
       the database.
     </p>
   <% end %></h4>
-  <p><%= aai_intax(max_val, project, max_val_ds) %></p>
+  <p><%= aai_intax(max_val, ref_db, max_val_ds) %></p>
   <h4>Taxonomic novelty
   <%= info_msg "Taxonomic novelty of query datasets" do %>
     <p>
@@ -110,7 +117,7 @@
       family not represented in the database.
     </p>
   <% end %></h4>
-  <p><%= aai_novel(max_val, project) %></p>
+  <p><%= aai_novel(max_val, ref_db) %></p>
 <% end %>
 <h4>Genome relatedness
 <%= info_msg "Genome relatedness to database references" do %>
@@ -121,15 +128,11 @@
   <p><b>ANI:</b>Average Nucleotide Identity</p>
   <p><b>AAI:</b>Average Amino Acid Identity</p>
 <% end %></h4>
-<% unless res.file_path(:ref_tree_pdf).nil? %>
+<% if res.file_path(:ref_tree_pdf) %>
   <p>
     This dataset was placed in the context of some representative genomes from
-    the reference collection. See <%= link_to("BioNJ tree in PDF",
-          query_dataset_result_path(dataset.id, :distances, :ref_tree_pdf),
-          target: "_blank") %> (or
-    <%= link_to("download it in Newick format",
-          query_dataset_result_path(dataset.id, :distances, :ref_tree),
-          target: "_blank") %>).
+    the reference collection. See below the <b>ref tree</b> (in Newick format)
+    and <b>ref tree pdf</b> (in PDF).
   </p>
 <% end %>
 <div class="panel-group" id=distances role=tablist
@@ -162,7 +165,7 @@
             <th>Dataset</th>
             <th><%= metric.upcase %> (%)</th>
             <th>Standard deviation (<%= metric.upcase %>%)</th>
-            <th>Fraction of <%= metric=="ani" ? "genome" : "proteins" %>
+            <th>Fraction of <%= metric == 'ani' ? 'genome' : 'proteins' %>
               shared (%)</th>
           </tr></thead>
           <tbody>
@@ -176,8 +179,7 @@
                 <% elsif cell.nil? or cell.empty? %>
                   <span class=text-muted>(estimated)</span>
                 <% else %>
-                  <%= link_to cell.unmiga_name,
-                    reference_dataset_path(project.id, cell) %>
+                  <%= link_to_reference_dataset(ref_db, cell) %>
                 <% end %>
                 </td>
               <% end %>

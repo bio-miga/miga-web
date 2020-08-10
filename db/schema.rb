@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_22_193100) do
+ActiveRecord::Schema.define(version: 2020_08_10_173407) do
 
   create_table "projects", force: :cascade do |t|
     t.text "path"
@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 2020_04_22_193100) do
     t.datetime "updated_at", null: false
     t.boolean "private", default: false
     t.boolean "official", default: true
+    t.boolean "reference", default: false
     t.index ["official"], name: "index_projects_on_official"
     t.index ["path"], name: "index_projects_on_path", unique: true
     t.index ["private"], name: "index_projects_on_private"

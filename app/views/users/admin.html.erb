@@ -29,6 +29,11 @@
       <p>Only admins can activate users in the system</p>
     <% end %>
 
+    <%= link_to(get_db_path, class: 'list-group-item') do %>
+      <h4><i class="glyphicon glyphicon-download"> </i> Download databases</h4>
+      <p>Download a pre-indexed database from MiGA Online</p>
+    <% end %>
+
     <%= link_to project_discovery_path, class: 'list-group-item' do %>
       <h4><i class="glyphicon glyphicon-link"> </i> Link existing projects</h4>
       <p>Link projects that are already in your data folder</p>

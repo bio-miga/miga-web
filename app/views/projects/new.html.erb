@@ -30,6 +30,24 @@
       <% end %>
 
       <hr/>
+      <h1>Reference Database</h1>
+      <p>
+        You can link a project to a reference database so all <b>reference</b>
+        datasets are taxonomically classified with respect to that reference.
+        <% if current_user.admin? %>
+          Update the list of reference databases
+          <%= link_to('here', get_db_path) %>
+        <% else %>
+          Contact the site administrator to update the list of reference
+          databases
+        <% end %>
+      </p>
+      <%= label_tag :reference_db, 'Reference database' %>
+      <%= select_tag(:reference_db,
+            options_for_select(@refdb.map { |i| [i.path.unmiga_name, i.path] }),
+            include_blank: true, class: 'form-control') %>
+
+      <hr/>
       <h1>Identity Engines</h1>
       <%= label_tag :ani_p, 'ANI Engine' %>
       <%= select_tag(:ani_p, options_for_select(

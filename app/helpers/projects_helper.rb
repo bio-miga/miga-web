@@ -20,12 +20,12 @@ module ProjectsHelper
   end
 
   def link_to_reference_dataset(project, dataset_name)
-    pm = project.miga
-    ds_miga = pm.dataset(dataset_name) unless pm.nil?
+    pm = project.miga if project
+    ds_miga = pm.dataset(dataset_name) if pm
     if ds_miga.nil?
       content_tag(:del, dataset_name, title: 'Reference dataset removed')
     else
-      link_to reference_dataset_path(project.id, dataset_name) do
+      link_to(reference_dataset_path(project.id, dataset_name)) do
         content_tag(:span, dataset_name.unmiga_name,
           style: 'display:inline;') +
               (ds_miga.metadata[:is_type] ?

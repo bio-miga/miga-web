@@ -10,6 +10,19 @@ class Project < ApplicationRecord
   before_save :create_miga_project
   default_scope -> { order(path: :asc) }
 
+  class << self
+    def miga_online_manif
+      require 'net/ftp'
+      
+      uri = URI.parse('ftp://microbial-genomes.org/db')
+      ftp = Net::FTP.new(uri.host)
+      ftp.passive = true
+      ftp.login
+      ftp.chdir(uri.path)
+      MiGA::Json.parse(ftp.get('_manif.json', nil), contents: true)
+    end
+  end
+
   def path_name
     path.tr('_',' ')
   end
