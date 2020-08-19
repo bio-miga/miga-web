@@ -48,6 +48,8 @@ class QueryDataset < ApplicationRecord
   # Always returns +false+.
   def is_ref? ; false ; end
 
+  alias ref? is_ref?
+
   # Checks if it's ready
   def ready?
     return true if complete
