@@ -6,7 +6,7 @@ gem 'therubyracer'
 # Use MiGA base code to communicate with the projects
 gem 'miga-base', '~> 0.7.13'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2'
+gem 'rails', '~> 6.0'
 # Make it safe
 gem 'bcrypt', '~> 3.1'
 # Mock-up users
@@ -79,6 +79,9 @@ group :development do
   # Spring speeds up development by keeping your application running in the
   # background. Read more: https://github.com/rails/spring
   gem 'spring'
+
+  # Rails 6.0
+  gem 'listen'
 end
 
 group :production do
