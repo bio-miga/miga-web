@@ -5,7 +5,8 @@ class ProjectsController < ApplicationController
   before_action :set_project,
     only: [:destroy, :show, :search, :reference_datasets,
       :medoid_clade, :medoid_clade_as,
-      :rdp_classify, :rdp_classify_as, :new_ncbi_download,
+      :rdp_classify, :rdp_classify_as,
+      :new_ncbi_download, :create_ncbi_download,
       :show_dataset, :result, :result_partial, :reference_dataset_result,
       :daemon_toggle, :new_reference, :create_reference, :progress,
       :delete_ref_dataset]
@@ -237,7 +238,6 @@ class ProjectsController < ApplicationController
   
   # Launches an NCBI download in the background
   def create_ncbi_download
-    @project = Project.find(params[:project_id])
     if params[:species].nil? || params[:species].empty?
       flash[:danger] = 'Species name cannot be empty'
       redirect_to project_new_ncbi_download_url(@project)
