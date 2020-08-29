@@ -27,12 +27,18 @@
     </section>
   </aside>
   <div class="col-md-8">
-    <% unless @query_dataset.miga.is_active? %>
+    <% unless @query_dataset.miga.active? %>
       <br/>
       <div class='alert alert-warning'>
         <h3>Dataset inactive</h3>
-        <p>This dataset was inactivated by the system due to an excessive
-        number of errors.</p><br/>
+        <p>
+          This dataset was inactivated by the system:
+          <%=
+            @query_dataset.miga.metadata[:warn] ?
+              @query_dataset.miga.metadata[:warn].sub(/^Inactive: /, '') :
+              'Unknown issue'
+          %>
+        </p><br/>
         <p class='text-center'>
           <%= link_to 'Reactivate dataset',
                 query_dataset_reactivate_url(@query_dataset),
