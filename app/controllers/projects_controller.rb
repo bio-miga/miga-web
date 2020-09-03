@@ -422,11 +422,8 @@ class ProjectsController < ApplicationController
     f = File.join(
       @project.miga.path, 'daemon', "MiGA:#{@project.miga.name}.output"
     )
-    #Debug for undefined method
-    logger.info "Check if the file found"
-    
-    if File.exists?(f) && !File.readlines(f)[-5, 5].nil?
-      last_five_lines = File.readlines(f)[-5, 5]
+    if File.exists?(f)
+      last_five_lines = File.readlines(f).pop(5)
       last_line = last_five_lines.last
       last_five_lines = last_five_lines.join('')
       mtime = File.mtime(f).to_s
