@@ -422,16 +422,39 @@ class ProjectsController < ApplicationController
     f = File.join(
       @project.miga.path, 'daemon', "MiGA:#{@project.miga.name}.output"
     )
-    if File.exists?(f)
+    #Debug for undefined method
+    logger.info "Check if the file found"
+    
+    if File.exists?(f) && !File.readlines(f)[-5, 5].nil?
       last_five_lines = File.readlines(f)[-5, 5]
       last_line = last_five_lines.last
       last_five_lines = last_five_lines.join('')
       mtime = File.mtime(f).to_s
     else
+      logger.info "less than 5 or file not exist"
       last_five_lines = nil
       last_line = nil
       mtime = nil
     end
+
+
+#    if File.exists?(f)
+#     last_five_lines = File.readlines(f)[-5, 5]
+#     unless last_five_lines.nil?
+#       last_line = last_five_lines.last
+#       last_five_lines = last_five_lines.join('')
+#       mtime = File.mtime(f).to_s
+#     else
+#       logger.info "lines are less than 5"
+#       last_five_lines = nil
+#       last_line = nil
+#       mtime = nil 
+#     end
+#    else
+#     last_five_lines = nil
+#     last_line = nil
+#     mtime = nil
+#   end
 
     # is the daemon active?
     active = @project.daemon_active?
