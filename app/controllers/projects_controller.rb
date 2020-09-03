@@ -431,30 +431,10 @@ class ProjectsController < ApplicationController
       last_five_lines = last_five_lines.join('')
       mtime = File.mtime(f).to_s
     else
-      logger.info "less than 5 or file not exist"
       last_five_lines = nil
       last_line = nil
       mtime = nil
     end
-
-
-#    if File.exists?(f)
-#     last_five_lines = File.readlines(f)[-5, 5]
-#     unless last_five_lines.nil?
-#       last_line = last_five_lines.last
-#       last_five_lines = last_five_lines.join('')
-#       mtime = File.mtime(f).to_s
-#     else
-#       logger.info "lines are less than 5"
-#       last_five_lines = nil
-#       last_line = nil
-#       mtime = nil 
-#     end
-#    else
-#     last_five_lines = nil
-#     last_line = nil
-#     mtime = nil
-#   end
 
     # is the daemon active?
     active = @project.daemon_active?
