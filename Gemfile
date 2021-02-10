@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'execjs' 
 gem 'therubyracer'
 # Use MiGA base code to communicate with the projects
-gem 'miga-base', '~> 0.7.13'
+gem 'miga-base', '~> 0.7.23'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0'
 # Make it safe

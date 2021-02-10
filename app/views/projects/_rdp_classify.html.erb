@@ -1,33 +1,74 @@
-<% r = @result.hash[:envelope][:body][:classifier_response] %>
-<div class="panel panel-default">
-  <ul class="list-group">
-  <% k = r[:classification] %>
-  <% k = [k] unless k.is_a? Array %>
-  <% k.each do |seq| %>
-    <li class="list-group-item"><div class=panel-body>
-      <h3 style="margin-top:0;"><%= seq[:query_id] %></h3>
-      <% i = 0.0 %>
-      <% seq[:assignment].each do |taxon| %>
-        <% i += 1 %>
-        <p style="padding-left:<%= i %>em;">
-          <span class=text-muted><%= taxon[:rank] %></span>
-          <b><%= link_to taxon[:name],
-            "http://rdp.cme.msu.edu/genome/main.spr?currentRoot=#{taxon[:taxid]}",
-            target: "_blank" %></b>
-          <span class=small>(<%= taxon[:confidence].to_f*100 %>% confidence)</span>
-        </p>
-      <% end %>
-    </div></li>
-  <% end %>
-  </ul>
-</div>
-<div class="panel panel-info small text-center">
-  <div class="panel-body bg-info">
-    <b>RDP Classifier:</b> <%= link_to r[:taxonomy_description],
-          "http://rdp.cme.msu.edu/classifier/classifier.jsp",
-          target: "_blank" %><br/>
-    <b>Taxonomy version number</b> <%= r[:taxonomy_version] %><br/>
-    <b>Date run:</b> <%= r[:date_run] %><br/>
+<% r = @result[:body] %>
+<% case @result[:format] %>
+<% when 'rdp-tsv' %>
+  <div class="panel panel-default">
+    <ul class="list-group">
+    <% k = r[:classification] %>
+    <% k = [k] unless k.is_a? Array %>
+    <% k.each do |seq| %>
+      <% seq = seq.split("\t") %>
+      <li class="list-group-item"><div class=panel-body>
+        <h3 style="margin-top:0;"><%= seq.shift %> <%= seq.shift %></h3>
+        <% i = 0.0 %>
+        <% while !seq.empty? do %>
+          <% i += 1 %>
+          <p style="padding-left:<%= i %>em;">
+            <% name = seq.shift %>
+            <span class=text-muted><%= seq.shift %></span>
+            <b><%= name %></b>
+            <span class=small>(<%= seq.shift.to_f * 100 %>% confidence)</span>
+          </p>
+        <% end %>
+      </div></li>
+    <% end %>
+    </ul>
   </div>
-</div>
-
+  <div class="panel panel-info small text-center">
+    <div class="panel-body bg-info">
+      <b>RDP Classifier locally executed by MiGA</b><br/>
+      <b>Taxonomy:</b> <%= r[:footer].gsub(/^# Version: /, '').gsub(/;.*/,'') %><br/>
+      <b>Classifier:</b> <%= r[:footer].gsub(/.*;/,'') %><br/>
+      <b>Date run:</b> <%= r[:date_run] %><br/>
+    </div>
+  </div>
+<% when 'rdp-soap' %>
+  <div class="panel panel-default">
+    <ul class="list-group">
+    <% k = r[:classification] %>
+    <% k = [k] unless k.is_a? Array %>
+    <% k.each do |seq| %>
+      <li class="list-group-item"><div class=panel-body>
+        <h3 style="margin-top:0;"><%= seq[:query_id] %></h3>
+        <% i = 0.0 %>
+        <% seq[:assignment].each do |taxon| %>
+          <% i += 1 %>
+          <p style="padding-left:<%= i %>em;">
+            <span class=text-muted><%= taxon[:rank] %></span>
+            <b><%=
+              link_to(
+                taxon[:name],
+                "http://rdp.cme.msu.edu/genome/main.spr?currentRoot=#{taxon[:taxid]}",
+                target: "_blank"
+              )
+            %></b>
+            <span class=small>(<%= taxon[:confidence].to_f * 100 %>% confidence)</span>
+          </p>
+        <% end %>
+      </div></li>
+    <% end %>
+    </ul>
+  </div>
+  <div class="panel panel-info small text-center">
+    <div class="panel-body bg-info">
+      <b>RDP Classifier:</b> <%= link_to r[:taxonomy_description],
+            "http://rdp.cme.msu.edu/classifier/classifier.jsp",
+            target: "_blank" %><br/>
+      <b>Taxonomy version number</b> <%= r[:taxonomy_version] %><br/>
+      <b>Date run:</b> <%= r[:date_run] %><br/>
+    </div>
+  </div>
+<% else %>
+  <div class="panel panel-danger text-center">
+    <b>Unrecognized classification format '<%= @result[:format] %>'</b>
+  </div>
+<% end %>

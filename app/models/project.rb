@@ -12,14 +12,10 @@ class Project < ApplicationRecord
 
   class << self
     def miga_online_manif
-      require 'net/ftp'
-      
-      uri = URI.parse('ftp://microbial-genomes.org/db')
-      ftp = Net::FTP.new(uri.host)
-      ftp.passive = true
-      ftp.login
-      ftp.chdir(uri.path)
-      MiGA::Json.parse(ftp.get('_manif.json', nil), contents: true)
+      ftp = MiGA::MiGA.remote_connection(:miga_db)
+      manif = ftp.get('_manif.json', nil)
+      ftp.close
+      MiGA::Json.parse(manif, contents: true)
     end
   end
 
@@ -31,7 +27,7 @@ class Project < ApplicationRecord
     load_miga_project
     miga_obj
   end
-  
+
   def daemon
     require 'miga/daemon'
     @daemon ||= MiGA::Daemon.new(miga)
@@ -59,7 +55,7 @@ class Project < ApplicationRecord
   def code_base_color
     sprintf('%06x', (XXhash.xxh32(path,6) % (16**6)))
   end
-   
+
   def code_color
     c = Color::RGB.by_hex(code_base_color).to_hsl
     c.luminosity = 40 + c.luminosity/4
@@ -89,7 +85,7 @@ class Project < ApplicationRecord
       'ncbi_get', '--project', miga.path, '--taxon', species
     ] + codes.map { |i| "--#{i}" }
     logger.info("Launching CLI: #{cmd}")
-    
+
     Spawnling.new(argv: "miga-web-spawn -#{path_name}-") do
       require 'miga/cli'
       MiGA::Cli.new(cmd).launch
@@ -98,20 +94,41 @@ class Project < ApplicationRecord
     true
   end
 
-  # Returns the RDP classification of dataset with name +ds_name+ using RDP
-  # SOAP services.
+  # Returns the RDP classification of dataset with name +ds_name+ if available,
+  # otherwise queries the RDP SOAP services
   def rdp_classify(ds_name)
     ds_miga = miga.dataset(ds_name)
     return if ds_miga.nil?
     res = ds_miga.result(:ssu)
     return if res.nil?
+
+    # Check if the classifier was called by MiGA
+    file = res.file_path(:classification)
+    unless file.nil?
+      classif = nil
+      (file =~ /\.gz$/ ? Zlib::GzipReader : File).open(file) do |fh|
+        classif = fh.map(&:chomp)
+      end
+      footer = classif.pop
+      return({
+        format: 'rdp-tsv', body: {
+          classification: classif,
+          footer: footer,
+          date_run: res.done_at
+        }
+      })
+    end
+
+    # Use the SOAP RDP server
     file = res.file_path(:all_ssu_genes)
     file = res.file_path(:longest_ssu_gene) if file.nil?
     return if file.nil?
-    seq = (file =~ /\.gz$/ ? Zlib::GzipReader : File).open(file).read
+    seq = nil
+    (file =~ /\.gz$/ ? Zlib::GzipReader : File).open(file) { |f| seq = f.read }
     wsdl = "http://rdp.cme.msu.edu:80/services/classifier?wsdl"
     client = Savon.client(wsdl: wsdl)
-    client.call(:classifier, message: seq)
+    response = client.call(:classifier, message: seq)
+    { format: 'rdp-soap', body: response.hash[:envelope][:body][:classifier_response] }
   end
 
   def readme_file
@@ -136,7 +153,7 @@ class Project < ApplicationRecord
   # - comments: Dataset comments
   # - user: Dataset user (deprecated but still supported)
   # And attach the path(s) in the +file1+ and (optional) +file2+
-  # 
+  #
   # Returns errors (if any) or +nil+ otherwise
   def create_miga_dataset(par, file1, file2 = nil)
     require 'miga/cli'
