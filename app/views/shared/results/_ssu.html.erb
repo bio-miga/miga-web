@@ -1,28 +1,31 @@
 <% unless res.file_path(:gff).nil? %>
-  <% gff = Zlib::GzipReader.open(res.file_path :gff){|gz| gz.read} %>
   <%
-    s = gff.split(/\n/). # Each line
-        select{ |l| l !~ /^#/ }. # Ignore comments
-        map{ |l| l.gsub(/.*;product=([^;]+).*/,"\\1") }. # 16S/18S/&c
-        inject(Hash.new(0)){ |t,e| t[e] += 1 ; t }. # Count each
-        map{ |l,c| pluralize c, l }.to_sentence # Human-readable
+    gff = Zlib::GzipReader.open(res.file_path(:gff), &:read)
+    s = gff
+        .split(/\n/) # Each line
+        .select{ |l| l !~ /^#/ } # Ignore comments
+        .map { |l| l.gsub(/.*;product=([^;]+).*/, "\\1") } # 16S/18S/&c
+        .inject(Hash.new(0)) { |t, e| t[e] += 1 ; t } # Count each
+        .map { |l, c| pluralize c, l }.to_sentence # Human-readable
   %>
   <% if s.empty? %>
     <p>MiGA didn't detect SSU sequences.</p>
   <% else %>
     <p>
-      MiGA found <%= s %>.
+      MiGA found <%= s %>
       <% info_msg_id = info_modal "RDP Classifier" do %>
         <div id="ssu-rdp"></div>
       <% end %>
       <% ds_name = obj.is_a?(MiGA::Dataset) ? obj.name : obj.miga_name %>
-      <%= link_to(rdp_classify_url(project.id, ds_name),
-            :class => "btn btn-default btn-sm",
-            :id => "link-ssu-rdp",
-            :remote => true, :"data-target" => "##{info_msg_id}",
-            :"data-url" => rdp_classify_as_url(project.id, ds_name)) do %>
-        Classify with RDP
-      <% end %>
+      <div class="text-center">
+        <%= link_to(rdp_classify_url(project.id, ds_name),
+              :class => "btn btn-default btn-sm",
+              :id => "link-ssu-rdp",
+              :remote => true, :"data-target" => "##{info_msg_id}",
+              :"data-url" => rdp_classify_as_url(project.id, ds_name)) do %>
+          Classify with RDP
+        <% end %>
+      </div>
     </p>
     <script>
       $("#link-ssu-rdp").click(function(event){

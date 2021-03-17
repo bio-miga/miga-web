@@ -133,7 +133,7 @@ class ProjectsController < ApplicationController
     @ds_name = params[:ds_name]
     @result = @project.rdp_classify(@ds_name)
   end
-  
+
   # Loads an RDP classification for asynchronous display.
   def rdp_classify_as
     rdp_classify
@@ -141,13 +141,13 @@ class ProjectsController < ApplicationController
       locals: { project: @project, ds_name: @ds_name, result: @result },
       layout: false
   end
-  
+
   # Loads a given dataset in a project.
   def show_dataset
     @dataset_miga = @project.miga.dataset(params[:dataset])
     redirect_to root_url if @dataset_miga.nil?
   end
-  
+
   # Create project
   def create
     @user = User.find_by(id: params[:user_id])
