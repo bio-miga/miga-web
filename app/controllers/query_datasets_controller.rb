@@ -153,11 +153,11 @@ class QueryDatasetsController < ApplicationController
   def reactivate
     if @query_dataset.miga.nil?
       flash[:danger] = 'Resource temporarily unavailable, try again later'
-      redirect_to query_datasets_path
     else
       @query_dataset.miga.activate!
       flash[:success] = 'Dataset successfully reactivated'
     end
+    redirect_to @query_dataset
   end
 
   private
