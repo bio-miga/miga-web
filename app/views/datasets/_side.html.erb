@@ -25,8 +25,14 @@
   <% end %>
 
   <% dataset.metadata.each do |k,v| %>
-    <% next if %i[ref created updated user tax
-          quality is_type is_ref_type type_rel status warn].include? k %>
+    <%
+      skip = %i[
+        ref created updated user tax
+        quality is_type is_ref_type type_rel status warn
+        run_mytaxa_scan db_project
+      ]
+    %>
+    <% next if skip.include?(k) %>
     <% next if k.to_s[0] == '_' %>
     <% k_str = k.to_s.unmiga_name.capitalize %>
     <%

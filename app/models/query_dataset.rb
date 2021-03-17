@@ -37,12 +37,27 @@ class QueryDataset < ApplicationRecord
 
   # Returns the MiGA name of the dataset
   def miga_name
-    "qG_#{name}_u#{user_id}"
+    name
   end
 
   # Returns the MiGA dataset object
   def miga
-    @miga ||= project.miga.dataset(miga_name)
+    @miga ||= query_project_miga.dataset(miga_name)
+  end
+
+  # Returns the MiGA object for the queries project
+  # Note that this is different from +project.miga+, which is the MiGA object
+  # of the reference database being queried
+  def query_project_miga
+    dir = Settings.miga_projects
+    path = File.join(dir, 'user-contributed', "#{user_id}-qG")
+    unless MiGA::Project.exist?(path)
+      require 'miga/cli'
+
+      cmd = ['new', '--project', path, '--type', 'mixed']
+      MiGA::Cli.new(cmd).launch
+    end
+    @query_project_miga ||= MiGA::Project.load(path)
   end
   
   # Always returns +false+.
@@ -102,7 +117,7 @@ class QueryDataset < ApplicationRecord
 
   # Returns the running log of the task (if any)
   def job_log(_task)
-    f = File.expand_path("daemon/d/#{miga.name}.log", project.miga.path)
+    f = File.expand_path("daemon/d/#{miga.name}.log", query_project_miga.path)
     return '' unless File.exist? f
     File.read(f).encode('UTF-8', 'binary',
       invalid: :replace, undef: :replace, replace: '?')
@@ -123,21 +138,23 @@ class QueryDataset < ApplicationRecord
 
   def create_miga_dataset
     # Don't do anything if it already exists
-    return true if project.miga.dataset(miga_name)
+    return true if query_project_miga.dataset(miga_name)
 
+    par = {
+      name: miga_name,
+      query_project_miga: query_project_miga,
+      type: 'genome', # <- This will be changed by #save_in_miga
+      input_type: input_type.to_s,
+      query: true,
+      user: user_id
+    }
     err = project.create_miga_dataset(
-      {
-        name: miga_name,
-        type: 'genome', # <- This will be changed by #save_in_miga
-        input_type: input_type.to_s,
-        query: true,
-        user: user_id
-      },
+      par,
       input_file.path,
       (input_file_2 && input_file_2.path ? input_file_2.path : nil)
     )
     raise err if err
-    project.miga.load
+    query_project_miga.load
   ensure
     # Empty input files
     [input_file, input_file_2].each do |i|

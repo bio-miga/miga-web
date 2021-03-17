@@ -157,19 +157,20 @@ class Project < ApplicationRecord
   # Returns errors (if any) or +nil+ otherwise
   def create_miga_dataset(par, file1, file2 = nil)
     require 'miga/cli'
+
     input_type = par[:input_type]
     input_type = 'trimmed_reads' if par[:input_type] == 'trimmed_fasta'
     input_type += file2 ? '_paired' : '_single' unless input_type == 'assembly'
     cmd = [
       'add',
-      '--project', miga.path,
+      '--project', par[:query_project_miga].path,
       '--input-type', input_type,
       '--dataset', par[:name]
     ]
     %i[type description comments].each do |k|
       cmd += ["--#{k}", par[k]] if par[k] && !par[k].empty?
     end
-    cmd += ['--metadata', "user=#{par[:user]}"] if par[:user]
+    cmd += ['--metadata', "db_project=../#{path}"]
     cmd << '--query' if par[:query]
     cmd << file1
     cmd << file2 if file2
