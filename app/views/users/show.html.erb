@@ -9,8 +9,7 @@
       </h1>
     </section>
   </aside>
-  <div class="col-md-8 user-dashboard">
-    <h1>User profile</h1>
+  <div class="col-md-8">
     <%
       {
         'Name' => @user.name,
@@ -19,10 +18,11 @@
         'Private projects' => @user.projects.where(private: true).size
       }.each do |k, v|
     %>
-      <div class='panel panel-default'>
-        <div class='panel-heading'><%= k %></div>
-        <div class='panel-body'><%= v %></div>
+      <div class="card">
+        <div class="card-header"><%= k %></div>
+        <div class="card-body"><%= v %></div>
       </div>
+      <br/>
     <% end %>
   </div>
 </div>

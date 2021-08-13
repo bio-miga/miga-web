@@ -1,0 +1,31 @@
+
+@import "custom";
+
+.card-dataset {
+  margin-bottom: 1em;
+  border: none !important;
+  border-left: 5px solid $gray-400 !important;
+  padding: 0;
+  &:hover {
+    background: $gray-100;
+    border-left: 5px solid $gray-700 !important;
+  }
+  .project-code {
+    font-size: 120%;
+    margin-right: 0.3em;
+  }
+  .project-code, .dataset-name {
+    display: inline-block;
+  }
+  .dataset-actions {
+    margin: 0;
+    font-size: 50%;
+  }
+  .timestamp {
+    text-align: right;
+  }
+  .card-body {
+    padding: 0.5em 1em;
+  }
+}
+

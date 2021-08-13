@@ -19,6 +19,12 @@ class Project < ApplicationRecord
     end
   end
 
+  def privileged_user?(test_user)
+    return false if test_user.nil?
+    return true if test_user == user || test_user.admin?
+    false
+  end
+
   def path_name
     path.tr('_',' ')
   end

@@ -1,0 +1,38 @@
+
+@import "custom";
+
+.card-project {
+  border: none !important;
+  .project-content {
+    padding: 0;
+    margin-bottom: 1em;
+    div {
+      vertical-align: top;
+    }
+  }
+  .project-code, .project-body {
+    display: inline-block;
+  }
+  .project-body {
+    padding: 0 0.5em;
+    div {
+      padding: 0;
+    }
+  }
+}
+
+.project-code {
+  width: 1.5em;
+  height: 1.5em;
+  text-align: center;
+  font-family: 'Wire One', condensed;
+  font-weight: bold !important;
+  font-size: 200%;
+  display: inline-block;
+  color: white;
+  &:hover {
+    color: white;
+    text-decoration: none;
+  }
+}
+

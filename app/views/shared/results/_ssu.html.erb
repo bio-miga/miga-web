@@ -13,18 +13,25 @@
   <% else %>
     <p>
       MiGA found <%= s %>
-      <% info_msg_id = info_modal "RDP Classifier" do %>
+      <% info_msg_id = info_modal('RDP Classifier') do %>
         <div id="ssu-rdp"></div>
       <% end %>
       <% ds_name = obj.is_a?(MiGA::Dataset) ? obj.name : obj.miga_name %>
       <div class="text-center">
-        <%= link_to(rdp_classify_url(project.id, ds_name),
-              :class => "btn btn-default btn-sm",
-              :id => "link-ssu-rdp",
-              :remote => true, :"data-target" => "##{info_msg_id}",
-              :"data-url" => rdp_classify_as_url(project.id, ds_name)) do %>
-          Classify with RDP
-        <% end %>
+        <%=
+          link_to(
+            'Classify with RDP',
+            rdp_classify_url(project.id, ds_name),
+            class: 'btn btn-block btn-primary',
+            type: :button,
+            id: 'link-ssu-rdp',
+            remote: true,
+            data: {
+              target: "##{info_msg_id}",
+              url: rdp_classify_as_url(project.id, ds_name)
+            }
+          )
+        %>
       </div>
     </p>
     <script>
@@ -41,18 +48,8 @@
         event.stopPropagation();
       })
     </script>
-    <div class="panel panel-default" id=ssu>
-      <div class=panel-heading role=tab id=ssu-h>
-        <h4 class=panel-title>
-          <a role=button data-toggle=collapse data-parent="#ssu"
-                class=btn href="#ssu-b" aria-expanded=false
-                aria-controls=ssu-b>
-            Feature locations
-          </a>
-        </h4>
-      </div>
-      <div id=ssu-b class="panel-collapse collapse"
-            role=tabpanel aria-labelledby=ssu-h>
+    <%= accordion('result-ssu', false) do |accordion| %>
+      <%= accordion_card(accordion, 'gff', 'Feature locations') do %>
         <div class="panel-body table-responsive">
           <table class="table table-hover">
             <thead><tr>
@@ -74,7 +71,8 @@
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
+      <% end %>
+    <% end %>
   <% end %>
 <% end %>
+<br/>

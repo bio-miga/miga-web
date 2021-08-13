@@ -1,15 +1,22 @@
 <% provide(:title, @project.path_name) %>
-<% provide(:breadcrumb_1, link_to('Projects', projects_path)) %>
+
 <div class="row">
-  <aside class="col-md-4">
-    <%= render partial: 'shared/menu_datasets',
-      locals: { project: @project,
-      ds_counts: @project.dataset_counts(current_user),
-      ref_datasets: false, qry_datasets: false } %>
+  <aside class="col-md-4 project-aside">
+    <%=
+      render(
+        partial: 'shared/menu_datasets',
+        locals: {
+          project: @project,
+          ds_counts: @project.dataset_counts(current_user),
+          ref_datasets: false, qry_datasets: false
+        }
+      )
+    %>
   </aside>
+
   <div class="col-md-8">
     <% if @project.private? %>
-      <div class='alert alert-info' style='margin:1.3em 0;'>
+      <div class="alert alert-info" style="margin: 1.3em 0;">
         This is a <b>private project</b>:
         only you have access.
       </div>
@@ -20,58 +27,8 @@
       </div>
     <% end %>
 
-    <%= render partial: 'progress' %>
-    <%= render partial: 'arcgis' %>
-
-    <% results_to_load = [] %>
-    <% MiGA::Project.RESULT_DIRS.keys.each do |k| %>
-      <% if res = @project.miga.result(k) %>
-        <div id="project_result_<%= k %>">
-          <h3 class="result-title">
-            <i class="glyphicon glyphicon-tasks"> </i>
-            <%= image_tag('loading.gif') %>
-            <%= k.to_s.unmiga_name.capitalize %>
-          </h3>
-        </div>
-        <% results_to_load << k %>
-      <% end %>
-    <% end %>
-    <script>
-      <% results_to_load.each do |k| %>
-        $.ajax(
-          { url: "<%= project_result_partial_path(@project, k) %>" }
-        ).done(function(data){ $("#project_result_<%= k %>").html(data) });
-      <% end %>
-    </script>
-    <h3 class='result-title'>
-      <i class="glyphicon glyphicon-info-sign"> </i>
-      About <%= @project.path_name %>
-    </h3>
-    <div class='result'><div class='result-body'>
-      <p>
-        Initialized as
-        <u rel="tooltip" title="<%=
-          MiGA::Project.KNOWN_TYPES[@project.miga.metadata[:type]][:description]
-        %>"><%= @project.miga.metadata[:type] %></u>
-        <%= time_ago_in_words @project.miga.metadata[:created] %> ago.
-      </p>
-      <h4>Identity Engines</h4>
-      <p>
-        <abbr title='Heuristic AAI'>hAAI</abbr>:
-          <%= @project.miga.metadata[:haai_p] || 'blast+' %>,
-        <abbr title='Average Amino Acid Identity'>AAI</abbr>:
-          <%= @project.miga.metadata[:aai_p] || 'blast+' %>,
-        <abbr title='Average Nucleotide Identity'>ANI</abbr>:
-          <%= @project.miga.metadata[:ani_p] || 'blast+' %>.
-      </p>
-      <% if File.exist? @project.readme_file %>
-        <h4>README</h4>
-        <div class='well well-sm small'>
-          <% markdown ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML,
-                  autolink: true, tables: true) %>
-          <%= markdown.render(File.read(@project.readme_file)).html_safe %>
-        </div>
-      <% end %>
-    </div></div>
+    <%= render(partial: 'progress') %>
+    <%= render(partial: 'arcgis') %>
+    <%= render(partial: 'results') %>
   </div>
 </div>

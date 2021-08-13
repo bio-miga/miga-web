@@ -30,6 +30,12 @@ class QueryDataset < ApplicationRecord
     "M:" + SecureRandom.urlsafe_base64(5).upcase.tap{ |i| i[3]="_" }
   end
 
+  def privileged_user?(test_user)
+    return false if test_user.nil?
+    return true if test_user == user || test_user.admin?
+    false
+  end
+
   def to_param
     self.update(acc:QueryDataset.new_acc) if self.acc.nil?
     self.acc

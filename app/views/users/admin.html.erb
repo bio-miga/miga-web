@@ -1,40 +1,39 @@
 <% provide(:title, 'Admin console') %>
 <div class="row">
-  <div class="col-md-12 user-dashboard list-group">
-    <h1>Admin console</h1>
-
-    <%= link_to query_datasets_path(all:true), class: 'list-group-item' do %>
+  <h1 class="my-4">Admin console</h1>
+  <div class="col-md-12 list-group">
+    <%= list_item(query_datasets_path(all: true)) do %>
       <h4><i class="glyphicon glyphicon-list"> </i> All query datasets</h4>
       <p>Only admins can see all the query datasets registered in the
         system</p>
     <% end %>
 
-    <%= link_to new_project_path, class: 'list-group-item' do %>
+    <%= list_item(new_project_path) do %>
       <h4><i class="glyphicon glyphicon-star"> </i> Create new project</h4>
       <p>As an admin, you can create new projects for different species</p>
     <% end %>
 
-    <%= link_to lair_path, class: 'list-group-item' do %>
+    <%= list_item(lair_path) do %>
       <h4><i class="glyphicon glyphicon-flash"> </i> Control and review daemons</h4>
       <p>Administrate and review the status of the daemons for all projects</p>
     <% end %>
 
-    <%= link_to users_path, class: 'list-group-item' do %>
+    <%= list_item(users_path) do %>
       <h4><i class="glyphicon glyphicon-user"> </i> Registered users</h4>
       <p>Only admins can see all the users in the system</p>
     <% end %>
     
-    <%= link_to unactivated_users_path, class: 'list-group-item' do %>
+    <%= list_item(unactivated_users_path) do %>
       <h4><i class="glyphicon glyphicon-user"> </i> Unactivated users</h4>
       <p>Only admins can activate users in the system</p>
     <% end %>
 
-    <%= link_to(get_db_path, class: 'list-group-item') do %>
+    <%= list_item(get_db_path) do %>
       <h4><i class="glyphicon glyphicon-download"> </i> Download databases</h4>
       <p>Download a pre-indexed database from MiGA Online</p>
     <% end %>
 
-    <%= link_to project_discovery_path, class: 'list-group-item' do %>
+    <%= list_item(project_discovery_path) do %>
       <h4><i class="glyphicon glyphicon-link"> </i> Link existing projects</h4>
       <p>Link projects that are already in your data folder</p>
     <% end %>

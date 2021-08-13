@@ -225,7 +225,6 @@ class QueryDatasetsController < ApplicationController
   def correct_user_or_admin
     @user = @query_dataset.user
     return true if @user.nil?
-    redirect_to(root_url) if current_user.nil? ||
-      !(current_user?(@user) || current_user.admin?)
+    redirect_to(root_url) unless @query_dataset.privileged_user?(current_user)
   end
 end

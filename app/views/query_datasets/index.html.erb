@@ -1,25 +1,30 @@
 <% if @project.nil? %>
-  <% provide(:title, "Query datasets") %>
+  <% provide(:title, 'Query datasets') %>
 <% else %>
   <% provide(:title, @project.path_name) %>
-  <% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
 <% end %>
 <div class="row">
   <aside class="col-md-4">
-    <% ds_counts = {qry: @all_qd, qry_yes: @ready_qd, qry_no: @running_qd} %>
+    <% ds_counts = { qry: @all_qd, qry_yes: @ready_qd, qry_no: @running_qd } %>
     <% ds_counts[:ref] = @project.ref_datasets.count unless @project.nil? %>
-    <%= render partial: 'shared/menu_datasets',
-          locals: { project: @project, ds_counts: ds_counts,
-          ref_datasets: false, qry_datasets: true } %>
+    <%=
+      render(
+        partial: 'shared/menu_datasets',
+        locals: {
+          project: @project, ds_counts: ds_counts,
+          ref_datasets: false, qry_datasets: true
+        }
+      )
+    %>
   </aside>
   <div class="col-md-8">
     <% if @query_datasets.any? %>
       <%= will_paginate @query_datasets, class: "center-block center" %>
-      <ol class='dataset-list'>
+      <div class="dataset-list">
         <% @query_datasets.each do |query_dataset| %>
-          <li><%= render query_dataset %></li>
+          <%= render query_dataset %>
         <% end %>
-      </ol>
+      </div>
       <%= will_paginate @query_datasets, class: "center-block center" %>
     <% end %>
   </div>

@@ -1,11 +1,12 @@
-<div class="center jumbotron">
+<div class="text-center jumbotron">
   <h1>Welcome to MiGA</h1>
-  <h2>Explore the Microbial Genomes Atlas</h2>
+  <h4>The Microbial Genomes Atlas</h4>
+  <br/>
   <div class="btn-group" role="group" aria-label="home-actions">
     <% if logged_in? %>
       <% n_proj = Project.where(private: false, official: true).count %>
       <%= link_to pluralize(n_proj, 'project'), projects_path,
-            class: 'btn btn-lg btn-default', type: 'button' %>
+            class: 'btn btn-lg btn-secondary', type: 'button' %>
       <% if Settings.user_projects || current_user.admin? %>
         <%= link_to 'Create project', new_project_path,
               class: 'btn btn-lg btn-primary', type: 'button' %>
@@ -14,7 +15,7 @@
       <%= link_to 'Create user', signup_path,
             class: 'btn btn-lg btn-primary', type: 'button' %>
       <%= link_to 'Log in', login_path,
-            class: 'btn btn-lg btn-default', type: 'button' %>
+            class: 'btn btn-lg btn-info', type: 'button' %>
     <% end %>
   </div>
 </div>

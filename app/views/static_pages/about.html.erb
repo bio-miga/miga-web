@@ -1,56 +1,65 @@
-<%= provide(:title, "About") %>
+<%= provide(:title, 'About') %>
+
 <div class="container text-center jumbotron">
   <h1>About MiGA Web</h1>
-  <h2>Web interface of MiGA, the Microbial Genomes Atlas.</h2>
+  <h4>Web interface for MiGA,<br/>the Microbial Genomes Atlas</h4>
 </div>
 
 <h1>Citation</h1>
 <p>If you use MiGA in your research, please cite:</p>
-<blockquote><%= MiGA::CITATION %></blockquote>
+<% MiGA::MiGA.CITATION_ARRAY.each do |ref| %>
+  <blockquote class="blockquote"><%= ref %></blockquote>
+<% end %>
 <br/>
 
 <h1>Behind MiGA</h1>
 <p>
   MiGA web is developed and maintained by
-  <%= link_to "Luis M. Rodriguez-R",
-        "https://lmrodriguezr.github.io/", target:"_blank" %>.
+  <%= link_to 'Luis M. Rodriguez-R',
+        'https://rodriguez-r.com/', target: '_blank' %>.
   The MiGA web codebase is
-  <%= link_to "freely available",
-        "https://github.com/bio-miga/miga-web", target:"_blank" %>
+  <%= link_to 'freely available',
+        'http://code.microbial-genomes.org/miga-web', target: '_blank' %>
   under the terms of the terms of the
-  <%= link_to "Artistic License 2.0",
-        "http://code.microbial-genomes.org/miga-web/blob/master/LICENSE",
-        target:"_blank"
-  %>.
+  <%= link_to 'Artistic License 2.0',
+        'http://code.microbial-genomes.org/miga-web/blob/master/LICENSE',
+        target: '_blank' %>.
 </p>
 <p>
   MiGA is the result of a collaboration between the
-  <%= link_to "Kostas Lab",
-        "http://enve-omics.gatech.edu/", target: "_blank" %>
-  (<%= link_to "Georgia Institute of Technology",
-        "http://www.gatech.edu/", target: "_blank" %>)
-  and the
-  <%= link_to "RDP team",
-        "http://rdp.cme.msu.edu/", target: "_blank" %>
-  (<%= link_to "Center for Microbial Ecology",
-        "http://cme.msu.edu/", target: "_blank" %>,
-  <%= link_to "Michigan State University",
-        "https://msu.edu/", target: "_blank" %>).
+  <%= link_to 'Kostas Lab',
+        'http://enve-omics.gatech.edu/', target: '_blank' %>
+  (<%= link_to 'Georgia Institute of Technology',
+        'http://www.gatech.edu/', target: '_blank' %>),
+  the <%= link_to 'RDP team',
+        'http://rdp.cme.msu.edu/', target: '_blank' %>
+  (<%= link_to 'Center for Microbial Ecology',
+        'http://cme.msu.edu/', target: '_blank' %>,
+  <%= link_to 'Michigan State University',
+        'https://msu.edu/', target: '_blank' %>), and
+  the <%= link_to 'Rodriguez-R lab',
+        'https://rodriguez-r.com', target: '_blank' %>
+  (<%= link_to 'University of Innsbruck',
+        'https://uibk.ac.at/', target: '_blank' %>).
+</p><p>
   The MiGA project is funded by the
-  <%= link_to "US National Science Foundation",
-        "http://nsf.gov/", target: "_blank" %>
-  (<%= link_to "Award #1356288",
-        "http://nsf.gov/awardsearch/showAward?AWD_ID=1356288",
-        target: "_blank" %>).
+  <%= link_to 'US National Science Foundation',
+        'http://nsf.gov/', target: '_blank' %>
+  (<%= link_to 'Award #1356288',
+        'http://nsf.gov/awardsearch/showAward?AWD_ID=1356288',
+        target: '_blank' %>, and
+  <%= link_to 'Award #MCB190042',
+        'https://xras.xsede.org/public/requests/31162-XSEDE-MCB190042-1190572',
+        target: '_blank' %>).
 </p>
 <br/>
 
 <h1>Getting MiGA Web</h1>
 <p>
-  If you would like to host your own MiGA web server for your dedicated
-  projects, please visit the <%= link_to "GitHub repository",
-  "http://code.microbial-genomes/miga-web", target:"_blank" %> and the
-  <%= link_to "MiGA manual", "https://manual.microbial-genomes.org/",
-  target: "_blank" %>.
+  If you want to host your own MiGA web server for your dedicated
+  projects, please visit the <%= link_to 'GitHub repository',
+  'http://code.microbial-genomes/miga-web', target: '_blank' %> and the
+  <%= link_to 'MiGA manual', 'https://manual.microbial-genomes.org/',
+  target: '_blank' %>.
 </p>
 <br/>

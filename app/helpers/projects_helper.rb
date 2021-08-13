@@ -1,4 +1,13 @@
 module ProjectsHelper
+  def project_code(project)
+    link_to(
+      project.code, project,
+      class: 'project-code rounded',
+      style: "background: #{project.code_color};",
+      title: project.path.unmiga_name
+    )
+  end
+
   def estimated_wait_time(project_id)
     @estimated_wait_time_last_check ||= []
     @estimated_wait_time ||= []

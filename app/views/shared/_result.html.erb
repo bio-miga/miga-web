@@ -24,11 +24,11 @@
       id='result-<%= key %>' href='#result-cnt-<%= key %>'
       aria-expanded='<%= r_open ? 'true' : 'false' %>'
       aria-controls='result-cnt-<%= key %>'>
-  <i class='glyphicon glyphicon-tasks'> </i>
+  <%= fa_icon('poll-h') %>
   <%= titles[key].nil? ? key.to_s.gsub('_', ' ').capitalize : titles[key] %>
 </h3>
 
-<div class='result collapse<%= ' in' if r_open %>' id='result-cnt-<%= key %>'
+<div class='result collapse<%= ' show' if r_open %>' id='result-cnt-<%= key %>'
       aria-expanded='<%= r_open ? 'true' : 'false' %>'>
 <div class='result-body'>
   <% case key %>
@@ -134,7 +134,7 @@
 </div>
 
 <div class='result-footer'>
-  <i class='glyphicon glyphicon-download' title='downloads'> </i>
+  <%= fa_icon(:download, title: 'downloads') %>
   <%=
     res.data[:files].keys.map do |k|
       f = res.file_path(k)
@@ -151,7 +151,7 @@
       html_safe
   %>
   <br/>
-  <i class='glyphicon glyphicon-info-sign' title='downloads'> </i>
+  <%= fa_icon('info-circle', title: 'More information') %>
   <%= link_to 'Learn more',
     'http://manual.microbial-genomes.org/part5/workflow.html#' +
       key.to_s.tr('_','-') %>

@@ -1,16 +1,13 @@
 <% provide(:title, 'Projects') %>
-<h1><%= @selection.to_s.capitalize %> Projects</h1>
-
-<div class="btn-toolbar">
-  <div class="btn">
-    <%= glyph :filter %> <b>Filter projects:</b>
-  </div>
+<h1 class="text-center"><%= @selection.to_s.capitalize %> Projects</h1>
+<br/>
+<div class="btn-toolbar d-flex">
   <div class="btn-group">
     <%
       menu = [
         [:public, :globe, projects_url],
         [:'user-contributed', :user, projects_url(user_contributed: true)],
-        [:clade, 'tree-deciduous', projects_url(type: :clade)],
+        [:clade, 'tree', projects_url(type: :clade)],
       ]
       if logged_in? && Settings.user_projects
         menu.unshift [:private, :lock, projects_url(private: true)]
@@ -19,27 +16,26 @@
 
     <% menu.each do |v| %>
       <%= link_to v[2],
-            class: "btn btn-#{@selection == v[0] ? :primary : :default}" do %>
-      <%= glyph v[1] %>&nbsp; <%= v[0].to_s.capitalize %>
+            class: "btn btn-#{@selection == v[0] ? :primary : :secondary}" do %>
+      <%= fa_icon(v[1]) %>&nbsp; <%= v[0].to_s.capitalize %>
       <% end %>
     <% end %>
   </div>
+  <div class="flex-fill"> </div>
   <% if Settings.user_projects || (logged_in? && current_user.admin?) %>
-    <div class="btn">
-      <%= glyph :play %> <b>Actions:</b>
-    </div>
-    <div class='btn-group'>
+    <div class='btn-group float-right'>
       <%= link_to new_project_url, class: 'btn btn-success' do %>
         <i class='glyphicon glyphicon-star'> </i>
         Create project
       <% end %>
     </div>
   <% end %>
-</div><hr/>
+</div>
+<hr/>
 
 <%= will_paginate class: 'center-block center' %>
 
-<div class='project-list'>
+<div>
   <% if @projects.empty? %>
     <div class='jumbotron'>
       <h2>Nothing here <i class='glyphicon glyphicon-leaf'> </i></h2>

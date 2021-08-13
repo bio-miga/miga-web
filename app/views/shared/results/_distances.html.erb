@@ -73,7 +73,7 @@
 </p>
 <% unless (dataset.ref? && job == :distances) || max_val_ds.nil? || project.miga.is_clade? %>
   <h4>Taxonomic classification
-  <%= info_msg "Taxonomic classification of query datasets" do %>
+  <%= info_msg('Taxonomic classification of query datasets') do %>
     <p>
       The taxonomic classification of your dataset is inferred by the maximum
       Average Amino Acid Identity (AAI) found against all the genomes in the
@@ -94,7 +94,7 @@
   <% end %></h4>
   <p><%= aai_intax(max_val, ref_db, max_val_ds) %></p>
   <h4>Taxonomic novelty
-  <%= info_msg "Taxonomic novelty of query datasets" do %>
+  <%= info_msg('Taxonomic novelty of query datasets') do %>
     <p>
       The taxonomic novelty of the query dataset is an analysis indicating the
       taxonomic rank at which your dataset represents a novel taxon with respect
@@ -120,7 +120,7 @@
   <p><%= aai_novel(max_val, ref_db) %></p>
 <% end %>
 <h4>Genome relatedness
-<%= info_msg "Genome relatedness to database references" do %>
+<%= info_msg('Genome relatedness to database references') do %>
   <p>
     Average sequence identities to reference datasets in the database. Displays
     only the top-50 values.
@@ -135,60 +135,48 @@
     and <b>ref tree pdf</b> (in PDF).
   </p>
 <% end %>
-<div class="panel-group" id=distances role=tablist
-      aria-multiselectable=true>
-<% %w[ani aai].each do |metric| %>
-  <%
-    next if db[metric.to_sym].nil?
-    db_qry = db[metric.to_sym].
-          execute("SELECT seq2, #{metric}, sd, 100.0*n/omega " +
-            "FROM #{metric} WHERE seq2 != ? " +
-            "GROUP BY seq2 ORDER BY #{metric} DESC " +
-            "LIMIT 50", [dataset.name])
-    next if db_qry.empty?
-  %>
-  <div class="panel panel-default">
-    <div class=panel-heading role=tab id="<%= metric %>-h">
-      <h4 class=panel-title>
-        <a role=button data-toggle=collapse data-parent="#distances"
-              class=btn href="#<%= metric %>-b" aria-expanded=false
-              aria-controls="<%= metric %>-b">
-          <%= metric.upcase %> table
-        </a>
-      </h4>
-    </div>
-    <div id="<%= metric %>-b" class="panel-collapse collapse"
-          role=tabpanel aria-labelledby="<%= metric %>-h">
-      <div class="panel-body table-responsive">
-        <table class="table table-hover">
-          <thead><tr>
-            <th>Dataset</th>
-            <th><%= metric.upcase %> (%)</th>
-            <th>Standard deviation (<%= metric.upcase %>%)</th>
-            <th>Fraction of <%= metric == 'ani' ? 'genome' : 'proteins' %>
-              shared (%)</th>
-          </tr></thead>
-          <tbody>
-          <% db_qry.each do |row| %>
-            <tr>
-              <% row.each do |cell| %>
-                <td>
-                <% if cell.is_a?(Float) %>
-                  <span rel=tooltip title="<%= cell %>"><%=
-                    cell.round(2) %></span>
-                <% elsif cell.nil? or cell.empty? %>
-                  <span class=text-muted>(estimated)</span>
-                <% else %>
-                  <%= link_to_reference_dataset(ref_db, cell) %>
+<%= accordion('distances', false) do |accordion| %>
+  <% %w[ani aai].each do |metric| %>
+    <%
+      next if db[metric.to_sym].nil?
+      db_qry = db[metric.to_sym].
+            execute("SELECT seq2, #{metric}, sd, 100.0*n/omega " +
+              "FROM #{metric} WHERE seq2 != ? " +
+              "GROUP BY seq2 ORDER BY #{metric} DESC " +
+              "LIMIT 50", [dataset.name])
+      next if db_qry.empty?
+    %>
+    <%= accordion_card(accordion, metric, "#{metric.upcase} table") do %>
+        <div class="table-responsive">
+          <table class="table table-hover table-sm">
+            <thead><tr>
+              <th>Dataset</th>
+              <th><%= metric.upcase %> (%)</th>
+              <th>Standard deviation (<%= metric.upcase %>%)</th>
+              <th>Fraction of <%= metric == 'ani' ? 'genome' : 'proteins' %>
+                shared (%)</th>
+            </tr></thead>
+            <tbody>
+            <% db_qry.each do |row| %>
+              <tr>
+                <% row.each do |cell| %>
+                  <td>
+                  <% if cell.is_a?(Float) %>
+                    <span rel=tooltip title="<%= cell %>"><%=
+                      cell.round(2) %></span>
+                  <% elsif cell.nil? or cell.empty? %>
+                    <span class=text-muted>(estimated)</span>
+                  <% else %>
+                    <%= link_to_reference_dataset(ref_db, cell) %>
+                  <% end %>
+                  </td>
                 <% end %>
-                </td>
+                </tr>
               <% end %>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+            </tbody>
+          </table>
+        </div>
+    <% end %>
+  <% end %>
 <% end %>
-</div>
+<br/>

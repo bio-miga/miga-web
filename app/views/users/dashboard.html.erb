@@ -1,28 +1,28 @@
 <% provide(:title, 'Dashboard') %>
 
 <div class="row">
-  <div class="col-md-12 user-dashboard list-group">
-    <h1><i class="glyphicon glyphicon-dashboard"> </i> Dashboard</h1>
+  <h1 class="my-4"><%= fa_icon(:dashboard) %> </i> Dashboard</h1>
+  <div class="col-md-12 list-group">
 
     <% if Settings.user_create_projects %>
-      <%= link_to new_project_path, class: 'list-group-item' do %>
-        <h4><i class="glyphicon glyphicon-star"> </i> Create new project</h4>
+      <%= list_item(new_project_path) do %>
+        <h4><%= fa_icon(:star) %> Create new project</h4>
         <p>Create your own project to compare multiple genomes among them</p>
       <% end %>
     <% end %>
 
-    <%= link_to query_datasets_path, class: 'list-group-item' do %>
-      <h4><i class="glyphicon glyphicon-list"> </i> Query datasets</h4>
+    <%= list_item(query_datasets_path) do %>
+      <h4><%= fa_icon(:list) %> Query datasets</h4>
       <p>You can upload new datasets to any available project</p>
     <% end %>
 
-    <%= link_to edit_user_path(current_user), class: 'list-group-item' do %>
-      <h4><i class="glyphicon glyphicon-cog"> </i> Edit profile</h4>
+    <%= list_item(edit_user_path(current_user)) do %>
+      <h4><%= fa_icon(:cog) %> Edit profile</h4>
       <p>Change your personal information</p>
     <% end %>
        
-    <%= link_to logout_path, method: :delete, class: 'list-group-item' do %>
-      <h4><i class="glyphicon glyphicon-user"> </i> Log out</h4>
+    <%= list_item(logout_path, method: :delete) do %>
+      <h4><%= fa_icon(:user) %> Log out</h4>
       <p>Au revoir!</p>
     <% end %>
   </div>
