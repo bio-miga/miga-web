@@ -202,6 +202,9 @@ module ApplicationHelper
 
   def plot_quality(comp, cont, qual)
     css_class = %w[success info warning danger]
+    comp = comp.round(2)
+    cont = cont.round(2)
+    qual = qual.round(2)
     comp_t = [ 80.0,  50.0,  20.0,   0.0]
     cont_t = [  4.0,  10.0,  16.0, 100.0]
     qual_t = [ 80.0,  50.0,  20.0,   0.0]
@@ -225,7 +228,9 @@ module ApplicationHelper
           concat(
             content_tag(:div, class: 'col-sm-4 p-0') do
               concat(
-                content_tag(:div, class: 'progress mt-1', style: 'margin-bottom:0;') do
+                content_tag(
+                  :div, class: 'progress mt-1', style: 'margin-bottom:0;'
+                ) do
                   t[:ticks].each_with_index do |pos, k| 
                     concat content_tag(
                       :div, ' ', class: "bg-#{css_class[k]}",

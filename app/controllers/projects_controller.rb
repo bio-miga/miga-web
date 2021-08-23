@@ -473,15 +473,18 @@ class ProjectsController < ApplicationController
     end
 
     @unregistered = (@existing - @registered).map do |i|
-      if i =~ /^[A-Za-z0-9_]+$/
+      case i
+      when /^[A-Za-z0-9_]+$/
         { path: i, type: :official }
-      elsif i =~ /^user-contributed\/(\d+)\/([A-Za-z0-9_]+)$/
+      when /^user-contributed\/(\d+)-qG$/
+        nil # <- Ignore user queries
+      when /^user-contributed\/(\d+)\/([A-Za-z0-9_]+)$/
         user = User.find_by(id: $1)
         { path: $2, type: (user ? :user : :bad_user), user: user }
       else
         { path: i, type: :incompatible }
       end
-    end
+    end.compact
   end
 
   # GET /project_link

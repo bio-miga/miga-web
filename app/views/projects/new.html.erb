@@ -1,36 +1,79 @@
 <% provide(:title, 'New project') %>
-<h1>New project</h1>
+
 <div class="row">
-  <div class="col-md-6 col-md-offset-3">
+  <div class="col-md-6 offset-md-3">
+    <h1 class="mt-5">New project</h1>
+    <hr/>
     <%= form_for(@project) do |f| %>
       <%= render 'shared/error_messages', object: f.object %>
 
       <%= hidden_field_tag :user_id, current_user.id %>
 
-      <%= f.label :path %>
-      <%= f.text_field :path, class: 'form-control' %>
+      <div class="form-group">
+        <%= f.label(:path) %>
+        <%= f.text_field(:path, class: 'form-control') %>
+        <small class="text-muted">
+          Use only alpha-numerics and underscores
+        </small>
+      </div>
 
-      <%= label_tag :type %>
-      <%= select_tag(:type, options_for_select(
-            MiGA::Project.KNOWN_TYPES.
-              map{ |k,t| [ k.to_s.capitalize + ': ' + t[:description], k ] },
-              selected: :genomes),
-            class: 'form-control') %>
+      <div class="form-group">
+        <%= label_tag(:type) %>
+        <%=
+          select_tag(
+            :type, options_for_select(
+              MiGA::Project
+                .KNOWN_TYPES
+                .map do |k, t|
+                  [ k.to_s.capitalize + ': ' + t[:description], k ]
+                end,
+                selected: :genomes
+            ),
+            class: 'form-control'
+          )
+        %>
+        <small class="text-muted">
+          Select depending on the datasets you plan to include in this project
+        </small>
+      </div>
 
-      <%= f.label :private, class: 'checkbox inline', style: 'margin-top:0;' do  %>
-        <%= f.check_box :private, checked: !current_user.admin? %>
-        <span>Keep project private</span>
-      <% end %>
+      <div class="form-group form-check">
+        <%=
+          f.check_box(
+            :private, checked: !current_user.admin?, class: 'form-check-input'
+          )
+        %>
+        <%=
+          f.label(
+            :private, 'Keep project private', class: 'form-check-label'
+          )
+        %>
+        <br/><small class="text-muted">
+          If selected, only you will have access to this project
+        </small>
+      </div>
 
       <% if current_user.admin? %>
-        <%= f.label :official, class: 'checkbox inline', style: 'margin-top:0;' do %>
-          <%= f.check_box :official, checked: true %>
-          <span>Make this project an official site database</span>
-        <% end %>
+        <div class="form-group form-check">
+          <%=
+            f.check_box(
+              :official, checked: true, class: 'form-check-input'
+            )
+          %>
+          <%=
+            f.label(
+              :official, 'Make this project an official site database',
+              class: 'checkbox inline', class: 'form-check-label'
+            )
+          %>
+          <br/><small class="text-muted">
+            If selected, all users will be able to query this project
+          </small>
+        </div>
       <% end %>
 
+      <h1 class="mt-5">Reference Database</h1>
       <hr/>
-      <h1>Reference Database</h1>
       <p>
         You can link a project to a reference database so all <b>reference</b>
         datasets are taxonomically classified with respect to that reference.
@@ -42,49 +85,68 @@
           databases
         <% end %>
       </p>
-      <%= label_tag :reference_db, 'Reference database' %>
-      <%= select_tag(:reference_db,
+      <div class="form-group">
+        <%= label_tag(:reference_db, 'Reference database') %>
+        <%=
+          select_tag(
+            :reference_db,
             options_for_select(@refdb.map { |i| [i.path.unmiga_name, i.path] }),
-            include_blank: true, class: 'form-control') %>
+            include_blank: true, class: 'form-control'
+          )
+        %>
+      </div>
 
+      <h1 class="mt-5">Identity Engines</h1>
       <hr/>
-      <h1>Identity Engines</h1>
-      <%= label_tag :ani_p, 'ANI Engine' %>
-      <%= select_tag(:ani_p, options_for_select(
-            [
-              ['BLAST+ (more sensitive)','blast+'],
-              ['FastANI (faster)','fastani'],
-              ['BLAT','blat'], ['Legacy BLAST','blast']
-            ],
-            selected: 'blast+'), class: 'form-control') %>
-
-      <%= label_tag :aai_p, 'AAI Engine' %>
-      <%= select_tag(:aai_p, options_for_select(
-            [
-              ['BLAST+ (more sensitive)', 'blast+'],
-              ['Diamond (faster)','diamond'],
-              ['Legacy BLAST','blast']
-            ],
-            selected: 'blast+'), class: 'form-control') %>
-
-      <%= label_tag :haai_p, 'hAAI Engine' %>
-      <%= select_tag(:haai_p, options_for_select(
-            [['BLAST+ (recommended)','blast+'], ['Diamond','diamond'],
-              ['Legacy BLAST','blast'], ['Bypass hAAI','no']],
-            selected: 'blast+'), class: 'form-control') %>
-
+      <%
+        engine_description = {
+          'blast+' => 'BLAST+',
+          'blast'  => 'Legacy BLAST',
+          'blat'   => 'BLAT',
+          'fastani' => 'FastANI',
+          'diamond' => 'Diamond',
+          'fastaai' => 'FastAAI',
+          'no'     => 'Bypass comparison'
+        }
+      %>
+      <% { ani_p: 'ANI', aai_p: 'AAI' }.each do |eng, name| %>
+        <div class="form-group">
+          <%= label_tag(eng, "#{name} Engine") %>
+          <%=
+            select_tag(
+              eng, options_for_select(
+                MiGA::Project.OPTIONS[eng][:in].map do |i|
+                  rec = i == MiGA::Project.OPTIONS[eng][:default]
+                  [engine_description[i] + "#{' (recommended)' if rec}", i]
+                end,
+                selected: MiGA::Project.OPTIONS[eng][:default]
+              ),
+              class: 'form-control'
+            )
+          %>
+        </div>
+      <% end %>
+      
+      <h1 class="mt-5">Optional information</h1>
       <hr/>
-      <h1>Optional information</h1>
-      <%= label_tag :name, 'Name' %>
-      <%= text_field_tag :name, '', class: 'form-control' %>
+      <div class="form-group">
+        <%= label_tag(:name) %>
+        <%= text_field_tag(:name, '', class: 'form-control') %>
+      </div>
 
-      <%= label_tag :description, 'Description' %>
-      <%= text_field_tag :description, '', class: 'form-control' %>
+      <div class="form-group">
+        <%= label_tag(:description) %>
+        <%= text_field_tag(:description, '', class: 'form-control') %>
+      </div>
 
-      <%= label_tag :comments, 'Comments' %>
-      <%= text_area_tag :comments, '', class: 'form-control' %>
+      <div class="form-group">
+        <%= label_tag(:comments) %>
+        <%= text_area_tag(:comments, '', class: 'form-control') %>
+      </div>
 
-      <%= f.submit 'Create new MiGA project', class: 'btn btn-primary' %>
+      <div class="my-5">
+        <%= f.submit('Create new MiGA project', class: 'btn btn-primary') %>
+      </div>
     <% end %>
   </div>
 </div>

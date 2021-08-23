@@ -1,55 +1,60 @@
 <% provide(:title, 'Link projects') %>
 
 <div class="row">
-  <% if @downloadable.empty? %>
-    <div class='jumbotron'>
-      <h2>
-        MiGA Online is currently not accessible to download remote databases
-        <i class='glyphicon glyphicon-leaf'> </i>
-      </h2>
-      <p>
-        If <a href='ftp://microbial-genomes.org/db'>this link</a> displays a
-        list of files, it's possible that your MiGA server has failed to reach
-        MiGA Online due to a local restriction or a configuration issue.
-      </p>
-    </div>
-  <% else %>
-    <h1>Download reference databases</h1>
-    <% @downloadable.each do |entry| %>
-      <h3><%= entry[:name].to_s.unmiga_name %></h3>
-      <div style='margin-left:2em;'>
+  <div class="col-lg-10 offset-lg-1">
+    <% if @downloadable.empty? %>
+      <div class='jumbotron'>
+        <h2>
+          MiGA Online is currently not accessible to download remote databases
+          <i class='glyphicon glyphicon-leaf'> </i>
+        </h2>
         <p>
-          <% latest = entry[:versions][entry[:latest].to_sym] %>
-          <b><%= entry[:description] %></b><br/>
-          <% if entry[:local] %>
-            <b>Local version:</b>
-            <%= link_to(entry[:local], project_path(entry[:name])) %><br/>
-          <% end %>
-          <b>Latest version:</b> <%= entry[:latest] %><br/>
-          <b>Download size:</b> <%= number_to_human_size(latest[:size]) %><br/>
-          <b>Unarchived size:</b>
-          <%= number_to_human_size(latest[:size_unarchived]) %><br/>
+          If <a href='ftp://microbial-genomes.org/db'>this link</a> displays a
+          list of files, it's possible that your MiGA server has failed to reach
+          MiGA Online due to a local restriction or a configuration issue.
         </p>
-        <% if entry[:local] && entry[:latest] == entry[:local] %>
-          <div class='alert alert-info'>
-            You already have the most recent version of this database
-          </div>
-        <% elsif entry[:downloading] %>
-          <div class='alert alert-success'>
-            Currently downloading archive from MiGA Online:
-            <%= entry[:downloading].round %>%
-          </div>
-        <% else %>
-          <%= link_to(
-                launch_get_db_path(entry[:name], version: entry[:latest]),
-                class: 'btn btn-primary btn-lg'
-              ) do %>
-            <i class="glyphicon glyphicon-download"> </i>
-            <%= entry[:local] ? 'Update' : 'Download' %>
-            <%= entry[:name] %> (<%= entry[:latest] %>)
-          <% end %>
-        <% end %>
       </div>
+    <% else %>
+      <h1 class="mt-5">Download reference databases</h1>
+      <hr/>
+      <% @downloadable.each do |entry| %>
+        <h3 class="mt-5"><%= entry[:name].to_s.unmiga_name %></h3>
+        <hr/>
+        <div style='margin-left:2em;'>
+          <p>
+            <% latest = entry[:versions][entry[:latest].to_sym] %>
+            <b><%= entry[:description] %></b><br/>
+            <% if entry[:local] %>
+              <b>Local version:</b>
+              <%= link_to(entry[:local], project_path(entry[:name])) %><br/>
+            <% end %>
+            <b>Latest version:</b> <%= entry[:latest] %><br/>
+            <b>Download size:</b> <%= number_to_human_size(latest[:size]) %><br/>
+            <b>Unarchived size:</b>
+            <%= number_to_human_size(latest[:size_unarchived]) %><br/>
+          </p>
+          <% if entry[:local] && entry[:latest] == entry[:local] %>
+            <div class='alert alert-info'>
+              You already have the most recent version of this database
+            </div>
+          <% elsif entry[:downloading] %>
+            <div class='alert alert-success'>
+              Currently downloading archive from MiGA Online:
+              <%= entry[:downloading].round %>%
+            </div>
+          <% else %>
+            <%= link_to(
+                  launch_get_db_path(entry[:name], version: entry[:latest]),
+                  class: 'btn btn-primary btn-lg'
+                ) do %>
+              <i class="glyphicon glyphicon-download"> </i>
+              <%= entry[:local] ? 'Update' : 'Download' %>
+              <%= entry[:name] %> (<%= entry[:latest] %>)
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
-  <% end %>
+    <br/><br/><br/>
+  </div>
 </div>
