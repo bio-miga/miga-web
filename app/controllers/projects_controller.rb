@@ -485,10 +485,7 @@ class ProjectsController < ApplicationController
   end
 
   # GET /project_link
-  logger = Rails.logger
   def link
-  # redirect_to project_discovery_path
-  # return
     par = params.permit([:path, :private, :official])
     @user = params[:user] ? User.find(params[:user]) : current_user
     @project = @user.projects.create(par)
