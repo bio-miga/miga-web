@@ -485,13 +485,22 @@ class ProjectsController < ApplicationController
   end
 
   # GET /project_link
+  logger = Rails.logger
   def link
+  # redirect_to project_discovery_path
+  # return
     par = params.permit([:path, :private, :official])
     @user = params[:user] ? User.find(params[:user]) : current_user
     @project = @user.projects.create(par)
     if @project.save && !@project.miga.nil?
-      flash[:success] = 'Project successfully linked'
-      redirect_to @project
+      if params[:reference] == 'true'
+        @project.update(reference: true)
+        flash[:success] = 'Project successfully linked as Reference Database'
+        redirect_to @project
+      else
+        flash[:success] = 'Project successfully linked'
+        redirect_to @project
+      end
     else
       flash[:danger] = 'An unexpected error occurred while linking project'
       redirect_to project_discovery_path
