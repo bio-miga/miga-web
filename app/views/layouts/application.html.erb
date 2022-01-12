@@ -31,8 +31,9 @@
   <%= yield :head %>
 </head>
 <body>
+  <a class="skip-nav-link" href="#main-content">skip navigation</a>
   <%= render 'layouts/header' %>
-  <main role="main">
+  <main role="main" id="main-content">
     <div class="container">
       <%= render 'layouts/flash' %>
       <%= yield %>

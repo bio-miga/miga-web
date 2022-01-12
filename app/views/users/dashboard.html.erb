@@ -1,7 +1,7 @@
 <% provide(:title, 'Dashboard') %>
 
-<div class="row">
-  <h1 class="my-4"><%= fa_icon(:dashboard) %> </i> Dashboard</h1>
+<div class="row dashboard">
+  <h1 class="my-4"><%= fa_icon('tachometer-alt') %> Dashboard</h1>
   <div class="col-md-12 list-group">
 
     <% if Settings.user_create_projects %>
@@ -12,7 +12,7 @@
     <% end %>
 
     <%= list_item(query_datasets_path) do %>
-      <h4><%= fa_icon(:list) %> Query datasets</h4>
+      <h4><%= fa_icon('list-alt') %> Query datasets</h4>
       <p>You can upload new datasets to any available project</p>
     <% end %>
 

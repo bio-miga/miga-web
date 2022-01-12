@@ -4,18 +4,21 @@
   <div class="col-lg-10 offset-lg-1">
     <h1 class="mt-5">Control daemons</h1>
     <hr/>
-    <div class="col-md-6 user-dashboard">
-      <div class='panel panel-default text-center'>
-        <div class='panel-heading'><h3>
-          <i class='glyphicon glyphicon-flash'> </i>
+    <div class="row">
+    <div class="col-md-6">
+      <div class="card text-center">
+        <div class="card-header"><h3>
+          <%= fa_icon('robot') %>&nbsp;
           Daemons controller
         </h3></div>
-        <div class='panel-body'>
-          <input type='checkbox' data-toggle='toggle' class='toggle'
-                id='lair-daemon-toggle' <%= 'checked' if @lair.active? %>>
-          <span class=text-muted style='margin:1em;'>
-            Toggle to turn the controller on or off
-          </span>
+        <div class="card-body">
+          <div class="custom-control custom-switch" style="margin: 0.45em 0;">
+            <input type="checkbox" class="custom-control-input"
+                  id="lair-daemon-toggle" <%= 'checked' if @lair.active? %>>
+            <label class="custom-control-label" for="lair-daemon-toggle">
+              Toggle to turn the controller on or off
+            </label>
+          </div>
           <script>
             $('#lair-daemon-toggle').change(function(){
               window.location.replace('<%= lair_toggle_url %>');
@@ -23,38 +26,40 @@
           </script>
         </div>
         <% unless @lair.last_alive.nil? %>
-          <div class='panel-footer'>
-            <b>Last seen alive:</b> <%= time_ago_in_words @lair.last_alive %> ago
+          <div class="card-footer">
+            <b>Last seen alive:</b>
+            <%= time_ago_in_words @lair.last_alive %> ago
           </div>
         <% end %>
       </div>
     </div>
 
-    <div class="col-md-6 user-dashboard">
-      <div class='panel panel-default text-center'>
-        <div class='panel-heading'><h3>
-          <i class='glyphicon glyphicon-bullhorn'> </i>
+    <div class="col-md-6">
+      <div class="card text-center">
+        <div class="card-header"><h3>
+          <%= fa_icon(:bullhorn) %>&nbsp;
           Broadcast signal
         </h3></div>
-        <div class='panel-body'>
+        <div class="card-body">
           <%= link_to 'Launch all daemons', daemon_start_all_url,
                 class: 'btn btn-primary' %>
           <%= link_to 'Terminate all daemons', daemon_stop_all_url,
                 class: 'btn btn-danger' %>
         </div>
-        <div class='panel-footer'>
+        <div class="card-footer">
           Turn on or off the daemons of all projects
         </div>
       </div>
     </div>
 
-    <div class="col-md-12 user-dashboard">
-      <div class='panel panel-default'>
-        <div class='panel-heading text-center'><h3>
-          <i class='glyphicon glyphicon-tasks'> </i>
+    <div class="col-md-12 mt-5">
+      <div class="card">
+        <div class="card-header text-center"><h3>
+          <%= fa_icon(:tasks) %>&nbsp;
           Individual project daemons
         </h3></div>
-        <table class='table'>
+
+        <table class="table">
           <tr>
             <th>Name</th>
             <th>Datasets</th>
@@ -74,9 +79,15 @@
                   <%= "#{time_ago_in_words(la)} ago" unless la.nil? %>
                 </td>
                 <td>
-                  <input type='checkbox' data-toggle='toggle' class='toggle'
-                        data-size='mini' id='daemon-toggle-<%= project.id %>'
-                        <%= 'checked' if daemon.active? %>>
+                  <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input"
+                           id="daemon-toggle-<%= project.id %>"
+                           <%= 'checked' if daemon.active? %>>
+                    <label class="custom-control-label"
+                           for="daemon-toggle-<%= project.id %>">
+                      <%= daemon.active? ? 'on' : 'off' %>
+                    </label>
+                  </div>
                   <script>
                     $('#daemon-toggle-<%= project.id %>').change(function(){
                       window.location.replace('<%= daemon_toggle_url(project.id) %>');
@@ -90,7 +101,9 @@
       </div>
     </div>
   </div>
+  </div>
 </div>
 <script>
   $('input[type="checkbox"].toggle').bootstrapToggle();
 </script>
+<br/>

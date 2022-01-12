@@ -1,3 +1,16 @@
 // Place all the styles related to the Users controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.user-list {
+  .card {
+    padding: 0;
+    .card-body {
+      margin: 0;
+    }
+    &:hover {
+      background: #f6f6f6;
+    }
+  }
+}
+

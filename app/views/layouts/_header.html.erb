@@ -45,11 +45,11 @@
           <% end %>
           <% if current_user.admin? %>
             <%= link_to(admin_url, class: 'dropdown-item') do %>
-              <%= fa_icon 'user-plus' %> Admin console
+              <%= fa_icon('sliders-h') %> Admin console
             <% end %>
           <% end %>
           <%= link_to(query_datasets_path, class: 'dropdown-item') do %>
-            <%= fa_icon 'list-alt' %> Query datasets
+            <%= fa_icon('list-alt') %> Query datasets
           <% end %>
           <div class="dropdown-divider"></div>
           <%= link_to(logout_path, method: :delete, class: 'dropdown-item') do %>

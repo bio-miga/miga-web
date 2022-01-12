@@ -318,7 +318,7 @@ class ProjectsController < ApplicationController
     lair.daemon(action)
     flash[:success] = "Daemon controller successful action: #{action}"
     sleep(1)
-    redirect_to lair_url
+    redirect_to(lair_url)
   end
 
   def daemon_toggle

@@ -1,13 +1,39 @@
-<li class=user-box>
-  <%= gravatar_for user, size: 50 %>
-  <%= link_to user.name, user %>
-  <% if current_user.admin? %>
-    <% if !current_user?(user) %>
-      | <%= link_to "delete", user, method: :delete,
-            data: { confirm: "You sure?" } %>
+<div class="col-lg-4 col-md-6 col-12">
+  <div class="card h-100">
+    <div class="card-body">
+      <%= gravatar_for(user, size: 50) %>
+      <%= link_to(user.name, user) %>
+      <br/>
+      <span class="text-muted">
+        <%= fa_icon('history') %>&nbsp;
+        <%= time_ago_in_words(user.created_at) %>
+      </span>
+    </div>
+    <% if current_user.admin? %>
+      <div class="card-footer">
+        <span class="text-muted"><%= user.email %></span><hr/>
+          <%= link_to(
+                edit_user_path(user), class: 'btn btn-sm btn-primary'
+              ) do %>
+            <%= fa_icon('user-edit') %> edit
+          <% end %>
+        <% unless current_user?(user) %>
+          <%= link_to(
+                user, class: 'btn btn-sm btn-primary',
+                method: :delete, data: { confirm: 'You sure?' }
+              ) do %>
+            <%= fa_icon('user-slash') %> delete
+          <% end %>
+          <% unless user.activated? %>
+            <%= link_to(
+                  activate_user_path(id: user.id),
+                  class: 'btn btn-sm btn-primary', method: :post
+                ) do %>
+              <%= fa_icon('user-check') %> activate
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
     <% end %>
-    <br/>
-    <span class=text-muted><%= user.email %></span><br/>
-    <span class=text-muted><%= time_ago_in_words user.created_at %>.</span>
-  <% end %>
-</li>
+  </div>
+</div>

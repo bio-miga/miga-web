@@ -31,7 +31,7 @@ module QueryDatasetsHelper
       [0.5,0.1,0.05,0.01].each{ |i| sig << '*' if v<i }
       all << '<div class="taxonomy-tree">' +
               "<b" + (v>0.5 ? ' class="text-muted"' : '') +
-              "><span class=badge>#{MiGA::Taxonomy.LONG_RANKS[k]}</span> "
+              "><span class=\"badge badge-pill badge-secondary\">#{MiGA::Taxonomy.LONG_RANKS[k]}</span> "
       if tax[k]
         tag = %i[root ns p ssp str ds].include?(k) ? :span : :i
         all << content_tag(tag, class: 'tax-name') do

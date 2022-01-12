@@ -4,9 +4,11 @@
 <hr/>
 <%= will_paginate(class: 'center-block center') %>
 
-<ul class="users">
-  <%= render(@users) %>
-</ul>
+<div class="container user-list">
+  <div class="row">
+    <%= render(@users) %>
+  </div>
+</div>
 
 <%= will_paginate(class: 'center-block center') %>
 <br/><br/><br/>

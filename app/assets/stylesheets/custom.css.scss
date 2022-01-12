@@ -30,11 +30,24 @@ $theme-colors: (
 
 html {
   height: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
   font-family: "Lato", sans-serif;
   height: 100%;
+}
+
+.skip-nav-link {
+  position: absolute;
+  transform: translateY(-150%);
+  background: white;
+  padding: 0.3em 0.5em;
+  margin: 0.5em;
+  &:focus {
+    transform: translateY(0);
+    z-index: 1045;
+  }
 }
 
 /* typography */
@@ -162,6 +175,18 @@ p {
 
 aside {
   margin-top: 1em;
+}
+
+.dashboard {
+  .fa, .fas, .far {
+    margin-right: 0.5em;
+    font-size: 80%;
+  }
+  .list-group-item {
+    p {
+      margin-left: 2em;
+    }
+  }
 }
 
 /* Taxonomy tree */
