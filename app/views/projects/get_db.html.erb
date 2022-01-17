@@ -6,7 +6,7 @@
       <div class='jumbotron'>
         <h2>
           MiGA Online is currently not accessible to download remote databases
-          <i class='glyphicon glyphicon-leaf'> </i>
+          <%= fa_icon('leaf') %>
         </h2>
         <p>
           If <a href='ftp://microbial-genomes.org/db'>this link</a> displays a
@@ -42,12 +42,18 @@
               Currently downloading archive from MiGA Online:
               <%= entry[:downloading].round %>%
             </div>
+            <%= link_to(
+                  clear_get_db_path(name: entry[:name], version: entry[:latest]),
+                  class: 'btn btn-danger'
+                ) do %>
+              <%= fa_icon('broom') %> Clear failed download
+            <% end %>
           <% else %>
             <%= link_to(
                   launch_get_db_path(entry[:name], version: entry[:latest]),
                   class: 'btn btn-primary btn-lg'
                 ) do %>
-              <i class="glyphicon glyphicon-download"> </i>
+              <%= fa_icon('download') %>
               <%= entry[:local] ? 'Update' : 'Download' %>
               <%= entry[:name] %> (<%= entry[:latest] %>)
             <% end %>

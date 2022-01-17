@@ -14,7 +14,7 @@ class ProjectsController < ApplicationController
   before_action :admin_user,
     only: [:lair, :lair_toggle, :daemon_toggle,
       :daemon_start_all, :daemon_stop_all, :daemon_action_all,
-      :discovery, :link, :get_db, :launch_get_db]
+      :discovery, :link, :get_db, :launch_get_db, :clear_get_db]
   if Settings.user_projects
     # Servers with user-owned projects
     before_action(
@@ -268,38 +268,23 @@ class ProjectsController < ApplicationController
 
   # Download or update the database in the background
   def launch_get_db
-    name = params[:name]
-    version = params[:version]
-    Thread.new do
-      require 'miga/cli'
-
-      # Get current registered version
-      project = Project.find_by(path: name)
-      if project && project.miga
-        project.miga.metadata[:release] =
-          "#{project.miga.metadata[:release]} (currently updating)"
-        project.miga.save
-      end
-
-      # Download
-      error =
-        MiGA::Cli.new([
-          'get_db', '-n', name, '--db-version', version,
-          '--local-dir', Settings.miga_projects, '--no-progress'
-        ]).launch
-      raise(error) if error.is_a? Exception
-
-      # Register in the database
-      project ||= current_user.projects.create(path: name)
-      project.update(reference: true)
-      f = File.join(Settings.miga_projects, "#{name}_#{version}.tar.gz")
-      File.unlink(f) if File.exist? f
-      ActiveRecord::Base.connection.close
-    end
-
-    sleep(10) # <- Hopefully this is enough to start the download
+    name = params.require(:name)
+    version = params.require(:version)
+    arch = File.join(Settings.miga_projects, "#{name}_#{version}.tar.gz")
+    FileUtils.touch(arch)
+    GetDbJob.perform_later(name, version, current_user)
     flash[:success] = 'Downloading database in the background'
-    redirect_to get_db_path
+    redirect_to(get_db_path)
+  end
+
+  # Clear a failed download
+  def clear_get_db
+    name = params.require(:name)
+    version = params.require(:version)
+    arch = File.join(Settings.miga_projects, "#{name}_#{version}.tar.gz")
+    File.unlink(arch) if File.exist?(arch)
+    flash[:success] = 'Temporary archive successfully removed'
+    redirect_to(get_db_path)
   end
 
   # Admin daemons
@@ -489,11 +474,15 @@ class ProjectsController < ApplicationController
 
   # GET /project_link
   def link
-    par = params.permit([:path, :private, :official])
+    par = params.permit([:path, :private, :official, :reference])
     @user = params[:user] ? User.find(params[:user]) : current_user
     @project = @user.projects.create(par)
     if @project.save && !@project.miga.nil?
-      flash[:success] = 'Project successfully linked'
+      if params[:reference] == 'true'
+        flash[:success] = 'Project successfully linked as reference database'
+      else
+        flash[:success] = 'Project successfully linked'
+      end
       redirect_to @project
     else
       flash[:danger] = 'An unexpected error occurred while linking project'

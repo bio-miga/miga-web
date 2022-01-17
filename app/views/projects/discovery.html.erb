@@ -36,6 +36,11 @@
                   project_link_path(entry.merge(private: true)),
                   class: 'btn btn-primary'
                 ) %>
+            <%= link_to(
+                  'Link as reference',
+                  project_link_path(entry.merge(private: false, reference: true)),
+                  class: 'btn btn-primary'
+                ) %>
           <% when :bad_user %>
             <div class='alert alert-danger'>
               <h4>Project owned by an unexisting user</h4>

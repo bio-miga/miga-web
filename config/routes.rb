@@ -55,6 +55,7 @@ Rails.application.routes.draw do
   get 'project_link' => 'projects#link', as: :project_link
   get 'get_db' => 'projects#get_db', as: :get_db
   get 'launch_get_db/:name/:version' => 'projects#launch_get_db', as: :launch_get_db
+  get 'clear_get_db' => 'projects#clear_get_db', as: :clear_get_db
 
   # Query datasets
   get 'query_datasets/:id/result/:result/:file' => 'query_datasets#result',
