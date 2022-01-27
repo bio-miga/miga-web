@@ -194,6 +194,7 @@ aside {
 .taxonomy-tree {
   padding-left: 1em;
   border-left: 1px solid $gray-400;
+  background: $gray-100;
   .datasets {
     background: $gray-100;
     margin: 1em 1em -1em 0; // 0 1em 0 0;
@@ -211,9 +212,6 @@ aside {
     &:hover * {
       visibility: visible;
     }
-    .badge {
-      
-    }
     .tree-rank-link {
       .badge {
         font-size: 70%;
@@ -229,6 +227,14 @@ aside {
           visibility: visible;
         }
       }
+    }
+  }
+  .non-significant {
+    color: $gray-500;
+    a, .badge { color: $gray-500; }
+    &:hover {
+      color: $gray-700;
+      a, .badge { color: $gray-700; }
     }
   }
 }
