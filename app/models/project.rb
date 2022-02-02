@@ -169,15 +169,16 @@ class Project < ApplicationRecord
     input_type += file2 ? '_paired' : '_single' unless input_type == 'assembly'
     cmd = [
       'add',
-      '--project', par[:query_project_miga].path,
+      '--project', (par[:query] ? par[:query_project_miga] : miga).path,
       '--input-type', input_type,
       '--dataset', par[:name]
     ]
     %i[type description comments].each do |k|
       cmd += ["--#{k}", par[k]] if par[k] && !par[k].empty?
     end
-    cmd += ['--metadata', "db_project=../#{path}"]
-    cmd << '--query' if par[:query]
+    if par[:query]
+      cmd += ['--metadata', "db_project=../#{path}", '--query']
+    end
     cmd << file1
     cmd << file2 if file2
     MiGA::Cli.new(cmd).launch
