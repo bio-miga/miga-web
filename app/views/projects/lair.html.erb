@@ -1,5 +1,10 @@
 <% provide(:title, 'Control daemons') %>
 
+<% daemon_modal_id = info_modal('Contacting server...') do %>
+  <%= image_tag('loading.gif') %>
+  Connecting to daemon
+<% end %>
+
 <div class="row">
   <div class="col-lg-10 offset-lg-1">
     <h1 class="mt-5">Control daemons</h1>
@@ -21,6 +26,7 @@
           </div>
           <script>
             $('#lair-daemon-toggle').change(function(){
+              $('#<%= daemon_modal_id %>').modal('show');
               window.location.replace('<%= lair_toggle_url %>');
             });
           </script>
@@ -90,6 +96,7 @@
                   </div>
                   <script>
                     $('#daemon-toggle-<%= project.id %>').change(function(){
+                      $('#<%= daemon_modal_id %>').modal('show');
                       window.location.replace('<%= daemon_toggle_url(project.id) %>');
                     });
                   </script>
@@ -103,7 +110,4 @@
   </div>
   </div>
 </div>
-<script>
-  $('input[type="checkbox"].toggle').bootstrapToggle();
-</script>
 <br/>

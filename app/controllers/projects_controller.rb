@@ -299,20 +299,14 @@ class ProjectsController < ApplicationController
     require 'miga/lair'
 
     lair = MiGA::Lair.new(Settings.miga_projects)
-    action = lair.active? ? :stop : :start
-    lair.daemon(action)
-    flash[:success] = "Daemon controller successful action: #{action}"
-    sleep(1)
+    lair_or_daemon_toggle(lair, 'daemon controller')
     redirect_to(lair_url)
   end
 
   def daemon_toggle
     daemon = MiGA::Daemon.new(@project.miga)
-    action = daemon.active? ? :stop : :start
-    daemon.daemon(action)
-    flash[:success] = "Daemon successful action: #{action}"
-    sleep(1)
-    redirect_to lair_url
+    lair_or_daemon_toggle(daemon, 'daemon')
+    redirect_to(lair_url)
   end
 
   def daemon_action_all(action)
@@ -549,5 +543,34 @@ class ProjectsController < ApplicationController
     @user = @project.user
     return true if @user.nil?
     redirect_to(root_url) unless @project.privileged_user?(current_user)
+  end
+
+  # Toggle a lair or a daemon
+  def lair_or_daemon_toggle(obj, name)
+    require 'miga/cli'
+
+    # Launch action
+    action = obj.active? ? 'stop' : 'start'
+    cmd = obj.is_a?(MiGA::Daemon) ?
+          ['daemon', action, '-P', obj.path] :
+          ['lair', action, '-p', obj.path]
+    MiGA::Cli.new(cmd).launch
+
+    # Check if it worked
+    success = false
+    5.times do
+      sleep(1)
+      if obj.active? == (action == 'start')
+        success = true
+        break
+      end
+    end
+
+    # Report status
+    if success
+      flash[:success] = "Succeeded to #{action} the #{name}"
+    else
+      flash[:danger] = "Unable to #{action} the #{name}"
+    end
   end
 end
