@@ -58,7 +58,7 @@ what we use.
 
 ```bash
 export SECRET_KEY_BASE=`bundle exec rake secret`
-bundle exec rails server -e production Puma
+bundle exec rails server -e production -u Puma
 ```
 
 Now you can visit your MiGA Web interface at
@@ -69,7 +69,7 @@ it to rails using -b and -p. For example, this is how we launch our own
 
 ```bash
 export SECRET_KEY_BASE=`bundle exec rake secret`
-bundle exec rails server -e production -b enve-omics.ce.gatech.edu -p 3000 Puma
+bundle exec rails server -e production -b enve-omics.ce.gatech.edu -p 3000 -u Puma
 ```
 
 ## Create admin users
