@@ -61,7 +61,7 @@
     <div class="card-body">
       <%= render(partial: partial, locals: locals) unless no_body %>
       <% if dataset&.metadata&.[](:updated) %>
-        <% date = Date.parse(dataset.metadata[:updated]) %>
+        <% date = DateTime.parse(dataset.metadata[:updated]) %>
         <div class="timestamp float-right" title="<%= date %>">
           <%= fa_icon(:history) %><%= time_ago_in_words(date) %>
         </div>
