@@ -39,11 +39,7 @@
 
       <% unless project.miga.nil? %>
         <div class="project-info">
-          <b>Datasets:</b>
-          <%= pluralize(project.ref_datasets.size, 'reference') %>
-          <% if logged_in? && current_user.admin? %>
-            | <%= pluralize(project.dataset_counts(current_user)[:qry], 'query') %>
-          <% end %>
+          <%= pluralize(project.ref_datasets.size, 'reference dataset') %>
         </div>
       <% end %>
     </div>
