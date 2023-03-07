@@ -60,8 +60,10 @@ class QueryDataset < ApplicationRecord
     unless MiGA::Project.exist?(path)
       require 'miga/cli'
 
+      Rails.logger.info "Creating user project: #{path}"
       cmd = ['new', '--project', path, '--type', 'mixed']
-      MiGA::Cli.new(cmd).launch
+      err = MiGA::Cli.new(cmd).launch
+      raise err if err.is_a? Exception
     end
     @query_project_miga ||= MiGA::Project.load(path)
   end
