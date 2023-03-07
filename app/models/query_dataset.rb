@@ -61,7 +61,10 @@ class QueryDataset < ApplicationRecord
       require 'miga/cli'
 
       Rails.logger.info "Creating user project: #{path}"
-      cmd = ['new', '--project', path, '--type', 'mixed', '--ignore-init']
+      cmd = [
+        'new', '--project', path, '--type', 'mixed', '--ignore-init',
+        '--name', "MiGA_u#{user_id}"
+      ]
       err = MiGA::Cli.new(cmd).launch
       raise err if err.is_a? Exception
     end
