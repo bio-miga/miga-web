@@ -504,7 +504,7 @@ class ProjectsController < ApplicationController
   def set_project
     id = params[:id]
     id ||= params[:project_id]
-    if id
+    if id && id != '0' && id != 0
       qry = id =~ /\A\d+\z/ ? :id : :path
       @project = Project.find_by(qry => id)
     elsif params[:user_id]

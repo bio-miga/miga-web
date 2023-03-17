@@ -23,7 +23,7 @@
             'Classify with RDP',
             obj.is_a?(MiGA::Dataset) ?
               rdp_classify_url(project.id, ds_name) :
-              rdp_classify_url(nil, ds_name, user_id: obj.user_id),
+              rdp_classify_url(0, ds_name, user_id: obj.user_id),
             class: 'btn btn-block btn-primary',
             type: :button,
             id: 'link-ssu-rdp',
@@ -33,7 +33,7 @@
               url:
                 obj.is_a?(MiGA::Dataset) ?
                   rdp_classify_as_url(project.id, ds_name) :
-                  rdp_classify_as_url(nil, obj.acc, user_id: obj.user_id)
+                  rdp_classify_as_url(0, obj.acc, user_id: obj.user_id)
             }
           )
         %>
