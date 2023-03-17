@@ -73,8 +73,7 @@ class User < ApplicationRecord
   ##
   # Absolute path to the MiGA project including all queries
   def query_project_path
-    Settings.miga_projects
-    File.join(dir,query_project_path_rel)
+    File.join(Settings.miga_projects, query_project_path_rel)
   end
 
   ##
