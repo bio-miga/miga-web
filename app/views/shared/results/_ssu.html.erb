@@ -21,14 +21,19 @@
         <%=
           link_to(
             'Classify with RDP',
-            rdp_classify_url(project.id, ds_name),
+            obj.is_a?(MiGA::Dataset) ?
+              rdp_classify_url(project.id, ds_name) :
+              rdp_classify_url(nil, ds_name, user_id: obj.user_id),
             class: 'btn btn-block btn-primary',
             type: :button,
             id: 'link-ssu-rdp',
             remote: true,
             data: {
               target: "##{info_msg_id}",
-              url: rdp_classify_as_url(project.id, ds_name)
+              url:
+                obj.is_a?(MiGA::Dataset) ?
+                  rdp_classify_as_url(project.id, ds_name) :
+                  rdp_classify_as_url(nil, obj.acc, user_id: obj.user_id)
             }
           )
         %>

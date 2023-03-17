@@ -37,7 +37,7 @@ class QueryDataset < ApplicationRecord
   end
 
   def to_param
-    self.update(acc:QueryDataset.new_acc) if self.acc.nil?
+    self.update(acc: QueryDataset.new_acc) if self.acc.nil?
     self.acc
   end
 
@@ -55,8 +55,7 @@ class QueryDataset < ApplicationRecord
   # Note that this is different from +project.miga+, which is the MiGA object
   # of the reference database being queried
   def query_project_miga
-    dir = Settings.miga_projects
-    path = File.join(dir, 'user-contributed', "#{user_id}-qG")
+    path = user.query_project_path
     unless MiGA::Project.exist?(path)
       require 'miga/cli'
 

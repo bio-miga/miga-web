@@ -189,7 +189,7 @@ class Project < ApplicationRecord
   def full_path
     dir = Settings.miga_projects
     unless official?
-      dir = File.join(dir, 'user-contributed', user.id.to_s)
+      dir = user.query_project_path
       FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
     end
     File.join(dir, path)
