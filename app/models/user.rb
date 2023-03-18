@@ -87,7 +87,7 @@ class User < ApplicationRecord
   # Returns a non-persistent ActiveRecord object of a Project
   # for the user-contributed MiGA (as interface)
   def query_project
-    Project.new(name: query_project_path_rel, user: self)
+    Project.new(path: query_project_path_rel, user: self)
   end
 
   private
