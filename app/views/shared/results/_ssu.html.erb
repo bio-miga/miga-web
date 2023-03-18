@@ -13,7 +13,7 @@
   <% else %>
     <p>
       MiGA found <%= s %>
-      <% info_msg_id = info_modal('RDP Classifier') do %>
+      <% info_msg_id = info_modal('RDP Classifier', dialog_class: 'modal-lg') do %>
         <div id="ssu-rdp"></div>
       <% end %>
       <% ds_name = obj.is_a?(MiGA::Dataset) ? obj.name : obj.miga_name %>
