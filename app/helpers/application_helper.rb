@@ -271,14 +271,22 @@ module ApplicationHelper
     @reload_page_soon ||= false
     return if @reload_page_soon || params[:noreload]
 
-    @reload_page_soon = params[:reload_attempt]&.to_i || 1
+    @reload_page_soon = params[:reload_attempt]&.to_i || 0
     @reload_page_soon += 1
-    time = 20000 + @reload_page_soon * 10_000
+    noreload = ''
+    time = 20_000 + @reload_page_soon * 10_000
+    if @reload_page_soon > 50
+      # 3h worth of reloads
+      flash[:warning] = 'This page is no longer reloading automatically'
+      noreload = 'url.searchParams.set(\'noreload\', true);'
+      time = 10
+    end
     <<~JS.html_safe
       <script>
         setTimeout(function() {
           var url = new URL(location);
           url.searchParams.set('reload_attempt', #{@reload_page_soon});
+          #{noreload}
           window.location.replace(url.toString());
         }, #{time});
       </script>
