@@ -266,4 +266,22 @@ module ApplicationHelper
   def glyph(name, opts = {})
     fa_icon(name, opts)
   end
+
+  def reload_page_soon
+    @reload_page_soon ||= false
+    return if @reload_page_soon || params[:noreload]
+
+    @reload_page_soon = params[:reload_attempt]&.to_i || 1
+    @reload_page_soon += 1
+    time = 20000 + @reload_page_soon * 10_000
+    <<~JS.html_safe
+      <script>
+        setTimeout(function() {
+          var url = new URL(location);
+          url.searchParams.set('reload_attempt', #{@reload_page_soon});
+          window.location.replace(url.toString());
+        }, #{time});
+      </script>
+    JS
+  end
 end

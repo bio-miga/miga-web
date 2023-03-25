@@ -8,6 +8,7 @@
     <%= dataset_quality(dataset) %>
   <% else %>
     <%= fa_icon(:spinner, class: 'text-muted', animation: 'spin') %>
+    <%= reload_page_soon %>
     &nbsp; <%= dataset&.type.to_s.capitalize %>
     running <%= dataset&.next_preprocessing.to_s.unmiga_name %>
   <% end %>
