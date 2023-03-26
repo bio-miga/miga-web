@@ -455,7 +455,7 @@ class ProjectsController < ApplicationController
       case i
       when /^[A-Za-z0-9_]+$/
         { path: i, type: :official }
-      when /^user-contributed\/(\d+)-qG$/
+      when /^user-contributed\/(\d+)-q[GP]$/
         nil # <- Ignore user queries
       when /^user-contributed\/(\d+)\/([A-Za-z0-9_]+)$/
         user = User.find_by(id: $1)

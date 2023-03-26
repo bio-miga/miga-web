@@ -72,15 +72,19 @@ class User < ApplicationRecord
 
   ##
   # Absolute path to the MiGA project including all queries
-  def query_project_path
-    File.join(Settings.miga_projects, query_project_path_rel)
+  # If +dir+ is true, it returns instead the path to the directory containing
+  # user-generated projects
+  def query_project_path(dir = false)
+    File.join(Settings.miga_projects, query_project_path_rel(dir))
   end
 
   ##
   # Relative path to the MiGA project including all queries
   # (relative to the location of all MiGA projects)
-  def query_project_path_rel
-    File.join('user-contributed', "#{id}-qG")
+  # If +dir+ is true, it returns instead the path to the directory containing
+  # user-generated projects
+  def query_project_path_rel(dir = false)
+    File.join('user-contributed', "#{id}-q#{dir ? 'P' : 'G'}")
   end
 
   ##
