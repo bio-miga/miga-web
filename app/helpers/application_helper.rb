@@ -281,13 +281,16 @@ module ApplicationHelper
       noreload = 'url.searchParams.set(\'noreload\', true);'
       time = 10
     end
+    reload_key = (rand * 1e9).to_i.to_s(16)
     <<~JS.html_safe
-      <script>
+      <script id="reload_snippet" data-key="#{reload_key}">
         setTimeout(function() {
-          var url = new URL(location);
-          url.searchParams.set('reload_attempt', #{@reload_page_soon});
-          #{noreload}
-          window.location.replace(url.toString());
+          if ($('#reload_snippet').data('key') == '#{reload_key}') {
+            var url = new URL(location);
+            url.searchParams.set('reload_attempt', #{@reload_page_soon});
+            #{noreload}
+            window.location.replace(url.toString());
+          }
         }, #{time});
       </script>
     JS
