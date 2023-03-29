@@ -8,8 +8,9 @@
         .inject(Hash.new(0)) { |t, e| t[e] += 1 ; t } # Count each
         .map { |l, c| pluralize(c, l) }.to_sentence # Human-readable
   %>
+  <h3>Ribosomal RNA (rRNAs)</h3>
   <% if s.empty? %>
-    <p>MiGA didn't detect SSU sequences.</p>
+    <p>MiGA didn't detect rRNA sequences.</p>
   <% else %>
     <p>
       MiGA found <%= s %>
@@ -20,7 +21,7 @@
       <div class="text-center">
         <%=
           link_to(
-            'Classify with RDP',
+            'Classify SSU (16S rRNA) with RDP',
             obj.is_a?(MiGA::Dataset) ?
               rdp_classify_url(project.id, ds_name) :
               rdp_classify_url(0, ds_name, user_id: obj.user_id),
@@ -80,12 +81,13 @@
     <% end %>
   <% end %>
   <% if res.stats[:trna_count] && res.stats[:trna_aa] %>
+    <h3 class="mt-4">Transfer RNA (tRNAs)</h3>
     <p>
-      Additionally, MiGA found
+      MiGA found
       <%= pluralize(res.stats[:trna_count], 'tRNA element') %> for
       <%= pluralize(res.stats[:trna_aa], 'amino acid') %>,
-      <% if res.stats[:trna_aa] >= 20 %>
-        correspoding to all the expected elements.
+      <% if res.stats[:trna_aa] >= 20 # Could be 21, Selenocysteine %>
+        correspoding to all the expected cannonical amino acids.
       <% elsif res.stats[:trna_aa] == 0 %>
         missing all the expected 20 or 21 cannonical amino acids.
       <% else %>
