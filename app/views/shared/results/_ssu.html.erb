@@ -6,7 +6,7 @@
         .select{ |l| l !~ /^#/ } # Ignore comments
         .map { |l| l.gsub(/.*;product=([^;]+).*/, "\\1") } # 16S/18S/&c
         .inject(Hash.new(0)) { |t, e| t[e] += 1 ; t } # Count each
-        .map { |l, c| pluralize c, l }.to_sentence # Human-readable
+        .map { |l, c| pluralize(c, l) }.to_sentence # Human-readable
   %>
   <% if s.empty? %>
     <p>MiGA didn't detect SSU sequences.</p>
@@ -78,6 +78,21 @@
         </div>
       <% end %>
     <% end %>
+  <% end %>
+  <% if res.stats[:trna_count] && res.stats[:trna_aa] %>
+    <p>
+      Additionally, MiGA found
+      <%= pluralize(res.stats[:trna_count], 'tRNA element') %> for
+      <%= pluralize(res.stats[:trna_aa], 'amino acid') %>,
+      <% if res.stats[:trna_aa] >= 20 %>
+        correspoding to all the expected elements.
+      <% elsif res.stats[:trna_aa] == 0 %>
+        missing all the expected 20 or 21 cannonical amino acids.
+      <% else %>
+        corresponding to <% (res.stats[:trna_aa].to_f * 100 / 20).round %>%
+        of the expected cannonical amino acids.
+      <% end %>
+    </p>
   <% end %>
 <% end %>
 <br/>
