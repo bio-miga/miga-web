@@ -8,7 +8,7 @@
         .inject(Hash.new(0)) { |t, e| t[e] += 1 ; t } # Count each
         .map { |l, c| pluralize(c, l) }.to_sentence # Human-readable
   %>
-  <h3>Ribosomal RNA (rRNAs)</h3>
+  <h4>Ribosomal RNA (rRNAs)</h4>
   <% if s.empty? %>
     <p>MiGA didn't detect rRNA sequences.</p>
   <% else %>
@@ -81,7 +81,7 @@
     <% end %>
   <% end %>
   <% if res.stats[:trna_count] && res.stats[:trna_aa] %>
-    <h3 class="mt-4">Transfer RNA (tRNAs)</h3>
+    <h4 class="mt-4">Transfer RNA (tRNAs)</h4>
     <p>
       MiGA found
       <%= pluralize(res.stats[:trna_count], 'tRNA element') %> for
