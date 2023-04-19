@@ -101,6 +101,7 @@ class QueryDataset < ApplicationRecord
   def run_mytaxa_scan!
     return if run_mytaxa_scan?
     miga.metadata[:run_mytaxa_scan] = true
+    miga.metadata[:status] = nil
     miga.save
     update_attribute(:complete, false) if complete
     update_attribute(:complete_new, false) if complete_new
