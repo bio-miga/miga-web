@@ -103,6 +103,7 @@ class QueryDataset < ApplicationRecord
     miga.metadata[:run_mytaxa_scan] = true
     miga.metadata[:status] = nil
     miga.save
+    query_project_miga.save! # touch
     update_attribute(:complete, false) if complete
     update_attribute(:complete_new, false) if complete_new
   end
