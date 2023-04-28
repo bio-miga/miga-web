@@ -32,8 +32,8 @@
   unless dataset.ref?
     miga_p = dataset.is_a?(MiGA::Dataset) ?
               dataset.project : dataset.project.miga
-    method = miga_p.is_clade? ? :subclades : :clade_finding
-    clades = miga_p.result(method)
+    method = miga_p.try(:is_clade?) ? :subclades : :clade_finding
+    clades = miga_p.nil? ? nil : miga_p.result(method)
     unless clades.nil?
       clades_t = DateTime.parse(clades.data[:created])
       if DateTime.parse(res.data[:created]) < clades_t
