@@ -53,7 +53,9 @@
     max_val = 0.0
     max_val_ds = nil
   %>
-  <% if not val.empty? and val.second %>
+  <% if ref_db.miga.nil? %>
+    MiGA cannot contact the reference database at the moment.
+  <% elsif !val.empty? && val.second %>
     The closest relatives found by MiGA in the database were
     <%= link_to_reference_dataset(ref_db, val.first.first) %>
     (<%= val.first.second.round 2 %>% <%= val_m %>) and
@@ -61,7 +63,7 @@
     (<%= val.second.second.round 2 %>% <%= val_m %>).
     <% max_val = val.first.second %>
     <% max_val_ds = ref_db.miga.dataset(val.first.first) %>
-  <% elsif not val.empty? and val.first %>
+  <% elsif !val.empty? && val.first %>
     The closest relative found by MiGA in the database was
     <%= link_to_reference_dataset(ref_db, val.first.first) %>
     (<%= val.first.second.round 2 %>% <%= val_m %>).
