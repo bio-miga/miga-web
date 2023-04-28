@@ -82,8 +82,9 @@
     <% end %>
   <% end %>
   
-  <% method = project.miga.is_clade? ? :subclades : :clade_finding %>
-  <% unless (clade_r = dataset.project.result(method)).nil? %>
+  <% method = project.miga.nil? ? nil :
+              project.miga.is_clade? ? :subclades : :clade_finding %>
+  <% unless method.nil? || (clade_r = dataset.project.result(method)).nil? %>
     <% unless (clade_f = clade_r.file_path(:class_table)).nil? %>
       <% File.open(clade_f, 'r') do |fh| %>
         <% clade = (fh.each_line.
