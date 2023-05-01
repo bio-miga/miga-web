@@ -1,8 +1,11 @@
 <%= accordion('dataset-metadata') do |accordion| %>
   <% unless dataset.metadata[:tax].nil? %>
     <%= accordion_card(accordion, 'taxonomy', 'Taxonomy') do %>
+      <% if dataset.metadata[:tax].namespace %>
+        <b>Taxonomic scheme: <%= dataset.metadata[:tax].namespace.upcase %></b>
+      <% end %>
       <ul class="taxonomy">
-        <% tax = dataset.metadata[:tax].sorted_ranks.map{ |r| r.join(": ")} %>
+        <% tax = dataset.metadata[:tax].sorted_ranks.map { |r| r.join(': ') } %>
         <% tax.each do |r| %>
           <% r = r.split(': ') %>
           <li>
