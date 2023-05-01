@@ -3,7 +3,7 @@
     <%= accordion_card(accordion, 'taxonomy', 'Taxonomy') do %>
       <% if dataset.metadata[:tax].namespace %>
         <% ns = dataset.metadata[:tax].namespace %>
-        <b>Taxonomic scheme: <%= ns == 'seqcode' ? 'SeqCode' : ns.upcase %></b>
+        <u>Taxonomic scheme: <%= ns == 'seqcode' ? 'SeqCode' : ns.upcase %></u>
       <% end %>
       <ul class="taxonomy">
         <% tax = dataset.metadata[:tax].sorted_ranks.map { |r| r.join(': ') } %>
