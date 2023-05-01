@@ -50,10 +50,10 @@ module ProjectsHelper
       link_to(reference_dataset_path(project.id, dataset_name)) do
         content_tag(:span, dataset_name.unmiga_name,
           style: 'display:inline;') + (
-            md[:strain] ?
+            md[:strain] ? (
               content_tag(:span, ' (') + md[:strain] +
-                miga_dataset_type(ds_miga) + content_tag(:span, ')') :
-              miga_dataset_type(ds_miga)
+                miga_dataset_type(ds_miga) + content_tag(:span, ')')
+            ) : miga_dataset_type(ds_miga)
           )
       end
     end
