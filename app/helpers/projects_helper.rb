@@ -32,7 +32,7 @@ module ProjectsHelper
     md = miga_dataset&.metadata || {}
     md[:is_type] ?
         content_tag(:sup, md[:seqcode] ? 'Ts' : 'T',
-          title: miga_dataset.md[:type_rel] || 'Type strain',
+          title: md[:type_rel] || 'Type strain',
           style: 'font-weight:bold;') :
       md[:is_ref_type] ?
         content_tag(:sup, 'R',
