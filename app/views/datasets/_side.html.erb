@@ -17,8 +17,49 @@
       </ul>
       <% if dataset.metadata[:tax].namespace %>
         <% ns = dataset.metadata[:tax].namespace %>
-        <span class="text-muted">(Taxonomic scheme:
-          <b><%= ns == 'seqcode' ? 'SeqCode' : ns.upcase %></b>)</span>
+        <div class="text-muted text-right">
+          (Taxonomic scheme:
+          <b><%= ns == 'seqcode' ? 'SeqCode' : ns.upcase %></b>)
+          <%= info_msg('Taxonomic schemes in MiGA') do %>
+            MiGA is taxonomy-agnostic, which means that the same tools and
+            techniques can be applied to different reference taxonomies.
+            However, it is important to maintain a standardized scheme for
+            a given database if we want to leverage that database on
+            classification. For that reason, MiGA implements a top-level
+            taxonomic rank called <i>namespace</i>, which tells us the taxonomic
+            scheme being followed. Some common schemes include:
+            <ul>
+              <li>
+                <b>SeqCode</b>: Following the reference taxonomy reported by
+                <a href='https://seqco.de/seqcode' target=_blank><i>The Code of
+                Nomenclature of Prokaryotes Described from Sequence Data</i></a>
+                (SeqCode). This taxonomy should be fully compatible with
+                <b>NCBI</b>, but may not be compatible with some specific nodes
+                of <b>GTDB</b>.
+              </li>
+              <li>
+                <b>NCBI</b>: Following the taxonomy curated and maintained by
+                <a href='https://ncbi.nlm.nih.gov/taxonomy' target=_blank>NCBI
+                Taxonomy</a>. This taxonomy mostly follows the recommendation of
+                <i>The International Code of Nomenclature of Prokaryotes</i>
+                (ICNP), and should be fully compatible with <b>SeqCode</b>.
+              </li>
+              <li>
+                <b>GTDB</b>: Following the taxonomy curated and mainteined by
+                the <a href='https://gtdb.ecogenomic.org/' target=_blank>Genome
+                Taxonomy Data Base</a>. This taxonomy introduces a complete
+                taxonomic tree from species to phylum, but it includes some
+                temporary alpha-numeric identifiers that don't follow binomial
+                nomenclature as recognized by either ICNP or SeqCode. Therefore,
+                it can be incompatible with <b>SeqCode</b> and <b>NCBI</b>, but
+                it offers non-missingness as well as largely standardized ranks
+                on the basis of Relative Evolutionary Distances.
+              </li>
+            </ul>
+            For additional information, please see the links above and the
+            associated publications.
+          <% end %>
+        </div>
       <% end %>
     <% end %>
   <% end %>
