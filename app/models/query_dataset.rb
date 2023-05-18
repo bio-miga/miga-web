@@ -103,7 +103,7 @@ class QueryDataset < ApplicationRecord
     miga.metadata[:run_mytaxa_scan] = true
     miga.metadata[:status] = nil
     miga.save
-    query_project_miga.save! # touch
+    miga.project.save! # touch
     update_attribute(:complete, false) if complete
     update_attribute(:complete_new, false) if complete_new
   end
@@ -111,13 +111,16 @@ class QueryDataset < ApplicationRecord
   # Checks if Distances is not scheduled yet.
   def run_distances?
     return false if miga.nil?
+
     !(miga.result(:distances).nil?)
   end
 
   def run_distances!
     return unless run_distances?
+
     miga.result(:distances).remove!
     miga.recalculate_status
+    miga.project.save! # `touch` to activate daemon
     update_attribute(:complete, false) if complete
     update_attribute(:complete_new, false) if complete_new
   end
