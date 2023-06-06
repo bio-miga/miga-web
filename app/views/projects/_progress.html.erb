@@ -9,7 +9,7 @@
 
 <div class="result collapse" id="project-progress-container">
   <div class="result-body">
-    <% if @project.miga.dataset_names.count > 100 %>
+    <% if @project.miga && @project.miga.dataset_names.count > 100 %>
       <div class="alert alert-warning">
         Estimation based on a sample of 100 datasets from a total of
         <%= number_with_delimiter @project.miga.dataset_names.count %>
