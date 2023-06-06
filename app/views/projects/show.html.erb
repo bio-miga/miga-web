@@ -21,14 +21,21 @@
         only you have access.
       </div>
     <% elsif !@project.official? %>
-      <div class='alert alert-info' style='margin:1.3em 0;'>
+      <div class="alert alert-info" style="margin:1.3em 0;">
         This is a <b>user-contributed project</b>:
         it is not officially supported.
       </div>
     <% end %>
 
-    <%= render(partial: 'progress') %>
-    <%= render(partial: 'arcgis') %>
-    <%= render(partial: 'results') %>
+    <% if @project.miga %>
+      <%= render(partial: 'progress') %>
+      <%= render(partial: 'arcgis') %>
+      <%= render(partial: 'results') %>
+    <% else %>
+      <div class="alert alert-warning" style="margin:1.3em 0;">
+        Project backend cannot be reached. If this error persists,
+        please contact the site administrators.
+      </div>
+    <% end %>
   </div>
 </div>
