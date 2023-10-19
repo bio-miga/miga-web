@@ -85,7 +85,7 @@ module ApplicationHelper
     @info_msg ||= []
     o = @info_msg
     @info_msg = []
-    o.empty? ? "" : o.inject(:+)
+    o.empty? ? '' : o.inject(:+)
   end
 
   def accordion(accordion_id, open = true)

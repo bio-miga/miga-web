@@ -29,6 +29,10 @@ class Project < ApplicationRecord
     path.tr('_',' ')
   end
 
+  def rel_path
+    Pathname.new(full_path).relative_path_from(Settings.miga_projects).to_s
+  end
+
   def miga
     load_miga_project
     miga_obj
@@ -177,7 +181,7 @@ class Project < ApplicationRecord
       cmd += ["--#{k}", par[k]] if par[k] && !par[k].empty?
     end
     if par[:query]
-      cmd += ['--metadata', "db_project=../#{path}", '--query']
+      cmd += ['--metadata', "db_project=../#{rel_path}", '--query']
     end
     cmd << file1
     cmd << file2 if file2
