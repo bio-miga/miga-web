@@ -37,6 +37,26 @@
     </section>
     <% if can_edit %>
       <section class="mb-5 card card-admin-zone">
+        <% if @query_dataset.miga.try(:metadata) %>
+          <% md_id = info_modal('Raw metadata') do %>
+            <table class="table">
+              <% @query_dataset.miga.metadata.each do |k, v| %>
+                <tr>
+                  <td><b><%= k %></b></td>
+                  <td><%= v %></td>
+                </tr>
+              <% end %>
+            </table>
+          <% end %>
+          <%=
+            link_to(
+              'See raw metadata', "##{md_id}",
+              class: 'btn btn-block btn-primary',
+              data: { toggle: 'modal', target: "##{md_id}" }
+            )
+          %>
+        <% end %>
+
         <% if !is_ref %>
           <% if @query_dataset.ready? %>
             <%=
