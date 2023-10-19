@@ -4,6 +4,10 @@
 %>
 
 <span class="status">
+  <% unless dataset.active? %>
+    <span class="text-danger">[Inactive]</span>
+  <% end %>
+
   <% if is_ready %>
     <%= dataset_quality(dataset) %>
   <% else %>
