@@ -37,10 +37,10 @@
     </section>
     <% if can_edit %>
       <section class="mb-5 card card-admin-zone">
-        <% if @query_dataset.miga.try(:metadata) %>
+        <% if @dataset_miga.try(:metadata) %>
           <% md_id = info_modal('Raw metadata') do %>
             <table class="table">
-              <% @query_dataset.miga.metadata.each do |k, v| %>
+              <% @dataset_miga.metadata.each do |k, v| %>
                 <tr>
                   <td><b><%= k %></b></td>
                   <td><%= v %></td>
