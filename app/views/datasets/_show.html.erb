@@ -1,0 +1,186 @@
+<%
+  @query_dataset ||= nil
+  @dataset_miga ||= @query_dataset&.miga
+  @project ||= @query_dataset&.project
+  is_ref = @query_dataset.nil?
+  can_edit = !@project.reference? && can?(:edit, @project)
+  can_edit ||= can?(:edit, @query_dataset)
+  provide(:title, @dataset_miga.name.unmiga_name)
+%>
+
+<div class="row mb-5">
+  <!-- LEFT COLUMN -->
+  <aside class="col-md-4 project-aside">
+    <section class="mb-5">
+      <%=
+        render(
+          partial: 'datasets/dataset',
+          object: @dataset_miga,
+          locals: {
+            project: @project, no_actions: true, show_status: true,
+            query_dataset: @query_dataset
+          }
+        )
+      %>
+    </section>
+    <section class="mb-5">
+      <%=
+        render(
+          partial: 'datasets/side',
+          locals: {
+            project: @project,
+            dataset: @dataset_miga,
+            query_dataset: @query_dataset
+          }
+        )
+      %>
+    </section>
+    <% if can_edit %>
+      <section class="mb-5 card card-admin-zone">
+        <% if @dataset_miga.try(:metadata) %>
+          <% md_id = info_modal('Raw metadata') do %>
+            <table class="table">
+              <% @dataset_miga.metadata.each do |k, v| %>
+                <tr>
+                  <td><b><%= k %></b></td>
+                  <td><%= v %></td>
+                </tr>
+              <% end %>
+            </table>
+          <% end %>
+          <%=
+            link_to(
+              'See raw metadata', "##{md_id}",
+              class: 'btn btn-block btn-primary',
+              data: { toggle: 'modal', target: "##{md_id}" }
+            )
+          %>
+        <% end %>
+
+        <% if !is_ref %>
+          <% if @query_dataset.ready? %>
+            <%=
+              link_to(
+                'Mark dataset as unseen',
+                query_dataset_mark_unread_url(@query_dataset), method: :post,
+                class: 'btn btn-block btn-primary'
+              )
+            %>
+          <% end %>
+          <% unless @query_dataset.run_mytaxa_scan? %>
+            <%=
+              link_to(
+                'Execute MyTaxa scan',
+                query_dataset_run_mytaxa_scan_path(@query_dataset.id),
+                class: 'btn btn-block btn-primary'
+              )
+            %>
+          <% end %>
+        <% end %>
+        <%=
+          link_to(
+            'Remove dataset',
+            is_ref ?
+              delete_ref_dataset_path(
+                id: @project.id, name: @dataset_miga.name
+              ) : @query_dataset,
+            method: :delete, title: 'Delete dataset',
+            data: {
+              confirm: 'Are you sure? This action cannot be undone'
+            },
+            class: 'btn btn-block btn-warning', type: 'button'
+          )
+        %>
+      </section>
+    <% end %>
+  </aside>
+
+  <!-- MAIN PAGE -->
+  <div class="col-md-8">
+    <!-- TOP MESSAGES -->
+    <% if !@dataset_miga.nil? && !@dataset_miga.active? %>
+      <div class="alert alert-warning my-3">
+        <h3>Dataset inactive</h3>
+        <p>
+          This dataset was inactivated by the system:
+          <%=
+            @dataset_miga.metadata[:warn] ?
+              @dataset_miga.metadata[:warn].sub(/^Inactive: /, '') :
+              'Unknown issue'
+          %>
+        </p>
+        <% unless is_ref %>
+          <p class="text-center">
+            <%=
+              link_to(
+                'Reactivate dataset',
+                query_dataset_reactivate_url(@query_dataset),
+                class: 'btn btn-warning'
+              )
+            %>
+          </p>
+        <% end %>
+      </div>
+    <% end %>
+    <% if @dataset_miga&.ref? && @project&.miga&.metadata&.[](:arcgis) %>
+      <% arcgis_obj_id = @dataset_miga.name %>
+      <% unless @project.miga.clade? ||
+              (clade_r = @project.miga.result(:clade_finding)).nil? ||
+              (ani_clade_f = clade_r.file_path(:clades_ani95)).nil? ||
+              (ani_clade = File.foreach(ani_clade_f).
+                map { |i| i.chomp.split(',') }.
+                find { |i| i.include? @dataset_miga.name }).nil? %>
+          <% arcgis_obj_id = ani_clade.join(',') %>
+      <% end %>
+      <style>
+        .embed-container {
+          position: relative; padding-bottom: 80%; height: 0; max-width: 100%;}
+        .embed-container iframe, .embed-container object, .embed-container iframe{
+          position: absolute; top: 0; left: 0; width: 100%; height: 100%;}
+        small{position: absolute; z-index: 40; bottom: 0; margin-bottom: -15px;}
+      </style>
+      <div class="embed-container"><iframe width="500" height="400"
+        frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+        title="ArcGIS Map + MiGA"
+        src="https://arcgis.com/apps/opsdashboard/index.html#/<%=
+          @project.miga.metadata[:arcgis] %>?MiGA_name=<%=
+          arcgis_obj_id %>"></iframe></div>
+    <% end %>
+
+    <!-- RESULTS -->
+    <% if !is_ref && !@query_dataset.ready? && @dataset_miga&.active? %>
+      <%=
+        render(
+          partial: 'shared/partial_result',
+          locals: { obj: @query_dataset, key: @dataset_miga.next_preprocessing }
+        )
+      %>
+    <% end %>
+    <% results_to_load = [] %>
+    <% MiGA::Dataset.RESULT_DIRS.keys.reverse_each do |k| %>
+      <% if res = @dataset_miga&.result(k) %>
+        <div id="dataset-result-<%= k %>">
+          <h3 class="result-title">
+            <i class="glyphicon glyphicon-tasks"> </i>
+            <%= image_tag("loading.gif") %>
+            <%= k.to_s.unmiga_name.capitalize %>
+          </h3>
+        </div>
+        <% results_to_load << k %>
+      <% end %>
+    <% end %>
+    <script>
+      <% results_to_load.each do |k| %>
+        <%
+          url =
+            is_ref ?
+              project_result_partial_path(@project, k, r_ds: @dataset_miga.name) :
+              project_result_partial_path(@project, k, q_ds: @query_dataset.id)
+        %>
+        $.ajax({ url: "<%= url %>" }).done(
+          function(data) { $("#dataset-result-<%= k %>").html(data) }
+        );
+      <% end %>
+    </script>
+  </div>
+</div>

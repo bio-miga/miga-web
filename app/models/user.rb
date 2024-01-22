@@ -70,6 +70,30 @@ class User < ApplicationRecord
     reset_sent_at < 2.hours.ago
   end
 
+  ##
+  # Absolute path to the MiGA project including all queries
+  # If +dir+ is true, it returns instead the path to the directory containing
+  # user-generated projects
+  def query_project_path(dir = false)
+    File.join(Settings.miga_projects, query_project_path_rel(dir))
+  end
+
+  ##
+  # Relative path to the MiGA project including all queries
+  # (relative to the location of all MiGA projects)
+  # If +dir+ is true, it returns instead the path to the directory containing
+  # user-generated projects
+  def query_project_path_rel(dir = false)
+    File.join('user-contributed', "#{id}-q#{dir ? 'P' : 'G'}")
+  end
+
+  ##
+  # Returns a non-persistent ActiveRecord object of a Project
+  # for the user-contributed MiGA (as interface)
+  def query_project
+    Project.new(path: query_project_path_rel, user: self)
+  end
+
   private
 
     # Converts email to all lower-case.

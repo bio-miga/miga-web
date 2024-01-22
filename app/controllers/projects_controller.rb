@@ -14,7 +14,7 @@ class ProjectsController < ApplicationController
   before_action :admin_user,
     only: [:lair, :lair_toggle, :daemon_toggle,
       :daemon_start_all, :daemon_stop_all, :daemon_action_all,
-      :discovery, :link, :get_db, :launch_get_db]
+      :discovery, :link, :get_db, :launch_get_db, :clear_get_db]
   if Settings.user_projects
     # Servers with user-owned projects
     before_action(
@@ -268,38 +268,23 @@ class ProjectsController < ApplicationController
 
   # Download or update the database in the background
   def launch_get_db
-    name = params[:name]
-    version = params[:version]
-    Thread.new do
-      require 'miga/cli'
-
-      # Get current registered version
-      project = Project.find_by(path: name)
-      if project && project.miga
-        project.miga.metadata[:release] =
-          "#{project.miga.metadata[:release]} (currently updating)"
-        project.miga.save
-      end
-
-      # Download
-      error =
-        MiGA::Cli.new([
-          'get_db', '-n', name, '--db-version', version,
-          '--local-dir', Settings.miga_projects, '--no-progress'
-        ]).launch
-      raise(error) if error.is_a? Exception
-
-      # Register in the database
-      project ||= current_user.projects.create(path: name)
-      project.update(reference: true)
-      f = File.join(Settings.miga_projects, "#{name}_#{version}.tar.gz")
-      File.unlink(f) if File.exist? f
-      ActiveRecord::Base.connection.close
-    end
-
-    sleep(10) # <- Hopefully this is enough to start the download
+    name = params.require(:name)
+    version = params.require(:version)
+    arch = File.join(Settings.miga_projects, "#{name}_#{version}.tar.gz")
+    FileUtils.touch(arch)
+    GetDbJob.perform_later(name, version, current_user)
     flash[:success] = 'Downloading database in the background'
-    redirect_to get_db_path
+    redirect_to(get_db_path)
+  end
+
+  # Clear a failed download
+  def clear_get_db
+    name = params.require(:name)
+    version = params.require(:version)
+    arch = File.join(Settings.miga_projects, "#{name}_#{version}.tar.gz")
+    File.unlink(arch) if File.exist?(arch)
+    flash[:success] = 'Temporary archive successfully removed'
+    redirect_to(get_db_path)
   end
 
   # Admin daemons
@@ -314,20 +299,14 @@ class ProjectsController < ApplicationController
     require 'miga/lair'
 
     lair = MiGA::Lair.new(Settings.miga_projects)
-    action = lair.active? ? :stop : :start
-    lair.daemon(action)
-    flash[:success] = "Daemon controller successful action: #{action}"
-    sleep(1)
-    redirect_to lair_url
+    lair_or_daemon_toggle(lair, 'daemon controller')
+    redirect_to(lair_url)
   end
 
   def daemon_toggle
     daemon = MiGA::Daemon.new(@project.miga)
-    action = daemon.active? ? :stop : :start
-    daemon.daemon(action)
-    flash[:success] = "Daemon successful action: #{action}"
-    sleep(1)
-    redirect_to lair_url
+    lair_or_daemon_toggle(daemon, 'daemon')
+    redirect_to(lair_url)
   end
 
   def daemon_action_all(action)
@@ -473,24 +452,31 @@ class ProjectsController < ApplicationController
     end
 
     @unregistered = (@existing - @registered).map do |i|
-      if i =~ /^[A-Za-z0-9_]+$/
+      case i
+      when /^[A-Za-z0-9_]+$/
         { path: i, type: :official }
-      elsif i =~ /^user-contributed\/(\d+)\/([A-Za-z0-9_]+)$/
+      when /^user-contributed\/(\d+)-q(G|P\/[^\/]+)$/
+        nil # <- Ignore user queries and projects
+      when /^user-contributed\/(\d+)\/([A-Za-z0-9_]+)$/
         user = User.find_by(id: $1)
         { path: $2, type: (user ? :user : :bad_user), user: user }
       else
         { path: i, type: :incompatible }
       end
-    end
+    end.compact
   end
 
   # GET /project_link
   def link
-    par = params.permit([:path, :private, :official])
+    par = params.permit([:path, :private, :official, :reference])
     @user = params[:user] ? User.find(params[:user]) : current_user
     @project = @user.projects.create(par)
     if @project.save && !@project.miga.nil?
-      flash[:success] = 'Project successfully linked'
+      if params[:reference] == 'true'
+        flash[:success] = 'Project successfully linked as reference database'
+      else
+        flash[:success] = 'Project successfully linked'
+      end
       redirect_to @project
     else
       flash[:danger] = 'An unexpected error occurred while linking project'
@@ -518,8 +504,12 @@ class ProjectsController < ApplicationController
   def set_project
     id = params[:id]
     id ||= params[:project_id]
-    qry = id =~ /\A\d+\z/ ? :id : :path
-    @project = Project.find_by(qry => id)
+    if id && id != '0' && id != 0
+      qry = id =~ /\A\d+\z/ ? :id : :path
+      @project = Project.find_by(qry => id)
+    elsif params[:user_id]
+      @project = User.find(params[:user_id])&.query_project
+    end
   end
 
   def project_params
@@ -556,7 +546,35 @@ class ProjectsController < ApplicationController
   def correct_user_or_admin
     @user = @project.user
     return true if @user.nil?
-    redirect_to(root_url) if current_user.nil? ||
-      !(current_user?(@user) || current_user.admin?)
+    redirect_to(root_url) unless @project.privileged_user?(current_user)
+  end
+
+  # Toggle a lair or a daemon
+  def lair_or_daemon_toggle(obj, name)
+    require 'miga/cli'
+
+    # Launch action
+    action = obj.active? ? 'stop' : 'start'
+    cmd = obj.is_a?(MiGA::Daemon) ?
+          ['daemon', action, '-P', obj.path] :
+          ['lair', action, '-p', obj.path]
+    MiGA::Cli.new(cmd).launch
+
+    # Check if it worked
+    success = false
+    5.times do
+      sleep(1)
+      if obj.active? == (action == 'start')
+        success = true
+        break
+      end
+    end
+
+    # Report status
+    if success
+      flash[:success] = "Succeeded to #{action} the #{name}"
+    else
+      flash[:danger] = "Unable to #{action} the #{name}"
+    end
   end
 end

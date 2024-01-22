@@ -1,3 +1,4 @@
+<% @result ||= {} %>
 <% r = @result[:body] %>
 <% case @result[:format] %>
 <% when 'rdp-tsv' %>
@@ -24,7 +25,7 @@
     </ul>
   </div>
   <div class="panel panel-info small text-center">
-    <div class="panel-body bg-info">
+    <div class="panel-body bg-light text-info p-2 mt-3 mb-1 rounded">
       <b>RDP Classifier locally executed by MiGA</b><br/>
       <b>Taxonomy:</b> <%= r[:footer].gsub(/^# Version: /, '').gsub(/;.*/,'') %><br/>
       <b>Classifier:</b> <%= r[:footer].gsub(/.*;/,'') %><br/>
@@ -59,7 +60,7 @@
     </ul>
   </div>
   <div class="panel panel-info small text-center">
-    <div class="panel-body bg-info">
+    <div class="panel-body bg-light text-info p-2 mt-3 mb-1 rounded">
       <b>RDP Classifier:</b> <%= link_to r[:taxonomy_description],
             "http://rdp.cme.msu.edu/classifier/classifier.jsp",
             target: "_blank" %><br/>
@@ -67,8 +68,12 @@
       <b>Date run:</b> <%= r[:date_run] %><br/>
     </div>
   </div>
+<% when nil %>
+  <div class="alert alert-danger text-center">
+    <b>Cannot contact RDP service</b>
+  </div>
 <% else %>
-  <div class="panel panel-danger text-center">
+  <div class="alert alert-danger text-center">
     <b>Unrecognized classification format '<%= @result[:format] %>'</b>
   </div>
 <% end %>

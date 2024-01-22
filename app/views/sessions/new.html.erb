@@ -6,21 +6,26 @@
       
       <%= render partial: "login_#{ Settings.login_message }" %>
 
-      <%= f.label :email %>
-      <%= f.email_field :email, class: 'form-control' %>
+      <%= form_input do %>
+        <%= f.label :email %>
+        <%= f.email_field :email, class: 'form-control' %>
+      <% end %>
 
-      <%= f.label :password %>
-      <%= link_to "(forgot password)", new_password_reset_path %>
-      <%= f.password_field :password, class: 'form-control' %>
+      <%= form_input do %>
+        <%= f.label :password %>
+        <%= link_to "(forgot password)", new_password_reset_path %>
+        <%= f.password_field :password, class: 'form-control' %>
+      <% end %>
 
-      <%= f.label :remember_me, class: "checkbox inline" do %>
-        <%= f.check_box :remember_me %>
-        <span>Remember me on this computer</span>
+      <%= form_input('form-check') do %>
+        <%= f.check_box :remember_me, class: 'form-check-input' %>
+        <%= f.label :remember_me, 'Remember me on this computer' %>
       <% end %>
 
       <%= f.submit "Log in", class: "btn btn-primary" %>
     <% end %>
 
+    <hr/>
     <p>New user? <%= link_to "Sign up now!", signup_path %></p>
   </div>
 </div>

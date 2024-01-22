@@ -24,14 +24,15 @@ module QueryDatasetsHelper
       o += ' (p-value: %.2g)' % v.second
       phrases << o
     end
-    all = '<div class="small comment">'
+    all = '<div class="small comment p-3 bg-light rounded border">'
     all_c = ''
     MiGA::TaxDist.aai_pvalues(aai, :intax, opts).each do |k,v|
       sig = ''
-      [0.5,0.1,0.05,0.01].each{ |i| sig << '*' if v<i }
+      [0.5, 0.1, 0.05, 0.01].each { |i| sig = "#{sig}*" if v < i }
       all << '<div class="taxonomy-tree">' +
-              "<b" + (v>0.5 ? ' class="text-muted"' : '') +
-              "><span class=badge>#{MiGA::Taxonomy.LONG_RANKS[k]}</span> "
+              "<b" + (v>0.5 ? ' class="non-significant"' : '') +
+              "><span class=\"badge badge-pill badge-secondary\">" +
+              "#{MiGA::Taxonomy.LONG_RANKS[k]}</span> "
       if tax[k]
         tag = %i[root ns p ssp str ds].include?(k) ? :span : :i
         all << content_tag(tag, class: 'tax-name') do
@@ -67,7 +68,7 @@ module QueryDatasetsHelper
         "represented in the database (p-value: #{"%.2g" % v.second}), " +
         "highest taxonomic rank with p-value &le; #{thr[k]}"
     end
-    all = '<div class="text-muted small comment"><b>P-values:</b> ' +
+    all = '<div class="text-muted small comment p-3 bg-light rounded border"><b>P-values:</b> ' +
             MiGA::TaxDist.aai_pvalues(aai, :novel, opts).map do |k,v|
               "<b>#{MiGA::Taxonomy.LONG_RANKS[k]}</b> #{"%.3g" % v}"
             end.join(", ") + '.</div>'

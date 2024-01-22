@@ -1,0 +1,54 @@
+<% results_to_load = [] %>
+<% MiGA::Project.RESULT_DIRS.keys.each do |k| %>
+  <% if res = @project.miga.result(k) %>
+    <div id="project_result_<%= k %>">
+      <h3 class="result-title">
+        <%= fa_icon('poll-h') %>
+        <%= image_tag('loading.gif') %>
+        <%= k.to_s.unmiga_name.capitalize %>
+      </h3>
+    </div>
+    <% results_to_load << k %>
+  <% end %>
+<% end %>
+<script>
+  <% results_to_load.each do |k| %>
+    $.ajax(
+      { url: "<%= project_result_partial_path(@project, k) %>" }
+    ).done(function(data){ $("#project_result_<%= k %>").html(data) });
+  <% end %>
+</script>
+
+<h3 class='result-title'>
+  <%= fa_icon('info-circle') %>
+  About <%= @project.path_name %>
+</h3>
+<div class='result'><div class='result-body'>
+  <p>
+    Initialized as
+    <u rel="tooltip" title="<%=
+      MiGA::Project.KNOWN_TYPES[@project.miga.metadata[:type]][:description]
+    %>"><%= @project.miga.metadata[:type] %></u>
+    <%= time_ago_in_words @project.miga.metadata[:created] %> ago.
+  </p>
+  <h4>Identity Engines</h4>
+  <p>
+    <abbr title='Heuristic AAI'>hAAI</abbr>:
+      <%= @project.miga.option(:haai_p) %>,
+    <abbr title='Average Amino Acid Identity'>AAI</abbr>:
+      <%= @project.miga.option(:aai_p) %>,
+    <abbr title='Average Nucleotide Identity'>ANI</abbr>:
+      <%= @project.miga.option(:ani_p) %>.
+  </p>
+  <% if File.exist? @project.readme_file %>
+    <h4>README</h4>
+    <div class='well well-sm small'>
+      <%
+        markdown ||= Redcarpet::Markdown.new(
+          Redcarpet::Render::HTML, autolink: true, tables: true
+        )
+      %>
+      <%= markdown.render(File.read(@project.readme_file)).html_safe %>
+    </div>
+  <% end %>
+</div></div>

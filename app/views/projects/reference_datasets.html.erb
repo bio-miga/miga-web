@@ -1,20 +1,29 @@
 <% provide(:title, @project.path_name) %>
-<% provide(:breadcrumb_1, link_to("Projects", projects_path)) %>
 <div class="row">
   <aside class="col-md-4">
-    <%= render partial: "shared/menu_datasets",
-      locals: { project: @project,
-      ds_counts: @project.dataset_counts(current_user),
-      ref_datasets: true, qry_datasets: false } %>
+    <%=
+      render(
+        partial: 'shared/menu_datasets',
+        locals: {
+          project: @project,
+          ds_counts: @project.dataset_counts(current_user),
+          ref_datasets: true, qry_datasets: false
+        }
+      )
+    %>
   </aside>
   <div class="col-md-8">
     <% if @project.ref_datasets.any? %>
-      <%= will_paginate @datasets, class: 'center-block center' %>
+      <%= will_paginate(@datasets, class: 'center-block center') %>
       <div class='dataset-list'>
         <% @datasets.each do |dataset| %>
-          <%= render partial: 'datasets/dataset',
-            object: @project.miga.dataset(dataset),
-            locals: { project: @project } %>
+          <%=
+            render(
+              partial: 'datasets/dataset',
+              object: @project.miga.dataset(dataset),
+              locals: { project: @project }
+            )
+          %>
         <% end %>
       </div>
       <%= will_paginate @datasets, class: 'center-block center' %>

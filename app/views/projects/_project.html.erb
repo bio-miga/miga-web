@@ -1,38 +1,57 @@
-<div class='project-item'>
-  <span class="label label-primary pull-left project-code"
-    style="background:<%= project.code_color %>;"><%= project.code %></span>
-  <span class="project-name">
-    <% if project.private? %>
-      <i class="glyphicon glyphicon-lock text-default" rel='tooltip' title='private'> </i>
-    <% end %>
-    <% if project.miga.nil? %>
-      <%= project.path.unmiga_name %>
-      <span class='text-danger'>Project Not Available</span>
-    <% else %>
-      <% if project.daemon_active? %>
-        <i class="glyphicon glyphicon-ok-sign text-light-success" rel="tooltip"
-          title="active <%=
-            time_ago_in_words(project.daemon_last_alive)%> ago"> </i>
+<div class="card card-project">
+  <div class="project-content card-body">
+    <%= project_code(project) %>
+
+    <div class="project-body">
+      <div class="project-name">
+        <% if project.private? %>
+          <%= fa_icon(:lock, title: 'private') %>
+        <% end %>
+        
+        <% if project.miga.nil? %>
+          <%= project.path.unmiga_name %>
+          <span class='text-danger'>Project Not Available</span>
+        <% else %>
+          <% if project.daemon_active? %>
+            <%=
+              fa_icon(
+                'check-circle',
+                class: 'text-success',
+                title: "active #{time_ago_in_words(project.daemon_last_alive)} ago"
+              )
+            %>
+          <% else %>
+            <%=
+              fa_icon(
+                'minus-circle', class: 'text-danger', title: 'inactive'
+              )
+            %>
+          <% end %>
+
+          <%=
+            link_to(
+              project.path_name, project,
+              title: project.miga.metadata[:description]
+            )
+          %>
+        <% end %>
+      </div>
+
+      <% unless project.miga.nil? %>
+        <div class="project-info">
+          <%= pluralize(project.ref_datasets.size, 'reference dataset') %>
+        </div>
+      <% end %>
+    </div>
+    <div class="timestamp float-right">
+      <% if project.last_db_update %>
+        <span title="<%= project.last_db_update.to_date %>">
+          <%= fa_icon(:history) %>
+          <%= time_ago_in_words(project.last_db_update) %>
+        </span>
       <% else %>
-        <i class="glyphicon glyphicon-remove-sign text-light-warning" rel="tooltip"
-          title="inactive"> </i>
-      <% end %>
-      <%= link_to project.path_name, project,
-        rel: 'tooltip', title: project.miga.metadata[:description] %>
-    </span>
-    <span class="datasets">
-      <b>Datasets:</b>
-      <%= pluralize(project.ref_datasets.size, 'reference') %>
-      <% if logged_in? && current_user.admin? %>
-        | <%= pluralize(project.dataset_counts(current_user)[:qry], 'query') %>
-      <% end %>
-    </span>
-    <span class="timestamp">
-      <% if project.last_db_update.nil? %>
         Index unavailable
-      <% else %>
-        Last updated <%= time_ago_in_words(project.last_db_update) %> ago
       <% end %>
-    <% end %>
-  </span>
+    </div>
+  </div>
 </div>

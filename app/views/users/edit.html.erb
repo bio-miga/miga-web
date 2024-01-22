@@ -6,24 +6,39 @@
       <%= form_for(@user) do |f| %>
 	 <%= render 'shared/error_messages', object: f.object %>
 
-	 <%= f.label :name %>
-	 <%= f.text_field :name, class: 'form-control' %>
+	 <%= form_input do %>
+           <%= f.label :name %>
+           <%= f.text_field :name, class: 'form-control' %>
+         <% end %>
 
-	 <%= f.label :email %>
-	 <%= f.email_field :email, class: 'form-control' %>
+	 <%= form_input do %>
+           <%= f.label :email %>
+           <%= f.email_field :email, class: 'form-control' %>
+         <% end %>
 
-	 <%= f.label :password %>
-	 <%= f.password_field :password, class: 'form-control' %>
+	 <%= form_input do %>
+           <%= f.label :password %>
+           <%= f.password_field :password, class: 'form-control' %>
+         <% end %>
 
-	 <%= f.label :password_confirmation, "Confirmation" %>
-	 <%= f.password_field :password_confirmation, class: 'form-control' %>
+	 <%= form_input do %>
+           <%= f.label :password_confirmation, "Confirmation" %>
+           <%= f.password_field :password_confirmation, class: 'form-control' %>
+         <% end %>
 
 	 <%= f.submit "Save changes", class: "btn btn-primary" %>
       <% end %>
 
+      <hr/>
       <div class="gravatar_edit">
-	 <%= gravatar_for @user %>
-	 <a href="http://gravatar.com/emails" target="_blank">change</a>
+        <%= gravatar_for @user %>
+        <%=
+          link_to(
+            'Change avatar',
+            'https://gravatar.com/emails',
+            class: 'btn btn-secondary', target: '_blank'
+          )
+        %>
       </div>
    </div>
 </div>

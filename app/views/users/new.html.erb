@@ -5,7 +5,7 @@
       <%= form_for(@user) do |f| %>
 	 <%= render "shared/error_messages", object: f.object %>
 	 
-	 <div class='alert alert-info'>
+	 <div class="alert alert-info my-4">
            <h3>Data privacy</h3>
            We intend to keep your data private, but your data may be subject to
            public disclosure due to security issues, programming error, human
@@ -13,17 +13,25 @@
            your data at all times.
          </div>
          
-         <%= f.label :name %>
-	 <%= f.text_field :name, class: "form-control" %>
+         <%= form_input do %>
+           <%= f.label :name %>
+           <%= f.text_field :name, class: "form-control" %>
+         <% end %>
 
-	 <%= f.label :email %>
-	 <%= f.email_field :email, class: "form-control" %>
+         <%= form_input do %>
+           <%= f.label :email %>
+           <%= f.email_field :email, class: "form-control" %>
+         <% end %>
 
-	 <%= f.label :password %>
-	 <%= f.password_field :password, class: "form-control" %>
+         <%= form_input do %>
+           <%= f.label :password %>
+           <%= f.password_field :password, class: "form-control" %>
+         <% end %>
 
-	 <%= f.label :password_confirmation, "Confirmation" %>
-	 <%= f.password_field :password_confirmation, class: "form-control" %>
+         <%= form_input do %>
+           <%= f.label :password_confirmation, "Confirmation" %>
+           <%= f.password_field :password_confirmation, class: "form-control" %>
+         <% end %>
 
 	 <%= f.submit "Create my account", class: "btn btn-primary" %>
       <% end %>

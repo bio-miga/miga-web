@@ -7,7 +7,7 @@ class QueryDataset < ApplicationRecord
   validates :user_id, presence: true
   validates :project_id, presence: true
   validates :name, presence: true, miga_name: true,
-    uniqueness: { scope: [:user, :project] }
+    uniqueness: { scope: :user }
   validates :input_file, presence: true
   validates :input_type, presence: true,
     inclusion: { in: %w(raw_reads trimmed_fasta assembly) }
@@ -30,19 +30,44 @@ class QueryDataset < ApplicationRecord
     "M:" + SecureRandom.urlsafe_base64(5).upcase.tap{ |i| i[3]="_" }
   end
 
+  def privileged_user?(test_user)
+    return false if test_user.nil?
+    return true if test_user == user || test_user.admin?
+    false
+  end
+
   def to_param
-    self.update(acc:QueryDataset.new_acc) if self.acc.nil?
+    self.update(acc: QueryDataset.new_acc) if self.acc.nil?
     self.acc
   end
 
   # Returns the MiGA name of the dataset
   def miga_name
-    "qG_#{name}_u#{user_id}"
+    name
   end
 
   # Returns the MiGA dataset object
   def miga
-    @miga ||= project.miga.dataset(miga_name)
+    @miga ||= query_project_miga.dataset(miga_name)
+  end
+
+  # Returns the MiGA object for the queries project
+  # Note that this is different from +project.miga+, which is the MiGA object
+  # of the reference database being queried
+  def query_project_miga
+    path = user.query_project_path
+    unless MiGA::Project.exist?(path)
+      require 'miga/cli'
+
+      Rails.logger.info "Creating user project: #{path}"
+      cmd = [
+        'new', '--project', path, '--type', 'mixed', '--ignore-init',
+        '--name', "MiGA_u#{user_id}"
+      ]
+      err = MiGA::Cli.new(cmd).launch
+      raise err if err.is_a? Exception
+    end
+    @query_project_miga ||= MiGA::Project.load(path)
   end
   
   # Always returns +false+.
@@ -76,7 +101,9 @@ class QueryDataset < ApplicationRecord
   def run_mytaxa_scan!
     return if run_mytaxa_scan?
     miga.metadata[:run_mytaxa_scan] = true
+    miga.metadata[:status] = nil
     miga.save
+    miga.project.save! # touch
     update_attribute(:complete, false) if complete
     update_attribute(:complete_new, false) if complete_new
   end
@@ -84,13 +111,16 @@ class QueryDataset < ApplicationRecord
   # Checks if Distances is not scheduled yet.
   def run_distances?
     return false if miga.nil?
+
     !(miga.result(:distances).nil?)
   end
 
   def run_distances!
     return unless run_distances?
+
     miga.result(:distances).remove!
     miga.recalculate_status
+    miga.project.save! # `touch` to activate daemon
     update_attribute(:complete, false) if complete
     update_attribute(:complete_new, false) if complete_new
   end
@@ -102,7 +132,7 @@ class QueryDataset < ApplicationRecord
 
   # Returns the running log of the task (if any)
   def job_log(_task)
-    f = File.expand_path("daemon/d/#{miga.name}.log", project.miga.path)
+    f = File.expand_path("daemon/d/#{miga.name}.log", query_project_miga.path)
     return '' unless File.exist? f
     File.read(f).encode('UTF-8', 'binary',
       invalid: :replace, undef: :replace, replace: '?')
@@ -123,21 +153,23 @@ class QueryDataset < ApplicationRecord
 
   def create_miga_dataset
     # Don't do anything if it already exists
-    return true if project.miga.dataset(miga_name)
+    return true if query_project_miga.dataset(miga_name)
 
+    par = {
+      name: miga_name,
+      query_project_miga: query_project_miga,
+      type: 'genome', # <- This will be changed by #save_in_miga
+      input_type: input_type.to_s,
+      query: true,
+      user: user_id
+    }
     err = project.create_miga_dataset(
-      {
-        name: miga_name,
-        type: 'genome', # <- This will be changed by #save_in_miga
-        input_type: input_type.to_s,
-        query: true,
-        user: user_id
-      },
+      par,
       input_file.path,
       (input_file_2 && input_file_2.path ? input_file_2.path : nil)
     )
     raise err if err
-    project.miga.load
+    query_project_miga.load
   ensure
     # Empty input files
     [input_file, input_file_2].each do |i|

@@ -1,59 +1,129 @@
 <footer class="footer container-fluid">
   <div class="row">
-    <div class="col-md-8">
-      <nav>
-        <ul class="left-col">
-          <li><%= link_to 'Help',
-                'https://help.microbial-genomes.org/',
-                target: '_blank', rel: 'noopener' %></li>
-          <li><%= link_to 'News',
-                'http://miga.microbial-genomes.org/',
-                target: '_blank', rel: 'noopener' %></li>
-          <li><%= link_to 'Support',
-                'http://support.microbial-genomes.org/',
-                target: '_blank', rel: 'noopener' %></li>
-          <li><%= link_to 'About', about_path %></li>
-          <li><%= link_to 'Roadmap',
-                'http://roadmap.microbial-genomes.org/',
-                target: '_blank', rel: 'noopener' %></li>
-        </ul>
+    <div class="col-sm-6 text-center">
+      <nav class="nav flex-column">
+        <h5>MiGA Online</h5>
+        <%=
+          link_to(
+            'Help', 'https://help.microbial-genomes.org/',
+            target: '_blank', rel: 'noopener', class: 'nav-link'
+          )
+        %>
+        <%= link_to('About', about_path, class: 'nav-link') %>
+        <%=
+          link_to(
+            'Support',
+            'http://support.microbial-genomes.org/',
+            target: '_blank', rel: 'noopener', class: 'nav-link'
+          )
+        %>
+        <hr/>
+        <h5>More MiGA</h5>
+        <%=
+          link_to(
+            'MiGA@XSEDE',
+            'https://xsede.microbial-genomes.org/',
+            target: '_blank', rel: 'noopener', class: 'nav-link'
+          )
+        %>
+        <%=
+          link_to(
+            'Container',
+            'http://container.microbial-genomes.org/',
+            target: '_blank', rel: 'noopener', class: 'nav-link'
+          )
+        %>
+        <%=
+          link_to(
+            'Base code',
+            'http://code.microbial-genomes.org/',
+            target: '_blank', rel: 'noopener', class: 'nav-link'
+          )
+        %>
+        <%=
+          link_to(
+            'News',
+            'http://miga.microbial-genomes.org/',
+            target: '_blank', rel: 'noopener', class: 'nav-link'
+          )
+        %>
+        <%=
+          link_to(
+            'Roadmap',
+            'http://roadmap.microbial-genomes.org/',
+            target: '_blank', rel: 'noopener', class: 'nav-link'
+          )
+        %>
       </nav>
     </div>
-    <div class="col-md-4 text-right right-col">
-      <small>
-        <p>
-          <%= link_to 'MiGA Web by Luis M. Rodriguez-R',
-                'http://code.microbial-genomes.org/miga-web',
-                target: '_blank', rel: 'noopener' %><br/>
-          Powered by <%= link_to MiGA::MiGA.LONG_VERSION.gsub(/ - \S+$/,""),
-                'http://code.microbial-genomes.org/miga',
-                target: '_blank', rel: 'noopener' %>
-        </p>
-      </small>
+    <div class="col-sm-6 text-center">
+      <nav class="nav flex-column">
+        <h5>Engine</h5>
+        <%=
+          link_to(
+            'MiGA Web 2.0rc2',
+            'http://code.microbial-genomes.org/miga-web',
+            target: '_blank', rel: 'noopener', class: 'nav-link'
+          )
+        %>
+        <%=
+          link_to(
+            'http://code.microbial-genomes.org/miga',
+            target: '_blank', rel: 'noopener', class: 'nav-link'
+          ) do
+        %>
+          <%= image_tag('MiGA.png', alt: 'MiGA logo', style: 'margin-top: -1em;') %>
+          <br/> <%= MiGA::MiGA.LONG_VERSION.sub(/MiGA (.*) - .*/, '\1') %>
+        <% end %>
+        <hr/>
+        <h5>Funded by</h5>
+        <%=
+          link_to(
+            'US NSF #1356288',
+            'http://nsf.gov/awardsearch/showAward?AWD_ID=1356288',
+            target: '_blank', rel: 'noopener', class: 'nav-link'
+          )
+        %>
+        <%=
+          link_to(
+            'US NSF #MCB190042',
+            'https://xras.xsede.org/public/requests/31162-XSEDE-MCB190042-1190572',
+            target: '_blank', rel: 'noopener', class: 'nav-link'
+          )
+        %>
+      </div>
+
     </div>
   </div>
-  <div class="row center">
-    <div class="col-sm-4">
-      <%= link_to image_tag("MiGA.png", alt: "MiGA logo"),
-            "http://miga.microbial-genomes.org/",
-            target: "_blank", rel: "noopener" %>
-    </div>
-    <div class="col-sm-4">
-      <h4>Funded by:</h4>
-      <%= link_to "US National Science Foundation",
-            "http://nsf.gov/", target: "_blank", rel: "noopener" %><br/>
-      <%= link_to "Award #1356288",
-            "http://nsf.gov/awardsearch/showAward?AWD_ID=1356288",
-            target: "_blank", rel: "noopener" %>
-    </div>
-    <div class="col-sm-4">
-      <h4>A collaboration between:</h4>
-      <%= link_to image_tag("GT.png", alt: "Georgia Tech logo"),
-            "http://enve-omics.gatech.edu/",
-            target: "_blank", rel: "noopener" %>
-      <%= link_to image_tag("RDP.png", alt: "RDP logo"),
-            "http://rdp.cme.msu.edu/",
-            target: "_blank", rel: "noopener" %>
+</footer>
+<div class='container p-5'>
+  <div class="row text-center rounded" id="footer-collab">
+    <div class="col-12">
+      <h5>A collaboration between</h5>
+      <%=
+        link_to(
+          image_tag('GT.png', alt: 'Georgia Tech logo'),
+          'http://enve-omics.gatech.edu/',
+          target: '_blank', rel: 'noopener'
+        )
+      %>
+      <%=
+        link_to(
+          image_tag('RDP.png', alt: 'RDP logo'),
+          'http://rdp.cme.msu.edu/',
+          target: '_blank', rel: 'noopener'
+        )
+      %>
+      <%=
+        link_to(
+          image_tag(
+            'LFU.webp', alt: 'Innsbruck University logo',
+            style: 'width: auto; height: 75px;'
+          ),
+          'http://disc-genomics.uibk.ac.at/',
+          target: '_blank', rel: 'noopener'
+        )
+      %>
     </div>
   </div>
 </footer>

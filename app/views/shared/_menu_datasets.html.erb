@@ -1,78 +1,108 @@
 <% unless project.nil? %>
-  <section class="project-title">
-    <%= render project %>
-  </section>
+  <section><%= render(project) %></section>
 <% end %>
-<section class="project_body">
-  <ul class="nav nav-pills nav-stacked">
+
+<section>
+  <hr/>
+  <ul class="nav nav-pills flex-column">
     <% lp = params.permit(:all) %>
     <% unless project.nil? %>
-      <li class="<%= 'active' if ref_datasets %>">
-        <%= link_to project_reference_datasets_path(project.id) do %>
+      <li class="nav-item">
+        <%= link_to(project_reference_datasets_path(project.id),
+                    class: "nav-link #{'active' if ref_datasets}") do %>
           Reference datasets <span class="badge"><%= ds_counts[:ref] %></span>
         <% end %>
       </li>
     <% end %>
     <% if project && project.reference? %>
-      <li>
+      <li class="nav-item">
         <hr/>
         <h3>Reference Project</h3>
         <p>
-          This database was downloaded from MiGA Online with release tag:
-          <%= (project.miga.metadata[:release] if project.miga) || 'unknown' %>
+          This database was downloaded from MiGA Online with release tag
+          <code class="code rounded bg-dark small p-1 mx-1 text-light">
+            <%= (project.miga.metadata[:release] if project.miga) || 'unknown' %>
+          </code>
         </p>
       </li>
     <% else %>
-      <li class="<%= 'active' if qry_datasets and not params[:ready] %>">
-        <%= link_to (project.nil? ? query_datasets_path(lp) :
-          project_query_datasets_path(project.id, lp)) do %>
+      <li class="nav-item">
+        <%
+          link = project.nil? ? query_datasets_path(lp) :
+                 project_query_datasets_path(project.id, lp)
+          klass = qry_datasets && !params[:ready] ? 'active' : ''
+        %>
+        <%= link_to(link, class: "nav-link #{klass}") do %>
           Query datasets <span class="badge"><%= ds_counts[:qry] %></span>
         <% end %>
       </li>
-      <li class="<%= 'active' if qry_datasets and params[:ready] == 'no' %>">
-        <%= link_to (project.nil? ?
-              query_datasets_path(lp.merge(ready: 'no')) :
-              project_query_datasets_path(project.id,
-                lp.merge(ready: 'no'))) do %>
-          <i class="glyphicon glyphicon-menu-right"> </i>
+      <li class="nav-item">
+        <%
+          link = project.nil? ? query_datasets_path(lp.merge(ready: 'no')) :
+                 project_query_datasets_path(project.id, lp.merge(ready: 'no'))
+          klass = qry_datasets && params[:ready] == 'no' ? 'active' : ''
+        %>
+        <%= link_to(link, class: "nav-link #{klass}") do %>
+          <span class="mx-2"></span><%= fa_icon('angle-right') %>
           Running <span class="badge"><%= ds_counts[:qry_no] %></span>
         <% end %>
       </li>
-      <li class="<%= 'active' if qry_datasets and params[:ready] == 'yes' %>">
-        <%= link_to (project.nil? ? query_datasets_path(lp.merge(ready: 'yes')) :
-            project_query_datasets_path(project.id, lp.merge(ready: 'yes'))) do %>
-          <i class="glyphicon glyphicon-menu-right"> </i>
+      <li class="nav-item">
+        <%
+          link = project.nil? ? query_datasets_path(lp.merge(ready: 'yes')) :
+                 project_query_datasets_path(project.id, lp.merge(ready: 'yes'))
+          klass = qry_datasets && params[:ready] == 'yes' ? 'active' : ''
+        %>
+        <%= link_to(link, class: "nav-link #{klass}") do %>
+          <span class="mx-2"></span><%= fa_icon('angle-right') %>
           Complete <span class="badge"><%= ds_counts[:qry_yes] %></span>
         <% end %>
       </li>
     <% end %>
   </ul>
-  <br/>
-  <% unless project.nil? || project.reference? %>
-    <%= link_to 'Upload new query datasets',
-          new_query_dataset_path(project_id: project.id),
-          class: 'btn btn-primary btn-block' %>
+  <% unless project.nil? %>
+    <hr/>
+    <%= link_to(new_query_dataset_path(project_id: project.id),
+                class: 'btn btn-primary btn-block') do %>
+        <%= fa_icon(:upload) %>
+        Upload new query datasets
+    <% end %>
   <% end %>
 </section>
 
-<% if !current_user.nil? && !project.nil? &&
-      (current_user.admin? || current_user?(project.user)) %>
-  <section class='admin-zone'>
-    <h1>Admin zone</h1>
+<%
+  can_admin = !current_user.nil? && !project.nil?
+  can_admin &&= current_user.admin? || current_user?(project.user)
+%>
+<% if can_admin %>
+  <section class='card card-admin-zone'>
+    <h2>Admin zone</h2>
     <% if project.reference? %>
       <p class='text-center'>
         Some actions are unavailable for reference projects
       </p>
     <% else %>
-      <%= link_to 'Upload reference datasets',
-            project_new_reference_url(project),
-            class: 'btn btn-primary btn-block' %>
-      <%= link_to 'Download available NCBI genomes',
-            project_new_ncbi_download_path(@project),
-            class: 'btn btn-primary btn-block' %>
+      <%=
+        link_to(
+          'Upload reference datasets',
+          project_new_reference_url(project),
+          class: 'btn btn-primary btn-block'
+        )
+      %>
+      <%=
+        link_to(
+          'Download available NCBI genomes',
+          project_new_ncbi_download_path(@project),
+          class: 'btn btn-primary btn-block'
+        )
+      %>
     <% end %>
-    <%= link_to 'Remove project', project, method: :delete,
-          class: 'btn btn-warning btn-block',
-          data: { confirm: 'Are you sure? This action cannot be undone.' } %>
+    <%=
+      link_to(
+        'Remove project', project, method: :delete,
+        class: 'btn btn-warning btn-block',
+        data: { confirm: 'Are you sure? This action cannot be undone' }
+      )
+    %>
   </section>
 <% end %>

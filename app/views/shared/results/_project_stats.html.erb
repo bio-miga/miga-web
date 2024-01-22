@@ -6,7 +6,7 @@ def print_tax_datasets(v, p)
   return if v["datasets"].empty?
   %>
   <div class="datasets list-group-item">
-    <%= v["datasets"].map do |d| %>
+    <%= v['datasets'].map do |d| %>
       <% link_to d.unmiga_name, reference_dataset_url(p.id, d) %>
     <% end.to_sentence.html_safe %>
   </div>
@@ -15,12 +15,14 @@ def print_tax_datasets(v, p)
 end
 
 def print_tax_children(v, p, str_id)
-  return if v["children"].empty?
-  ch = v["children"].select{ |i| i["str"] !~ /:\?$/ } +
-       v["children"].select{ |i| i["str"] =~ /:\?$/ }
-  ds = ch.select{ |i| i["str"] =~ /^ds:/ }
-  tx = ch.select{ |i| i["str"] !~ /^ds:/ }
-  print_tax_datasets({"datasets"=>ds.map{ |i| i["datasets"] }.flatten}, p)
+  return if v['children'].empty?
+  ch = v['children'].select{ |i| i['str'] !~ /:\?$/ } +
+       v['children'].select{ |i| i['str'] =~ /:\?$/ }
+  ds = ch.select{ |i| i['str'] =~ /^ds:/ }
+  tx = ch.select{ |i| i['str'] !~ /^ds:/ }
+  print_tax_datasets(
+    { 'datasets' => ds.map{ |i| i['datasets'] }.flatten }, p
+  )
   if str_id.nil?
     tx.each { |i| print_tax_rank(i, p) }
   else
@@ -34,21 +36,35 @@ end
 
 def print_tax_rank(v, p)
   return if v.nil?
-  if v["datasets"].empty? and (v["str"] =~ /:\?$/ or v["str"]=="root:biota")
+  if v['datasets'].empty? && (v['str'] =~ /:\?$/ || v['str'] == 'root:biota')
     print_tax_children(v, p, nil)
     print_tax_datasets(v, p)
   else
     str_id = "tax-#{$id_k += 1}"
-    str = v["str"].split(":")
+    str = v['str'].split(':')
     str_rk = MiGA::Taxonomy.LONG_RANKS[str[0].to_sym]
     str_rk = str[0] if str_rk.nil?
     str_vl = str[1].unmiga_name
     %>
     <div class="taxonomy-tree">
-      <b><%= link_to "##{str_id}", "data-toggle"=>"collapse",
-                "aria-expanded"=>"false", "aria-controls"=>str_id do %>
-          <span class=badge><%= str_rk %></span> <i><%= str_vl %></i>
-      <% end %></b>
+      <div class="tree-rank-name">
+        <%=
+          link_to(
+            "##{str_id}",
+            data: { toggle: 'collapse' },
+            aria: { expanded: 'false', controls: str_id },
+            class: 'tree-rank-link'
+            
+          ) do
+        %>
+          <span class="badge badge-secondary badge-pill"><%= str_rk %></span>
+          <b><i><%= str_vl %></i></b>
+        <% end %>
+        <%= link_to(project_search_path(p.id, q: "tax:#{str[1]}"),
+                    class: 'taxonomy-tree-search') do %>
+          <%= fa_icon('search') %>
+        <% end %>
+      </div>
       <% print_tax_datasets(v, p) %>
       <% print_tax_children(v, p, str_id) %>
     </div>
@@ -59,19 +75,28 @@ end
 
 <% unless res.file_path(:taxonomy_index).nil? %>
   <h4>Search in project</h4>
-  <%= render partial: "projects/search_bar" %>
+  <%= render(partial: 'projects/search_bar') %>
   <% unless project.miga.is_multi? %>
-    <br/>
-    <div class="help-block">
+    <div class="help-block text-muted">
       &nbsp;Or filter by quality:
-      <% q_tag = {excellent:"success", high:"info",
-        intermediate:"warning", low:"danger"} %>
-      <% q_tag.keys.each do |i| %>
-        <%= link_to i,
-          project_search_path(project.id, q:"quality:#{i}"),
-          class: "btn btn-q-#{i} btn-xs" %>
+      <%
+        q_tag = {
+          excellent: 'success', high: 'info',
+          intermediate: 'warning', low: 'danger'
+        } %>
+      <% q_tag.each do |i, klass| %>
+        <%=
+          link_to(
+            project_search_path(project.id, q: "quality:#{i}"),
+            class: "text-#{klass} mx-1 text-decoration-none",
+          ) do
+        %>
+          <%= fa_icon('clipboard-check', style: 'font-size: 80%;') %>
+          <%= i %>
+        <% end %>
       <% end %>
     </div>
+    <br/>
   <% end %>
   <h4>Taxonomy tree</h4>
   <% tax = JSON.parse File.read res.file_path :taxonomy_index %>

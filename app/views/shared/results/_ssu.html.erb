@@ -6,25 +6,38 @@
         .select{ |l| l !~ /^#/ } # Ignore comments
         .map { |l| l.gsub(/.*;product=([^;]+).*/, "\\1") } # 16S/18S/&c
         .inject(Hash.new(0)) { |t, e| t[e] += 1 ; t } # Count each
-        .map { |l, c| pluralize c, l }.to_sentence # Human-readable
+        .map { |l, c| pluralize(c, l) }.to_sentence # Human-readable
   %>
+  <h4>Ribosomal RNA (rRNAs)</h4>
   <% if s.empty? %>
-    <p>MiGA didn't detect SSU sequences.</p>
+    <p>MiGA didn't detect rRNA sequences.</p>
   <% else %>
     <p>
       MiGA found <%= s %>
-      <% info_msg_id = info_modal "RDP Classifier" do %>
+      <% info_msg_id = info_modal('RDP Classifier', dialog_class: 'modal-lg') do %>
         <div id="ssu-rdp"></div>
       <% end %>
       <% ds_name = obj.is_a?(MiGA::Dataset) ? obj.name : obj.miga_name %>
       <div class="text-center">
-        <%= link_to(rdp_classify_url(project.id, ds_name),
-              :class => "btn btn-default btn-sm",
-              :id => "link-ssu-rdp",
-              :remote => true, :"data-target" => "##{info_msg_id}",
-              :"data-url" => rdp_classify_as_url(project.id, ds_name)) do %>
-          Classify with RDP
-        <% end %>
+        <%=
+          link_to(
+            'Classify SSU (16S rRNA) with RDP',
+            obj.is_a?(MiGA::Dataset) ?
+              rdp_classify_url(project.id, ds_name) :
+              rdp_classify_url(0, ds_name, user_id: obj.user_id),
+            class: 'btn btn-block btn-primary',
+            type: :button,
+            id: 'link-ssu-rdp',
+            remote: true,
+            data: {
+              target: "##{info_msg_id}",
+              url:
+                obj.is_a?(MiGA::Dataset) ?
+                  rdp_classify_as_url(project.id, ds_name) :
+                  rdp_classify_as_url(0, ds_name, user_id: obj.user_id)
+            }
+          )
+        %>
       </div>
     </p>
     <script>
@@ -41,18 +54,8 @@
         event.stopPropagation();
       })
     </script>
-    <div class="panel panel-default" id=ssu>
-      <div class=panel-heading role=tab id=ssu-h>
-        <h4 class=panel-title>
-          <a role=button data-toggle=collapse data-parent="#ssu"
-                class=btn href="#ssu-b" aria-expanded=false
-                aria-controls=ssu-b>
-            Feature locations
-          </a>
-        </h4>
-      </div>
-      <div id=ssu-b class="panel-collapse collapse"
-            role=tabpanel aria-labelledby=ssu-h>
+    <%= accordion('result-ssu', false) do |accordion| %>
+      <%= accordion_card(accordion, 'gff', 'Feature locations') do %>
         <div class="panel-body table-responsive">
           <table class="table table-hover">
             <thead><tr>
@@ -74,7 +77,24 @@
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% if res.stats[:trna_count] && res.stats[:trna_aa] %>
+    <h4 class="mt-4">Transfer RNA (tRNAs)</h4>
+    <p>
+      MiGA found
+      <%= pluralize(res.stats[:trna_count], 'tRNA element') %> for
+      <%= pluralize(res.stats[:trna_aa], 'amino acid') %>,
+      <% if res.stats[:trna_aa] >= 20 # Could be 21, Selenocysteine %>
+        correspoding to all the expected cannonical amino acids.
+      <% elsif res.stats[:trna_aa] == 0 %>
+        missing all the expected 20 or 21 cannonical amino acids.
+      <% else %>
+        corresponding to <% (res.stats[:trna_aa].to_f * 100 / 20).round %>%
+        of the expected cannonical amino acids.
+      <% end %>
+    </p>
   <% end %>
 <% end %>
+<br/>

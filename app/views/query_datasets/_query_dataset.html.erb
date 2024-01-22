@@ -1,46 +1,11 @@
-<div class='dataset-item query-dataset'>
-  <%= link_to query_dataset.project.code, query_dataset.project,
-    class: "label label-primary pull-left project-code",
-    style: "background:#{query_dataset.project.code_color};",
-    title: query_dataset.project.path_name %></a>
-  <span class='dataset-name'>
-    <% md = query_dataset.miga.nil? ? {} : query_dataset.miga.metadata %>
-    <% if query_dataset.miga.nil? %>
-      <i class='glyphicon glyphicon-exclamation-sign small text-light-danger'
-        rel='tooltip' title='Data not available'> </i>
-      <%= link_to query_dataset, title: 'Delete dataset', method: :delete,
-            data: { confirm: "Are you sure? This action cannot be undone." } do %>
-        <i class='glyphicon glyphicon-remove small text-light-danger'> </i>
-      <% end %>
-    <% else %>
-      <% if not query_dataset.miga.is_active? %>
-        <i class="glyphicon glyphicon-remove-circle small text-light-danger"
-          rel="tooltip" title="inactive"> </i>
-      <% elsif query_dataset.complete_new %>
-        <i class="glyphicon glyphicon-record small text-light-info"
-          rel="tooltip" title="ready"> </i>
-      <% elsif query_dataset.ready? %>
-        <i class="glyphicon glyphicon-ok-circle small text-light-success"
-          rel="tooltip" title="ready"> </i>
-      <% else %>
-        <i class="glyphicon glyphicon-time small text-light-info" rel="tooltip"
-          title="running <%= query_dataset.miga.next_preprocessing %>"> </i>
-      <% end %>
-      <% qi = md[:quality] %>
-      <% unless qi.nil? %>
-        <i class="glyphicon glyphicon-adjust small text-light-<%=
-            {excellent: 'success', high: 'info',
-              intermediate: 'warning', low: 'danger'}[qi.to_sym]
-        %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
-      <% end %>
-    <% end %>
-    <b><%= link_to query_dataset.name.unmiga_name, query_dataset %></b>
-  </span>
-  <span class="timestamp">
-    Created <%= time_ago_in_words(query_dataset.created_at) %> ago
-    <% unless query_dataset.user.nil? or current_user? query_dataset.user %>
-      by <%= link_to(query_dataset.user.name, query_dataset.user) %>
-    <% end %>
-  </span>
-</div>
-
+<%=
+  render(
+    partial: 'datasets/dataset',
+    object: query_dataset.miga,
+    locals: {
+      project: query_dataset.project,
+      query_dataset: query_dataset,
+      noname: noname ||= nil
+    }
+  )
+%>

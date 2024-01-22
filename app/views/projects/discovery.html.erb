@@ -1,52 +1,61 @@
 <% provide(:title, 'Link projects') %>
 
 <div class="row">
-  <% if @unregistered.empty? %>
-    <div class='jumbotron'>
-      <h2>
-        All projects are properly linked
-        <i class='glyphicon glyphicon-leaf'> </i>
-      </h2>
-    </div>
-  <% else %>
-    <h1>Link projects</h1>
-    <% @unregistered.each do |entry| %>
-      <% entry[:official] = entry[:type] == :official %>
-      <h3><%= entry[:path] %> (<%= entry[:type] %>)</h3>
-      <div style='margin-left:2em;'>
-        <% case entry[:type] %>
-        <% when :official, :user %>
-          <% if entry[:type] == :official %>
-            <p>Link this project as an <b>official</b> site database</p>
-          <% else %>
-            <p>
-              Link this project as an <b>unofficial</b> site database owned by
-              <%= link_to entry[:user].name, entry[:user] %>
-            </p>
-          <% end %>
-          <%= link_to(
-                'Link publicly',
-                project_link_path(entry.merge(private: false)),
-                class: 'btn btn-primary'
-              ) %>
-          <%= link_to(
-                'Link privately',
-                project_link_path(entry.merge(private: true)),
-                class: 'btn btn-primary'
-              ) %>
-        <% when :bad_user %>
-          <div class='alert alert-danger'>
-            <h4>Project owned by an unexisting user</h4>
-            Please move this folder to the root of the data folder or change the
-            user ID folder to an existing user
-          </div>
-        <% else %>
-          <div class='alert alert-danger'>
-            <h4>Location incompatible with MiGA Web</h4>
-            Please move this folder to the root of the data folder
-          </div>
-        <% end %>
+  <div class="col-lg-10 offset-lg-1">
+    <% if @unregistered.empty? %>
+      <div class="jumbotron">
+        <h2>
+          All projects are properly linked
+          <i class='glyphicon glyphicon-leaf'> </i>
+        </h2>
       </div>
+    <% else %>
+      <h1>Link projects</h1>
+      <% @unregistered.each do |entry| %>
+        <% entry[:official] = entry[:type] == :official %>
+        <h3 class="mt-5"><%= entry[:path] %> (<%= entry[:type] %>)</h3>
+        <hr/>
+        <div style='margin-left:2em;'>
+          <% case entry[:type] %>
+          <% when :official, :user %>
+            <% if entry[:type] == :official %>
+              <p>Link this project as an <b>official</b> site database</p>
+            <% else %>
+              <p>
+                Link this project as an <b>unofficial</b> site database owned by
+                <%= link_to entry[:user].name, entry[:user] %>
+              </p>
+            <% end %>
+            <%= link_to(
+                  'Link publicly',
+                  project_link_path(entry.merge(private: false)),
+                  class: 'btn btn-primary'
+                ) %>
+            <%= link_to(
+                  'Link privately',
+                  project_link_path(entry.merge(private: true)),
+                  class: 'btn btn-primary'
+                ) %>
+            <%= link_to(
+                  'Link as reference',
+                  project_link_path(entry.merge(private: false, reference: true)),
+                  class: 'btn btn-primary'
+                ) %>
+          <% when :bad_user %>
+            <div class='alert alert-danger'>
+              <h4>Project owned by an unexisting user</h4>
+              Please move this folder to the root of the data folder or change the
+              user ID folder to an existing user
+            </div>
+          <% else %>
+            <div class='alert alert-danger'>
+              <h4>Location incompatible with MiGA Web</h4>
+              Please move this folder to the root of the data folder
+            </div>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
-  <% end %>
+    <br/><br/><br/>
+  </div>
 </div>

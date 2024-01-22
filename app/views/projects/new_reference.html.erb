@@ -1,11 +1,11 @@
 <% provide(:breadcrumb_1, link_to(@project.path, @project)) %>
 <%= provide(:title, 'New reference datasets') %>
-<h1>New reference datasets</h1>
 <div class="row">
-  <div class="col-md-6 col-md-offset-3">
+  <div class="col-md-6 offset-md-3">
+    <h1>New reference datasets</h1>
+    <hr/>
     <div class="projects"><%= render @project %></div>
     <hr/>
-
     <%= render partial: 'shared/dataset_form' %>
   </div>
 </div>

@@ -1,40 +1,73 @@
-<div class='dataset-item reference-dataset'>
-  <% noname ||= false %>
-  <% expand_side ||= false %>
-  <% unless noname %>
-    <% unless dataset.nil? %>
-      <%= link_to(delete_ref_dataset_path(id: project.id, name: dataset.name),
-            method: :delete, title: 'Delete dataset',
-            data: { confirm: 'Are you sure? This action cannot be undone.' },
-            class: 'pull-right btn text-danger', type: 'button') do %>
-        <i class='glyphicon glyphicon-trash'> </i>
-      <% end %>
-    <% end %>
-    <span class="dataset-name">
-      <span class="project-code"><%= link_to project.code, project %></span>
+<%
+  noname ||= false
+  no_body ||= false
+  no_actions ||= false
+  expand_side ||= false
+  query_dataset ||= nil
+  show_status ||= false
+  isref = query_dataset.nil?
+  locals = {
+    project: project, dataset: dataset, query_dataset: query_dataset
+  }
+  partial = expand_side ? 'datasets/side' :
+            show_status ? 'datasets/instatus' :
+            isref ? 'datasets/intax' : 'datasets/instatus'
+%>
+<% if noname %>
+  <%= render(partial: partial, locals: locals) unless no_body %>
+<% else %>
+  <div class="card card-dataset <%= isref ? 'reference' : 'query' %>-dataset">
+    <div class="card-header">
+      <%= project_code(project) %>
       <% if dataset.nil? %>
-        <span class='text-danger'>Missing dataset</span>
+        <div class="dataset-name text-danger">Missing dataset</div>
       <% else %>
-        <% qi = dataset.metadata[:quality] %>
-        <% unless qi.nil? %>
-          <i class="glyphicon glyphicon-adjust small text-light-<%=
-              { excellent: 'success', high: 'info',
-                intermediate: 'warning', low: 'danger' }[qi.to_sym]
-          %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
-        <% end %>
-        <%= link_to_reference_dataset(project, dataset.name) %>
+        <div class="dataset-name">
+          <% qi = dataset.metadata[:quality] %>
+          <% unless qi.nil? %>
+            <i class="glyphicon glyphicon-adjust small text-light-<%=
+                { excellent: 'success', high: 'info',
+                  intermediate: 'warning', low: 'danger' }[qi.to_sym]
+            %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
+          <% end %>
+          <%=
+            isref ? link_to_reference_dataset(project, dataset.name) :
+                    link_to(query_dataset.name.unmiga_name, query_dataset)
+          %>
+        </div>
+        <div class="dataset-actions actions float-right">
+          <% if !no_actions && (
+                  (isref && can?(:edit, project)) ||
+                  (!isref && can?(:delete, query_dataset))
+                ) %>
+            <%=
+              link_to(
+                isref ?
+                  delete_ref_dataset_path(id: project.id, name: dataset.name) :
+                  query_dataset,
+                method: :delete, title: 'Delete dataset',
+                data: {
+                  confirm: 'Are you sure? This action cannot be undone'
+                },
+                class: 'btn text-danger btn-sm', type: 'button'
+              ) do
+            %>
+              <%= fa_icon('trash-alt')%>
+            <% end %>
+          <% end %>
+        </div>
       <% end %>
-    </span>
-  <% end %>
-  <%= render(
-        partial: (expand_side ? 'datasets/side' : 'datasets/intax'),
-        locals: { project: project, dataset: dataset, noname: noname }
-      ) %>
-  <% unless noname || dataset.nil? %>
-    <span class="timestamp">
-      Updated <%= time_ago_in_words Date.parse(dataset.metadata[:updated]) %>
-      ago.
-    </span>
-  <% end %>
-</div>
+    </div>
+    <div class="card-body">
+      <%= render(partial: partial, locals: locals) unless no_body %>
+      <% if dataset&.metadata&.[](:updated) %>
+        <% date = DateTime.parse(dataset.metadata[:updated]) %>
+        <div class="timestamp float-right" title="<%= date %>">
+          <%= fa_icon(:history) %><%= time_ago_in_words(date) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
 

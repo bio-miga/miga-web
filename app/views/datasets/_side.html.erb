@@ -1,20 +1,66 @@
 <%= accordion('dataset-metadata') do |accordion| %>
   <% unless dataset.metadata[:tax].nil? %>
     <%= accordion_card(accordion, 'taxonomy', 'Taxonomy') do %>
-      <ul class='panel-body taxonomy'>
-      <% tax = dataset.metadata[:tax].sorted_ranks.map{ |r| r.join(": ")} %>
-      <% tax.each do |r| %>
-        <% r = r.split(": ") %>
-        <li>
-          <span class=text-muted><%= r[0] %>:</span>
-          <% if r[1] =~ /^(Candidatus) (.*)/ %>
-            <i><%= $1 %></i> <%= $2 %>
-          <% else %>
-            <i><%= r[1] %></i>
-          <% end %>
-        </li>
-      <% end %>
+      <ul class="taxonomy">
+        <% tax = dataset.metadata[:tax].sorted_ranks.map { |r| r.join(': ') } %>
+        <% tax.each do |r| %>
+          <% r = r.split(': ') %>
+          <li>
+            <span class=text-muted><%= r[0] %>:</span>
+            <% if r[1] =~ /^(Candidatus) (.*)/ %>
+              <i><%= $1 %></i> <%= $2 %>
+            <% else %>
+              <i><%= r[1] %></i>
+            <% end %>
+          </li>
+        <% end %>
       </ul>
+      <% if dataset.metadata[:tax].namespace %>
+        <% ns = dataset.metadata[:tax].namespace %>
+        <div class="text-muted text-right">
+          (Taxonomic scheme:
+          <b><%= ns == 'seqcode' ? 'SeqCode' : ns.upcase %></b>)
+          <%= info_msg('Taxonomic schemes in MiGA') do %>
+            MiGA is taxonomy-agnostic, which means that the same tools and
+            techniques can be applied to different reference taxonomies.
+            However, it is important to maintain a standardized scheme for
+            a given database if we want to leverage that database on
+            classification. For that reason, MiGA implements a top-level
+            taxonomic rank called <i>namespace</i>, which tells us the taxonomic
+            scheme being followed. Some common schemes include:
+            <ul>
+              <li>
+                <b>SeqCode</b>: Following the reference taxonomy reported by
+                <a href='https://seqco.de/seqcode' target=_blank><i>The Code of
+                Nomenclature of Prokaryotes Described from Sequence Data</i></a>
+                (SeqCode). This taxonomy should be fully compatible with
+                <b>NCBI</b>, but may not be compatible with some specific nodes
+                of <b>GTDB</b>.
+              </li>
+              <li>
+                <b>NCBI</b>: Following the taxonomy curated and maintained by
+                <a href='https://ncbi.nlm.nih.gov/taxonomy' target=_blank>NCBI
+                Taxonomy</a>. This taxonomy mostly follows the recommendation of
+                <i>The International Code of Nomenclature of Prokaryotes</i>
+                (ICNP), and should be fully compatible with <b>SeqCode</b>.
+              </li>
+              <li>
+                <b>GTDB</b>: Following the taxonomy curated and mainteined by
+                the <a href='https://gtdb.ecogenomic.org/' target=_blank>Genome
+                Taxonomy Data Base</a>. This taxonomy introduces a complete
+                taxonomic tree from species to phylum, but it includes some
+                temporary alpha-numeric identifiers that don't follow binomial
+                nomenclature as recognized by either ICNP or SeqCode. Therefore,
+                it can be incompatible with <b>SeqCode</b> and <b>NCBI</b>, but
+                it offers non-missingness as well as largely standardized ranks
+                on the basis of Relative Evolutionary Distances.
+              </li>
+            </ul>
+            For additional information, please see the links above and the
+            associated publications.
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   <% end %>
 
@@ -25,8 +71,14 @@
   <% end %>
 
   <% dataset.metadata.each do |k,v| %>
-    <% next if %i[ref created updated user tax
-          quality is_type is_ref_type type_rel status warn].include? k %>
+    <%
+      skip = %i[
+        ref created updated user tax
+        quality is_type is_ref_type type_rel status warn
+        run_mytaxa_scan db_project
+      ]
+    %>
+    <% next if skip.include?(k) %>
     <% next if k.to_s[0] == '_' %>
     <% k_str = k.to_s.unmiga_name.capitalize %>
     <%
@@ -76,8 +128,9 @@
     <% end %>
   <% end %>
   
-  <% method = project.miga.is_clade? ? :subclades : :clade_finding %>
-  <% unless (clade_r = dataset.project.result(method)).nil? %>
+  <% method = project.miga.nil? ? nil :
+              project.miga.is_clade? ? :subclades : :clade_finding %>
+  <% unless method.nil? || (clade_r = dataset.project.result(method)).nil? %>
     <% unless (clade_f = clade_r.file_path(:class_table)).nil? %>
       <% File.open(clade_f, 'r') do |fh| %>
         <% clade = (fh.each_line.

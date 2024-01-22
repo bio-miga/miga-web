@@ -1,0 +1,60 @@
+
+@import "custom";
+
+$gray-light: $gray-100;
+$gray-medium: $gray-300;
+$gray-dark: $gray-600;
+
+.result {
+  margin: 0;
+  h3 {
+    border-left: 1px solid $gray-medium;
+    margin: 0;
+    padding: 5px;
+  }
+  .result-body {
+    padding: 1em 1em 0 1em;
+    border-left: 1px solid $gray-medium;
+    border-bottom: 1px solid $gray-medium;
+    h4 {
+      font-size: 120%;
+    }
+  }
+  .result-footer {
+    border-left: 1px solid $gray-medium;
+    background: $gray-light;
+    padding: 5px 10px;
+    margin-bottom: 3em;
+    .timestamp {
+      color: $gray-dark;
+      text-align: right;
+      margin-top: -1.5em;
+    }
+  }
+}
+.result-dir {
+  .file {
+    text-align: center;
+    margin: 5px 5px 0 5px;
+  }
+}
+.result-footer {
+  .fa, .fas, .far, .fal, .fad, .fab {
+    font-size: 75%;
+    color: $blue-miga;
+    margin-right: 0.5em;
+  }
+}
+
+.result-title {
+  font-size: 150%;
+  margin-top: 1em;
+  .fa, .fas, .far, .fal, .fad, .fab {
+    font-size: 90%;
+    margin-right: 0.5em;
+  }
+  &:hover {
+    color: $blue-miga;
+  }
+}
+

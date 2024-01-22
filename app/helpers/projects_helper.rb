@@ -1,4 +1,13 @@
 module ProjectsHelper
+  def project_code(project)
+    link_to(
+      project.code, project,
+      class: 'project-code rounded',
+      style: "background: #{project.code_color};",
+      title: project.path.unmiga_name
+    )
+  end
+
   def estimated_wait_time(project_id)
     @estimated_wait_time_last_check ||= []
     @estimated_wait_time ||= []
@@ -19,23 +28,33 @@ module ProjectsHelper
           @estimated_wait_time_last_check[project_id] ]
   end
 
+  def miga_dataset_type(miga_dataset)
+    md = miga_dataset&.metadata || {}
+    md[:is_type] ?
+        content_tag(:sup, md[:seqcode] ? 'Ts' : 'T',
+          title: md[:type_rel] || 'Type strain',
+          style: 'font-weight:bold;') :
+      md[:is_ref_type] ?
+        content_tag(:sup, 'R',
+          title: md[:type_rel] || 'Reference material',
+          style: 'font-weight:bold;') : nil
+  end
+
   def link_to_reference_dataset(project, dataset_name)
     pm = project.miga if project
     ds_miga = pm.dataset(dataset_name) if pm
     if ds_miga.nil?
       content_tag(:del, dataset_name, title: 'Reference dataset removed')
     else
+      md = ds_miga.metadata
       link_to(reference_dataset_path(project.id, dataset_name)) do
         content_tag(:span, dataset_name.unmiga_name,
-          style: 'display:inline;') +
-              (ds_miga.metadata[:is_type] ?
-                content_tag(:sup, 'T',
-                  title: ds_miga.metadata[:type_rel] || 'Type strain',
-                  style: 'font-weight:bold;') :
-              ds_miga.metadata[:is_ref_type] ?
-                content_tag(:sup, 'R',
-                  title: ds_miga.metadata[:type_rel] || 'Reference material',
-                  style: 'font-weight:bold;') : nil)
+          style: 'display:inline;') + (
+            md[:strain] ? (
+              content_tag(:span, ' (') + md[:strain] +
+                miga_dataset_type(ds_miga) + content_tag(:span, ')')
+            ) : miga_dataset_type(ds_miga)
+          )
       end
     end
   end

@@ -1,0 +1,27 @@
+<%
+  dataset ||= query_dataset.miga
+  is_ready = query_dataset.nil? ? dataset.done_preprocessing? : query_dataset.ready?
+%>
+
+<span class="status">
+  <% unless dataset.active? %>
+    <span class="text-danger">[Inactive]</span>
+  <% end %>
+
+  <% if is_ready %>
+    <%= dataset_quality(dataset) %>
+  <% else %>
+    <%= fa_icon(:spinner, class: 'text-muted', animation: 'spin') %>
+    <%= reload_page_soon %>
+    &nbsp; <%= dataset&.type.to_s.capitalize %>
+    running <%= dataset&.next_preprocessing.to_s.unmiga_name %>
+  <% end %>
+  <% if logged_admin? && query_dataset&.user %>
+    <span class="text-muted">
+     / by
+     <%=
+       link_to(query_dataset.user.name, query_dataset.user, class: 'text-muted')
+     %>
+    </span>
+  <% end %>
+</span>

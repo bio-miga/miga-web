@@ -2,37 +2,46 @@
 <html lang=en>
 <head>
   <% unless Settings.google_tracking_id.nil? %>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= Settings.google_tracking_id %>"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '<%= Settings.google_tracking_id %>');
-  </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%=
+          Settings.google_tracking_id %>"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '<%= Settings.google_tracking_id %>');
+    </script>
   <% end %>
   <title><%= full_title(yield :title) %></title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'https://cdn.plot.ly/plotly-latest.min.js', 'data-turbolinks-track' => true, 'async' => true %>
+  <%=
+    stylesheet_link_tag(
+      'application', media: 'all', 'data-turbolinks-track': 'reload'
+    )
+  %>
+  <%= javascript_include_tag('application', 'data-turbolinks-track' => true) %>
+  <%=
+    javascript_include_tag(
+      'https://cdn.plot.ly/plotly-latest.min.js',
+      'data-turbolinks-track' => true,
+      'async' => true
+    )
+  %>
   <%= render 'layouts/shim' %>
   <%= csrf_meta_tags %>
   <%= yield :head %>
 </head>
 <body>
+  <a class="skip-nav-link" href="#main-content">skip navigation</a>
   <%= render 'layouts/header' %>
-  <div class="container wrapper">
-    <% flash.each do |message_type, message| %>
-      <div class="alert alert-<%= message_type %>"><%= message %></div>
-    <% end %>
-    <%= yield %>
+  <main role="main" id="main-content">
+    <div class="container">
+      <%= render 'layouts/flash' %>
+      <%= yield %>
+    </div>
     <div class="push"></div>
-  </div>
+  </main>
   <%= info_msg_content %>
   <%= render 'layouts/footer' %>
-  <%= debug(params) if Rails.env.development? %>
-  <script>
-    $(function(){ $("[rel=tooltip]").tooltip({ placement: 'top'}); });
-  </script>
+  <%# debug(params) if Rails.env.development? %>
 </body>
 </html>

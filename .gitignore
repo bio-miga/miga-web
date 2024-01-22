@@ -6,6 +6,7 @@
 
 # Ignore bundler config.
 /.bundle
+.DS_Store
 
 # Ignore the default SQLite database.
 /db/*.sqlite3
@@ -26,7 +27,6 @@
 # Ignore precompiled assets
 /public/assets
 
-Gemfile.lock
 *.swp
 
 # Ignore local settings

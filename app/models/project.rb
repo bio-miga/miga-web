@@ -19,8 +19,18 @@ class Project < ApplicationRecord
     end
   end
 
+  def privileged_user?(test_user)
+    return false if test_user.nil?
+    return true if test_user == user || test_user.admin?
+    false
+  end
+
   def path_name
     path.tr('_',' ')
+  end
+
+  def rel_path
+    Pathname.new(full_path).relative_path_from(Settings.miga_projects).to_s
   end
 
   def miga
@@ -157,20 +167,22 @@ class Project < ApplicationRecord
   # Returns errors (if any) or +nil+ otherwise
   def create_miga_dataset(par, file1, file2 = nil)
     require 'miga/cli'
+
     input_type = par[:input_type]
     input_type = 'trimmed_reads' if par[:input_type] == 'trimmed_fasta'
     input_type += file2 ? '_paired' : '_single' unless input_type == 'assembly'
     cmd = [
       'add',
-      '--project', miga.path,
+      '--project', (par[:query] ? par[:query_project_miga] : miga).path,
       '--input-type', input_type,
       '--dataset', par[:name]
     ]
     %i[type description comments].each do |k|
       cmd += ["--#{k}", par[k]] if par[k] && !par[k].empty?
     end
-    cmd += ['--metadata', "user=#{par[:user]}"] if par[:user]
-    cmd << '--query' if par[:query]
+    if par[:query]
+      cmd += ['--metadata', "db_project=../#{rel_path}", '--query']
+    end
     cmd << file1
     cmd << file2 if file2
     MiGA::Cli.new(cmd).launch
@@ -181,7 +193,7 @@ class Project < ApplicationRecord
   def full_path
     dir = Settings.miga_projects
     unless official?
-      dir = File.join(dir, 'user-contributed', user.id.to_s)
+      dir = user.query_project_path(true)
       FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
     end
     File.join(dir, path)
