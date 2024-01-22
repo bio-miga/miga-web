@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gem 'execjs', '~> 2.7' 
 # Use MiGA base code to communicate with the projects
-gem 'miga-base', '~> 1.2'
+gem 'miga-base', '~> 1.3'
 gem 'rails', '~> 6.0'
 # Make it safe
 gem 'bcrypt', '~> 3.1'
