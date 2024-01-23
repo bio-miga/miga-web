@@ -23,17 +23,14 @@
         <div class="dataset-name text-danger">Missing dataset</div>
       <% else %>
         <div class="dataset-name">
-          <% qi = dataset.metadata[:quality] %>
-          <% unless qi.nil? %>
-            <i class="glyphicon glyphicon-adjust small text-light-<%=
-                { excellent: 'success', high: 'info',
-                  intermediate: 'warning', low: 'danger' }[qi.to_sym]
-            %>" rel="tooltip" title="<%= qi.capitalize %> quality genome"> </i>
+          <% if isref %>
+            <%= link_to_reference_dataset(project, dataset.name) %>
+          <% else %>
+            <% if query_dataset.complete_new? %>
+              <%= fa_icon('circle', class: 'text-info', title: 'Unseen') %>
+            <% end %>
+            <%= link_to(query_dataset.name.unmiga_name, query_dataset) %>
           <% end %>
-          <%=
-            isref ? link_to_reference_dataset(project, dataset.name) :
-                    link_to(query_dataset.name.unmiga_name, query_dataset)
-          %>
         </div>
         <div class="dataset-actions actions float-right">
           <% if !no_actions && (
