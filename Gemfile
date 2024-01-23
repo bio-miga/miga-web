@@ -46,6 +46,7 @@ gem 'jbuilder', '~> 2.11'
 gem 'sdoc', '~> 2.0', group: :doc
 
 gem 'redcarpet', '~> 3.5'
+gem 'dkim', '~> 1.1'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger

@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "noreply@enve-omics.ce.gatech.edu"
+  default from: 'no-reply@microbial-genomes.org'
   layout 'mailer'
 end
