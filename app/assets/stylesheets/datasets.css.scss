@@ -6,6 +6,16 @@
   border: none !important;
   border-left: 5px solid $gray-400 !important;
   padding: 0;
+  &:has(.card-header .fas[title="Unseen"]) {
+    //border-left: theme-color-level(info, 0) !important;
+    border-left-color: var(--info) !important;
+    .card-header {
+      background: theme-color-level(info, -11);
+    }
+    &:hover .card-header {
+      background: theme-color-level(info, -10);
+    }
+  }
   &:hover {
     background: $gray-100;
     border-left: 5px solid $gray-700 !important;
