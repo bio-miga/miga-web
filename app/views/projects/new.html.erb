@@ -10,7 +10,7 @@
       <%= hidden_field_tag :user_id, current_user.id %>
 
       <div class="form-group">
-        <%= f.label(:path) %>
+        <%= f.label(:path, 'Name') %>
         <%= f.text_field(:path, class: 'form-control') %>
         <small class="text-muted">
           Use only alpha-numerics and underscores
