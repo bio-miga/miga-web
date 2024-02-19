@@ -53,7 +53,7 @@
     max_val = 0.0
     max_val_ds = nil
   %>
-  <% if ref_db.miga.nil? %>
+  <% if !ref_db&.miga %>
     MiGA cannot contact the reference database at the moment.
   <% elsif !val.empty? && val.second %>
     The closest relatives found by MiGA in the database were
