@@ -34,13 +34,19 @@ Once your MiGA Web is ready, you can start the server. First, prepare the
 system:
 
 ```bash
-# Tell rails this is a production server:
+# Tell rails this is a production server
 export RAILS_ENV=production
-# create an empty folder to host your projects (it can be anywhere):
+
+# create an empty folder to host your projects (it can be anywhere)
 mkdir $HOME/miga-data
-# Generate the initial database:
+
+# Configure server secret credentials
+bin/rails credentials:edit
+
+# Generate the initial database
 bundle exec rake db:migrate
-# Precompile assets:
+
+# Precompile assets
 bundle exec rake assets:precompile
 ```
 
@@ -57,7 +63,7 @@ Finally, launch the server. We have had a great experience with Puma, so that's
 what we use.
 
 ```bash
-export SECRET_KEY_BASE=`bundle exec rake secret`
+export RAILS_SERCE_STATIC_FILES=true
 bundle exec rails server -e production -u Puma
 ```
 
@@ -68,7 +74,7 @@ it to rails using -b and -p. For example, this is how we launch our own
 [MiGA Web](http://enve-omics.ce.gatech.edu:3000):
 
 ```bash
-export SECRET_KEY_BASE=`bundle exec rake secret`
+export RAILS_SERCE_STATIC_FILES=true
 bundle exec rails server -e production -b enve-omics.ce.gatech.edu -p 3000 -u Puma
 ```
 

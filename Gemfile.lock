@@ -70,14 +70,14 @@ GEM
       execjs (~> 2)
     base64 (0.2.0)
     bcrypt (3.1.20)
-    bigdecimal (3.1.6)
+    bigdecimal (3.1.7)
     bindex (0.8.1)
     bootstrap (4.6.2)
       autoprefixer-rails (>= 9.1.0)
       popper_js (>= 1.16.1, < 2)
       sassc-rails (>= 2.0.0)
     builder (3.2.4)
-    carrierwave (2.2.5)
+    carrierwave (2.2.6)
       activemodel (>= 5.0.0)
       activesupport (>= 5.0.0)
       addressable (~> 2.6)
@@ -159,7 +159,7 @@ GEM
       mutex_m
       nkf
       rack (>= 2.0, < 3.1)
-    i18n (1.14.1)
+    i18n (1.14.4)
       concurrent-ruby (~> 1.0)
     image_processing (1.12.2)
       mini_magick (>= 4.9.5, < 5)
@@ -185,7 +185,7 @@ GEM
       net-smtp
     marcel (1.0.4)
     method_source (1.0.0)
-    miga-base (1.3.11.1)
+    miga-base (1.3.13.8)
       daemons (~> 1.3)
       json (~> 2)
       net-ftp
@@ -194,7 +194,7 @@ GEM
       sqlite3 (~> 1.3)
     mini_magick (4.12.0)
     mini_mime (1.1.5)
-    minitest (5.22.2)
+    minitest (5.22.3)
     mutex_m (0.2.0)
     net-ftp (0.3.4)
       net-protocol
@@ -210,11 +210,11 @@ GEM
       timeout
     net-smtp (0.4.0.1)
       net-protocol
-    nio4r (2.7.0)
+    nio4r (2.7.1)
     nkf (0.2.0)
-    nokogiri (1.16.2-x86_64-darwin)
+    nokogiri (1.16.3-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.16.2-x86_64-linux)
+    nokogiri (1.16.3-x86_64-linux)
       racc (~> 1.4)
     nori (2.7.0)
       bigdecimal
@@ -225,7 +225,7 @@ GEM
     puma (5.6.8)
       nio4r (~> 2.0)
     racc (1.7.3)
-    rack (2.2.8.1)
+    rack (2.2.9)
     rack-test (2.1.0)
       rack (>= 1.3)
     rails (6.1.7.7)
@@ -303,8 +303,8 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
-    sqlite3 (1.7.2-x86_64-darwin)
-    sqlite3 (1.7.2-x86_64-linux)
+    sqlite3 (1.7.3-x86_64-darwin)
+    sqlite3 (1.7.3-x86_64-linux)
     ssrf_filter (1.1.2)
     stringio (3.1.0)
     thor (1.3.1)
