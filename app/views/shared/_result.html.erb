@@ -161,12 +161,12 @@
           key.to_s.tr('_','-')
       ) %>
   <% if res.versions.present? %>
-    |
+    &nbsp;|&nbsp;
     <% id = info_modal('Versions') do %>
-      <dl>
+      <dl class="pl-1">
         <% res.versions.each do |k, v| %>
           <dt><%= k %></dt>
-          <dd><%= v %></dd>
+          <dd class="ml-4"><%= v %></dd>
         <% end %>
       </dl>
     <% end %>
