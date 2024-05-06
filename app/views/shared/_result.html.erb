@@ -39,10 +39,13 @@
     <% Dir.new(res.file_path :fastqc).each_entry do |f| %>
       <% next unless f =~ /\.html/ %>
       <li>
-      <%= link_to f, obj.is_a?(MiGA::Dataset) ?
-          reference_dataset_result_path(proj.id, obj.name,
-            :read_quality, :fastqc, f:f) :
-          query_dataset_result_path(obj.id, :read_quality, :fastqc, f:f) %>
+      <%= link_to(
+            f,
+            obj.is_a?(MiGA::Dataset) ?
+              reference_dataset_result_path(proj.id, obj.name,
+                :read_quality, :fastqc, f:f) :
+              query_dataset_result_path(obj.id, :read_quality, :fastqc, f: f)
+          ) %>
       </li>
     <% end %>
     </ul>
@@ -152,9 +155,23 @@
   %>
   <br/>
   <%= fa_icon('info-circle', title: 'More information') %>
-  <%= link_to 'Learn more',
-    'http://manual.microbial-genomes.org/part5/workflow.html#' +
-      key.to_s.tr('_','-') %>
+  <%= link_to(
+        'Learn more',
+        'http://manual.microbial-genomes.org/part5/workflow.html#' +
+          key.to_s.tr('_','-')
+      ) %>
+  <% if res.versions.present? %>
+    |
+    <% id = info_modal('Versions') do %>
+      <dl>
+        <% res.versions.each do |k, v| %>
+          <dt><%= k %></dt>
+          <dd><%= v %></dd>
+        <% end %>
+      </dl>
+    <% end %>
+    </>
+  <% end %>
   <div class='timestamp'><%= time_ago_in_words res.data[:created] %> ago</div>
 </div>
 </div>
