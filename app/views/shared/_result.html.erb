@@ -170,7 +170,10 @@
         <% end %>
       </dl>
     <% end %>
-    </>
+    <%= link_to(
+          'Versions', "##{id}",
+          data: { toggle: 'modal', target: "##{id}" }
+        ) %>
   <% end %>
   <div class='timestamp'><%= time_ago_in_words res.data[:created] %> ago</div>
 </div>
