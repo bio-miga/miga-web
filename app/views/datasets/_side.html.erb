@@ -121,6 +121,9 @@
           l = i.split(/:/, 2)
           "<a href='#{l[1]}' target=_blank>#{l[0]}</a>"
         end.join(', ')
+      when :url
+        k_str = 'URL'
+        v = "<a href='#{v}' target='_blank'>#{v}</a>"
       end
     %>
     <%= accordion_card(accordion, k, k_str) do %>
