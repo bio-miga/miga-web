@@ -26,6 +26,7 @@
       'async' => true
     )
   %>
+  <%= favicon_link_tag asset_path('favicon.ico') %>
   <%= render 'layouts/shim' %>
   <%= csrf_meta_tags %>
   <%= yield :head %>
