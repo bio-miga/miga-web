@@ -115,4 +115,6 @@ Rails.application.configure do
   # config.active_record.database_selector = { delay: 2.seconds }
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
+  config.plausible_domain = ENV['RAILS_MIGA_PLAUSIBLE_DOMAIN']
+  config.plausible_server = ENV['RAILS_MIGA_PLAUSIBLE_SERVER']
 end
