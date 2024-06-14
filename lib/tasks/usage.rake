@@ -1,18 +1,21 @@
 
-def report(stats)
+def report(stats, args)
+  file = args[:file]
+  ofh = file.present? ? File.open(file, 'w') : $stdout
   range = stats.keys.minmax
   (range[0][0] .. range[1][0]).each do |year|
     (1 .. 12).each do |month|
       next if year == range[0][0] && month < range[0][1]
       next if year == range[1][0] && month > range[1][1]
 
-      puts [year, month, stats[[year, month]] || 0].join("\t")
+      ofh.puts [year, month, stats[[year, month]] || 0].join("\t")
     end
   end
+  ofh.close if file.present?
 end
 
 namespace :usage do
-  task :queries => :environment do |t, args|
+  task :queries, [:file] => :environment do |t, args|
     stats = {}
 
     # Query datasets
@@ -26,10 +29,10 @@ namespace :usage do
     # TODO
 
     # Report
-    report(stats)
+    report(stats, args)
   end
 
-  task :users => :environment do |t, args|
+  task :users, [:file] => :environment do |t, args|
     stats = {}
 
     # Users with at least one query dataset
@@ -41,6 +44,6 @@ namespace :usage do
     end
 
     # Report
-    report(stats)
+    report(stats, args)
   end
 end
