@@ -124,6 +124,9 @@
       when :url
         k_str = 'URL'
         v = "<a href='#{v}' target='_blank'>#{v}</a>"
+      when :seqcode_url
+        k_str = 'SeqCode URL'
+        v = "<a href='#{v}' target='_blank'>#{v}</a>"
       end
     %>
     <%= accordion_card(accordion, k, k_str) do %>
