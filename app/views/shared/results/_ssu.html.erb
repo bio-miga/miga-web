@@ -14,46 +14,48 @@
   <% else %>
     <p>
       MiGA found <%= s %>
-      <% info_msg_id = info_modal('RDP Classifier', dialog_class: 'modal-lg') do %>
-        <div id="ssu-rdp"></div>
-      <% end %>
-      <% ds_name = obj.is_a?(MiGA::Dataset) ? obj.name : obj.miga_name %>
-      <div class="text-center">
-        <%=
-          link_to(
-            'Classify SSU (16S rRNA) with RDP',
-            obj.is_a?(MiGA::Dataset) ?
-              rdp_classify_url(project.id, ds_name) :
-              rdp_classify_url(0, ds_name, user_id: obj.user_id),
-            class: 'btn btn-block btn-primary',
-            type: :button,
-            id: 'link-ssu-rdp',
-            remote: true,
-            data: {
-              target: "##{info_msg_id}",
-              url:
-                obj.is_a?(MiGA::Dataset) ?
-                  rdp_classify_as_url(project.id, ds_name) :
-                  rdp_classify_as_url(0, ds_name, user_id: obj.user_id)
+      <% if s =~ /16S/ %>
+        <% info_msg_id = info_modal('RDP Classifier', dialog_class: 'modal-lg') do %>
+          <div id="ssu-rdp"></div>
+        <% end %>
+        <% ds_name = obj.is_a?(MiGA::Dataset) ? obj.name : obj.miga_name %>
+        <div class="text-center">
+          <%=
+            link_to(
+              'Classify SSU (16S rRNA) with RDP',
+              obj.is_a?(MiGA::Dataset) ?
+                rdp_classify_url(project.id, ds_name) :
+                rdp_classify_url(0, ds_name, user_id: obj.user_id),
+              class: 'btn btn-block btn-primary',
+              type: :button,
+              id: 'link-ssu-rdp',
+              remote: true,
+              data: {
+                target: "##{info_msg_id}",
+                url:
+                  obj.is_a?(MiGA::Dataset) ?
+                    rdp_classify_as_url(project.id, ds_name) :
+                    rdp_classify_as_url(0, ds_name, user_id: obj.user_id)
+              }
+            )
+          %>
+        </div>
+        <script>
+          $("#link-ssu-rdp").click(function(event){
+            var m = $($(this).data("target"));
+            var t = $("#ssu-rdp")
+            m.modal('show');
+            if(!t.data('loaded')){
+              t.html("Contacting RDP...")
+              t.load($(this).data('url'));
+              t.data('loaded', true);
             }
-          )
-        %>
-      </div>
+            event.preventDefault();
+            event.stopPropagation();
+          })
+        </script>
+      <% end %>
     </p>
-    <script>
-      $("#link-ssu-rdp").click(function(event){
-        var m = $($(this).data("target"));
-        var t = $("#ssu-rdp")
-        m.modal('show');
-        if(!t.data('loaded')){
-          t.html("Contacting RDP...")
-          t.load($(this).data('url'));
-          t.data('loaded', true);
-        }
-        event.preventDefault();
-        event.stopPropagation();
-      })
-    </script>
     <%= accordion('result-ssu', false) do |accordion| %>
       <%= accordion_card(accordion, 'gff', 'Feature locations') do %>
         <div class="panel-body table-responsive">
@@ -91,7 +93,7 @@
       <% elsif res.stats[:trna_aa] == 0 %>
         missing all the expected 20 or 21 cannonical amino acids.
       <% else %>
-        corresponding to <% (res.stats[:trna_aa].to_f * 100 / 20).round %>%
+        corresponding to <%= (res.stats[:trna_aa].to_f * 100 / 20).round %>%
         of the expected cannonical amino acids.
       <% end %>
     </p>
