@@ -73,7 +73,8 @@
     MiGA couldn't find any close relatives registered in the database.
   <% end %>
 </p>
-<% unless (dataset.ref? && job == :distances) || max_val_ds.nil? || project.miga.is_clade? %>
+<% unless (dataset.ref? && job == :distances) || max_val_ds.nil? ||
+      project.miga.is_clade? %>
   <h4>Taxonomic classification
   <%= info_msg('Taxonomic classification of query datasets') do %>
     <p>
@@ -137,7 +138,7 @@
     and <b>ref tree pdf</b> (in PDF).
   </p>
 <% end %>
-<%= accordion('distances', false) do |accordion| %>
+<%= accordion("distances-#{job}", false) do |accordion| %>
   <% %w[ani aai].each do |metric| %>
     <%
       next if db[metric.to_sym].nil?
