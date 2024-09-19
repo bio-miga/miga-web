@@ -26,7 +26,7 @@ namespace :usage do
     end
 
     # Individual project references
-    Project.where(private: true).each do |p|
+    Project.where(official: false).includes(:user).each do |p|
       d = p.created_at
       period = [d.year, d.month]
       stats[period] ||= 0
