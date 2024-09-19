@@ -30,7 +30,7 @@ namespace :usage do
       d = p.created_at
       period = [d.year, d.month]
       stats[period] ||= 0
-      stats[periods] += p.miga&.dataset_names&.count || 0
+      stats[period]  += p.miga&.dataset_names&.count || 0
     end
 
     # Report
