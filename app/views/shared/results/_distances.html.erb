@@ -45,14 +45,6 @@
                 query_dataset_run_distances_url(dataset) %>.
         </div>
         <%
-      elsif !_del_reference_dataset.empty?
-        %>
-        <div class="alert alert-info">
-          The result contains datasets not in the reference project,
-          <%= link_to 'recalculate distances',
-                query_dataset_run_distances_url(dataset) %>.
-        </div>
-        <%
       end
     end
   end
@@ -190,5 +182,13 @@
         </div>
     <% end %>
   <% end %>
+<% end %>
+<% if !_del_reference_dataset.empty? %>
+  <br/>
+  <div class="alert alert-info">
+    The result contains datasets not in the reference project,
+    <%= link_to 'recalculate distances',
+          query_dataset_run_distances_url(dataset) %>.
+  </div>
 <% end %>
 <br/>
