@@ -1,5 +1,5 @@
 <%
-  @_del_reference_dataset = [] # Reinitialize
+  _empty_del_reference_dataset! # Reinitialize
   ref_db = project
   if job == :taxonomy && dataset.ref?
     ref_db = nil
@@ -45,7 +45,7 @@
                 query_dataset_run_distances_url(dataset) %>.
         </div>
         <%
-      elsif !@_del_reference_dataset.empty?
+      elsif !_del_reference_dataset.empty?
         %>
         <div class="alert alert-info">
           The result contains datasets not in the reference project,
