@@ -183,7 +183,8 @@
     <% end %>
   <% end %>
 <% end %>
-<% if !_del_reference_dataset.empty? %>
+<% unless dataset.is_a?(MiGA::Dataset) || dataset.ref? ||
+          _del_reference_dataset.empty? %>
   <br/>
   <div class="alert alert-info">
     The result contains datasets not in the reference project,
