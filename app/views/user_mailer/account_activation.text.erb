@@ -3,8 +3,6 @@ Hi <%= @user.name %>,
 Welcome to MiGA! Click on the link below to activate your account:
 
 <%=
-  edit_account_activation_url(
-    @user.activation_token, email: @user.email, id: @user.activation_digest
-  )
+  edit_account_activation_url(@user.activation_token, email: @user.email)
 %>
 
