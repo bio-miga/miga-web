@@ -4,7 +4,7 @@
 %>
 
 <span class="status">
-  <% unless dataset.active? %>
+  <% unless dataset&.active? %>
     <span class="text-danger">[Inactive]</span>
   <% end %>
 
