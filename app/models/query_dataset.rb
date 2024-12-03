@@ -55,7 +55,7 @@ class QueryDataset < ApplicationRecord
   # Note that this is different from +project.miga+, which is the MiGA object
   # of the reference database being queried
   def query_project_miga
-    path = user.query_project_path
+    path = user&.query_project_path or return
     unless MiGA::Project.exist?(path)
       require 'miga/cli'
 
