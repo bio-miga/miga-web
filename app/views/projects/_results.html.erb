@@ -43,7 +43,7 @@
   <% if @project.reference_db %>
     <h4>Reference Database</h4>
     <p>
-      <%= link_to(@project.path.unmiga_name, @project.reference_db) %>
+      <%= link_to(@project.reference_db.path_name, @project.reference_db) %>
     </p>
   <% end %>
   <% if File.exist? @project.readme_file %>
