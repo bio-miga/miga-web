@@ -39,9 +39,10 @@ class ProjectsController < ApplicationController
       @projects = Project.where(private: true, user: current_user)
             .paginate(page: params[:page])
     elsif params[:user_contributed]
+      sel = { official: false }
+      sel[:private] = false unless current_user.admin? && params[:all]
       @selection = :'user-contributed'
-      @projects = Project.where(official: false, private: false)
-            .paginate(page: params[:page])
+      @projects = Project.where(sel).paginate(page: params[:page])
     elsif params[:type]
       @selection = params[:type].to_sym
       @projects = Project.where(private: false, official: true)
