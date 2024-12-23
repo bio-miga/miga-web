@@ -188,6 +188,17 @@ class Project < ApplicationRecord
     MiGA::Cli.new(cmd).launch
   end
 
+  ##
+  # Returns the Project object for the reference DB, or nil if the miga object
+  # is unavailable, if the project doesn't have a reference database, or if the
+  # corresponding Rails object cannot be found
+  def reference_db
+    return nil unless miga.present? && miga.metadata[:ref_project].present?
+
+    @reference_db ||=
+      Project.where(path: File.basename(miga.metadata[:ref_project])).first
+  end
+
   private
 
   def full_path

@@ -40,6 +40,12 @@
     <abbr title='Average Nucleotide Identity'>ANI</abbr>:
       <%= @project.miga.option(:ani_p) %>.
   </p>
+  <% if @project.reference_db %>
+    <h4>Reference Database</h4>
+    <p>
+      <%= link_to(@project.path.unmiga_name, @project.reference_db) %>
+    </p>
+  <% end %>
   <% if File.exist? @project.readme_file %>
     <h4>README</h4>
     <div class='well well-sm small'>
