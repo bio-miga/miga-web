@@ -44,14 +44,19 @@
       <% end %>
     </div>
     <div class="timestamp float-right">
+      <% date  = project.updated_at %>
+      <% index = false %>
       <% if project.last_db_update %>
-        <span title="<%= project.last_db_update.to_date %>">
-          <%= fa_icon(:history) %>
-          <%= time_ago_in_words(project.last_db_update) %>
-        </span>
-      <% else %>
-        Index unavailable
+        <% index = true %>
+        <% date  = project.last_db_update %>
+      <% elsif project.miga.try(:metadata).try(:updated) %>
+        <% date  = project.miga.metadata.updated) %>
       <% end %>
+      <span title="<%= date %>">
+        <%= 'Index unavailable' unless index %>
+        <%= fa_icon(:history) %>
+        <%= time_ago_in_words(date) %>
+      </span>
     </div>
   </div>
 </div>
