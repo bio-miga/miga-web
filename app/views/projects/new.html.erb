@@ -2,6 +2,17 @@
 
 <div class="row">
   <div class="col-md-6 offset-md-3">
+    <div classs="alert alert-info">
+      <h4>Are you sure you want to create a new project?</h4>
+      New projects allow you to create databases that you can later query with
+      other genomes. This can be useful if you want to compare a collection of
+      genomes between them, or if you want to create a searchable project.
+      However, if you want to search your genome or genomes against an existing
+      database (for example, to classify them taxonomically), you can go instead
+      to the home page and select "Upload genomes" in one of the existing
+      projects.
+    </div>
+
     <h1 class="mt-5">New project</h1>
     <hr/>
     <%= form_for(@project) do |f| %>
