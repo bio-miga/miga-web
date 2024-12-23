@@ -43,7 +43,7 @@ class ProjectsController < ApplicationController
       sel[:private] = false unless current_user.admin? && params[:all]
       @selection = :'user-contributed'
       @projects = Project.where(sel)
-      @projects = @projects.order(created_at: :desc) if sel[:private] == false
+      @projects = @projects.reorder(created_at: :asc) if sel[:private] == false
       @projects = @projects.paginate(page: params[:page])
     elsif params[:type]
       @selection = params[:type].to_sym
