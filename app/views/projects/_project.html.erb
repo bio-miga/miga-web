@@ -52,8 +52,11 @@
       <% elsif project.miga.try(:metadata).try(:updated) %>
         <% date  = project.miga.metadata.updated %>
       <% end %>
+
+      <% unless index %>
+        <span class="text-danger">No index</span>
+      <% end %>
       <span title="<%= date %>">
-        <%= 'Index unavailable' unless index %>
         <%= fa_icon(:history) %>
         <%= time_ago_in_words(date) %>
       </span>
