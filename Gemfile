@@ -1,5 +1,8 @@
 source 'https://rubygems.org'
 
+# Explicitly require (otherwise imported by activesupport among others) to lock
+# the version. See: https://stackoverflow.com/questions/79360526
+gem 'concurrent-ruby', '1.3.4'
 gem 'execjs', '~> 2.7' 
 # Use MiGA base code to communicate with the projects
 gem 'miga-base', '~> 1.3'
