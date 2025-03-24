@@ -110,10 +110,10 @@ class QueryDatasetsController < ApplicationController
       render :nothing => true, :status => 200, :content_type => "text/html"
     else
       abs_path = res.file_path(params[:file])
-      if Dir.exists?(abs_path) and params[:f] and not params[:f]=~/\//
+      if Dir.exist?(abs_path) and params[:f] and not params[:f]=~/\//
         abs_path = File.expand_path(params[:f], abs_path)
       end
-      if Dir.exists? abs_path
+      if Dir.exist? abs_path
         @path = abs_path
         @file = File.basename abs_path
         @res  = res
