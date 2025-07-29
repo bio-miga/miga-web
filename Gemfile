@@ -1,16 +1,9 @@
 source 'https://rubygems.org'
 
-# Explicitly require (otherwise imported by activesupport among others) to lock
-# the version. See: https://stackoverflow.com/questions/79360526
-gem 'concurrent-ruby', '1.3.4'
 gem 'execjs', '~> 2.7' 
 # Use MiGA base code to communicate with the projects
 gem 'miga-base', '~> 1.3'
 gem 'rails', '~> 6.1'
-
-
-# Explicitly limit nokogiri version (local issue, to be addressed)
-gem 'nokogiri', '1.16.7'
 gem 'rails-html-sanitizer', '1.6.0'
 
 # Make it safe
