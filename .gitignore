@@ -39,3 +39,5 @@
 !/app/views/sessions/_login_default.html.erb
 
 coverage/
+
+/config/master.key
