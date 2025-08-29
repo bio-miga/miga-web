@@ -404,7 +404,7 @@ class ProjectsController < ApplicationController
     f = File.join(
       @project.miga.path, 'daemon', "MiGA:#{@project.miga.name}.output"
     )
-    if File.exists?(f)
+    if File.exist?(f)
       last_five_lines = File.readlines(f).pop(5)
       last_line = last_five_lines.last
       last_five_lines = last_five_lines.join('')
