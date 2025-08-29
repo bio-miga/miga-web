@@ -103,8 +103,12 @@
       }
       case k
       when :type
-        v = "<b>#{v.capitalize}</b>: " \
-              "#{MiGA::Dataset.KNOWN_TYPES[v][:description]}"
+        if MiGA::Dataset.KNOWN_TYPES[v]
+          v = "<b>#{v.capitalize}</b>: " \
+                "#{MiGA::Dataset.KNOWN_TYPES[v][:description]}"
+        else
+          v = "<b>#{v.capitalize}</b>: UNKNOWN DATASET TYPE"
+        end
       when :comments
         if /(.*)Assembly: (\S+)(.*)/.match(v)
           v = "#{$1}<a href='https://www.ncbi.nlm.nih.gov/assembly/#{$2}/' " +
