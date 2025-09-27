@@ -72,7 +72,7 @@ class QueryDatasetsController < ApplicationController
             if saved_cnt == 1
               redirect_to @query_dataset
             else
-              redirect_to project_query_datasets_url(@project)
+              redirect_to query_datasets_url
             end
           else
             render :new
