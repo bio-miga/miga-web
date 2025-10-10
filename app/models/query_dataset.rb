@@ -88,6 +88,8 @@ class QueryDataset < ApplicationRecord
       update_attribute(:complete_new, true)
     end
     complete
+  rescue JSON::ParserError
+    return false
   end
 
   # Checks if MyTaxa scan is required for the dataset.
