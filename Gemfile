@@ -72,6 +72,6 @@ end
 
 group :production do
   #gem 'pg', '0.17.1'
-  gem 'puma', '~> 5.6'
+  gem 'puma', '~> 7.2'
 end
 
