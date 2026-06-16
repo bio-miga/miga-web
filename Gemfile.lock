@@ -215,7 +215,7 @@ GEM
       time
     net-http (0.9.1)
       uri (>= 0.11.1)
-    net-imap (0.6.3)
+    net-imap (0.6.4.1)
       date
       net-protocol
     net-pop (0.1.2)
@@ -334,7 +334,7 @@ GEM
     tilt (2.7.0)
     time (0.4.2)
       date
-    timeout (0.6.0)
+    timeout (0.6.1)
     tsort (0.2.0)
     turbolinks (5.2.1)
       turbolinks-source (~> 5.2)
